@@ -4,7 +4,7 @@ android {
     compileSdkVersion 29
     defaultConfig {
         applicationId "luoluna.sweven.album"
-        minSdkVersion 15
+        minSdkVersion 21
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -16,6 +16,22 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+//
+//    def listSubFile = {
+//        def resFolder = 'src/main/res/layouts'
+//        def files = file(resFolder).listFiles()
+//        def folders = []
+//        files.each {
+//            item -> folders.add(item.absolutePath)
+//        }
+//        folders.add(file(resFolder).parentFile.absolutePath)
+//        return folders
+//    }
+//    sourceSets {
+//        main {
+//            res.srcDirs = listSubFile()
+//        }
+//    }
 }
 
 dependencies {
@@ -25,4 +41,6 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    implementation project(path: ':util')
+    implementation 'androidx.recyclerview:recyclerview:1.0.0'
 }
