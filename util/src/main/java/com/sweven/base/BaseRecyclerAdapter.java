@@ -2,6 +2,7 @@ package com.sweven.base;
 
 import android.app.Activity;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -20,15 +21,15 @@ import java.util.List;
  * query(T t),del(T t),del(int position,T t)
  * </p>
  */
-public class BaseRecyclerAdapter<T> extends RecyclerView.Adapter {
+public class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<BaseRecyclerAdapter.ViewHolder> {
 
     protected String TAG = getClass().getSimpleName();
     protected LogUtil log;
     protected ToastUtil toast;
 
-    private Activity activity;
-    private List<T> list;
-    private LayoutInflater inflater;
+    protected Activity activity;
+    protected List<T> list;
+    protected LayoutInflater inflater;
 
     public BaseRecyclerAdapter(Activity activity) {
         this.activity = activity;
@@ -49,14 +50,14 @@ public class BaseRecyclerAdapter<T> extends RecyclerView.Adapter {
 
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 //      View view =  inflater.inflate(R.layout.layout,parent,false);
 //        return new RecyclerView.ViewHolder(view);
         return null;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position) {
 //        ViewHolder holder=(ViewHolder) viewHolder;
 //        T t=list.get(position);
     }
@@ -124,5 +125,12 @@ public class BaseRecyclerAdapter<T> extends RecyclerView.Adapter {
     @Override
     public int getItemCount() {
         return list == null ? 0 : list.size();
+    }
+
+    public abstract static class ViewHolder extends RecyclerView.ViewHolder{
+
+        public ViewHolder(@NonNull View view) {
+            super(view);
+        }
     }
 }

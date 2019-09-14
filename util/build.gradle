@@ -20,6 +20,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        sourceCompatibility = '1.8'
+        targetCompatibility = '1.8'
+    }
 
 }
 
@@ -34,4 +38,5 @@ dependencies {
     implementation 'com.konghq:unirest-objectmapper-jackson:2.3.02'
     implementation 'com.google.zxing:core:3.4.0'
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
+    implementation 'com.lcodecorex:tkrefreshlayout:1.0.7'
 }

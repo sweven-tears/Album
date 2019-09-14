@@ -2,6 +2,7 @@ package com.sweven.base;
 
 import android.os.Bundle;
 import android.view.KeyEvent;
+import android.view.View;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
@@ -25,8 +26,8 @@ public class BaseActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         init();
-        bindView();
-        initData();
+//        bindView();
+//        initData();
     }
 
     private void init() {
@@ -34,8 +35,8 @@ public class BaseActivity extends AppCompatActivity {
         log = new LogUtil(TAG);
     }
 
-    protected void bindID(@IdRes int res) {
-        findViewById(res);
+    protected <T extends View> T bindID(@IdRes int res) {
+        return findViewById(res);
     }
 
     protected void bindView() {
