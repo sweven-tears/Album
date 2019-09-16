@@ -108,8 +108,12 @@ public class RefreshRecyclerBottomView extends FrameLayout implements IBottomVie
     public void startAnim(float maxHeadHeight, float headHeight) {
         loading.clearAnimation();
         setLoadMoreText(loadMoreDoingStr);
-        animationDrawable = (AnimationDrawable) loading.getDrawable();
-        animationDrawable.start();
+        try {
+            animationDrawable = (AnimationDrawable) loading.getDrawable();
+            animationDrawable.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -118,8 +122,12 @@ public class RefreshRecyclerBottomView extends FrameLayout implements IBottomVie
     @Override
     public void reset() {
         loading.clearAnimation();
-        animationDrawable = (AnimationDrawable) loading.getDrawable();
-        animationDrawable.stop();
+        try {
+            animationDrawable = (AnimationDrawable) loading.getDrawable();
+            animationDrawable.stop();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         setLoadMoreText(LoadMoreDoneStr);
         loading.setVisibility(GONE);
     }

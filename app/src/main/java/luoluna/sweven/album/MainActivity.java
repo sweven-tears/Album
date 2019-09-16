@@ -6,11 +6,11 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.sweven.base.BaseActivity;
+import com.sweven.widget.RefreshRecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +25,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private ImageView doneIv;
     private RelativeLayout doneRl;
 
-    private RecyclerView recyclerView;
+    private RefreshRecyclerView recyclerView;
     private AlbumAdapter adapter;
     private List<Album> list = new ArrayList<>();
 

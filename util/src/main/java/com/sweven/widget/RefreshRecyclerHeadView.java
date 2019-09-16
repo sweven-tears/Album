@@ -118,8 +118,12 @@ public class RefreshRecyclerHeadView extends FrameLayout implements IHeaderView 
         loading.setVisibility(View.VISIBLE);
 
         loading.clearAnimation();
-        animationDrawable = (AnimationDrawable) loading.getDrawable();
-        animationDrawable.start();
+        try {
+            animationDrawable = (AnimationDrawable) loading.getDrawable();
+            animationDrawable.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -134,8 +138,12 @@ public class RefreshRecyclerHeadView extends FrameLayout implements IHeaderView 
     @Override
     public void reset() {
         loading.clearAnimation();
-        animationDrawable = (AnimationDrawable) loading.getDrawable();
-        animationDrawable.stop();
+        try {
+            animationDrawable = (AnimationDrawable) loading.getDrawable();
+            animationDrawable.stop();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         loading.setVisibility(GONE);
         refreshingText.setVisibility(VISIBLE);
         setRefreshingStr(releaseDoneStr);
