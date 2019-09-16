@@ -49,9 +49,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     protected void initData() {
         title.setText(R.string.index_title);
         doneIv.setVisibility(View.VISIBLE);
-        doneIv.setImageResource(App.album == App.BIG_ALBUM ? R.drawable.ic_big_album_list : R.drawable.ic_big_album_list);
+        doneIv.setImageResource(App.album == App.BIG_ALBUM ? R.drawable.ic_big_album_list : R.drawable.ic_roll_album_list);
         doneRl.setOnClickListener(this);
 
+        recyclerView.defaultRecyclerView();
         GridLayoutManager manager = new GridLayoutManager(this, 2);
         manager.setOrientation(RecyclerView.VERTICAL);
 //        recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));

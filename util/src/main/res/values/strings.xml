@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">util</string>
+    <string name="cancel_label">取消</string>
+    <string name="confirm_label">确定</string>
 </resources>

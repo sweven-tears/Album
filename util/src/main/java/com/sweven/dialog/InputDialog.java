@@ -2,6 +2,9 @@ package com.sweven.dialog;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import com.sweven.util.R;
 
@@ -11,6 +14,11 @@ import com.sweven.util.R;
  */
 public class InputDialog extends Dialog {
 
+    private TextView label, cancel, confirm;
+    private View line1, line2;
+    private EditText input;
+
+    private OnConfirmListener onConfirmListener;
 
     public InputDialog(Context context) {
         super(context);
@@ -28,6 +36,53 @@ public class InputDialog extends Dialog {
     }
 
     private void init() {
-//        getLayoutInflater().inflate(R.layout.)
+        setContentView(R.layout.view_input);
+        label = findViewById(R.id.label);
+        cancel = findViewById(R.id.cancel);
+        confirm = findViewById(R.id.confirm);
+        line1 = findViewById(R.id.line1);
+        line2 = findViewById(R.id.line2);
+        input = findViewById(R.id.input);
+
+        cancel.setOnClickListener(v -> cancel());
+        confirm.setOnClickListener(v -> {
+            if (onConfirmListener != null) {
+                onConfirmListener.confirm(getInput());
+            }
+        });
+    }
+
+    public InputDialog setLabel(String label) {
+        this.label.setText(label);
+        return this;
+    }
+
+    public InputDialog setCancel(String cancel) {
+        this.cancel.setText(cancel);
+        return this;
+    }
+
+    public InputDialog setHint(String hint) {
+        this.input.setHint(hint);
+        return this;
+    }
+
+    public InputDialog setConfirm(String confirm) {
+        this.confirm.setText(confirm);
+        return this;
+    }
+
+    public void setOnConfirmListener(OnConfirmListener onCallBackListener) {
+        if (this.onConfirmListener == null) {
+            this.onConfirmListener = onCallBackListener;
+        }
+    }
+
+    public String getInput() {
+        return input.getText().toString().intern();
+    }
+
+    public interface OnConfirmListener {
+        void confirm(String input);
     }
 }

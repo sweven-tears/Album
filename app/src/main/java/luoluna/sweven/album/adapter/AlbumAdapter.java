@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.sweven.base.BaseRecyclerAdapter;
+import com.sweven.dialog.InputDialog;
 import com.sweven.util.ViewUtil;
 import com.sweven.util.WindowUtil;
 
@@ -132,7 +133,21 @@ public class AlbumAdapter extends BaseRecyclerAdapter<Album> {
             int w = WindowUtil.getWindowWidth(activity);
             int h = WindowUtil.getWindowHeight(activity);
             ViewUtil.setWidthHeight(item, w / 2, h / 3);
-            item.setOnClickListener(v -> toast.showShort("big添加"));
+            item.setOnClickListener(v -> {
+                InputDialog dialog = new InputDialog(activity);
+                dialog.setLabel("图集名")
+                        .setHint("请输入")
+                        .setOnConfirmListener(input -> {
+                            if (input.isEmpty()) {
+                                toast.showShort("输入不能为空");
+                            } else {
+                                Album album = new Album(1, input);
+                                insert(0, album);
+                                dialog.cancel();
+                            }
+                        });
+                dialog.show();
+            });
         }
     }
 
