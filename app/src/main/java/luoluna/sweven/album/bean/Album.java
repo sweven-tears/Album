@@ -14,6 +14,7 @@ public class Album {
     private long count;
     private List<String> desktops;
     private String remark;
+    private boolean add;
 
     public Album() {
     }
@@ -21,6 +22,18 @@ public class Album {
     public Album(int id, String name) {
         this.id = id;
         this.name = name;
+    }
+
+    public Album(boolean add) {
+        this.add = add;
+    }
+
+    public boolean isAdd() {
+        return add;
+    }
+
+    public void setAdd(boolean add) {
+        this.add = add;
     }
 
     public int getId() {

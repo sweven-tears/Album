@@ -1,12 +1,21 @@
 package luoluna.sweven.album.adapter;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.sweven.base.BaseRecyclerAdapter;
+import com.sweven.util.ViewUtil;
+import com.sweven.util.WindowUtil;
 
 import java.util.List;
 
@@ -19,6 +28,9 @@ import luoluna.sweven.album.bean.Album;
  * Email: sweventears@foxmail.com
  */
 public class AlbumAdapter extends BaseRecyclerAdapter<Album> {
+    private static final int NORMAL = 1;
+    private static final int ADD = 0;
+
     public AlbumAdapter(Activity activity, List<Album> list) {
         super(activity, list);
     }
@@ -28,30 +40,118 @@ public class AlbumAdapter extends BaseRecyclerAdapter<Album> {
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view;
         if (App.album == App.BIG_ALBUM) {
-            view = inflater.inflate(R.layout.item_list_album_big, parent, false);
-            return new BigAlbumHolder(view);
+            if (viewType == NORMAL) {
+                view = inflater.inflate(R.layout.item_list_album_big, parent, false);
+                return new BigAlbumHolder(view);
+            }
+            view = inflater.inflate(R.layout.item_list_album_big_add, parent, false);
+            return new BigAlbumAddHolder(view);
         } else {
-            view = inflater.inflate(R.layout.item_list_album_roll, parent, false);
-            return new RollAlbumHolder(view);
+            if (viewType == NORMAL) {
+                view = inflater.inflate(R.layout.item_list_album_roll, parent, false);
+                return new RollAlbumHolder(view);
+            }
+            view = inflater.inflate(R.layout.item_list_album_roll_add, parent, false);
+            return new RollAlbumAddHolder(view);
         }
     }
 
     @Override
+    public int getItemViewType(int position) {
+        return list.get(position).isAdd() ? ADD : NORMAL;
+    }
+
+    @SuppressLint("SetTextI18n")
+    @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position) {
-        super.onBindViewHolder(viewHolder, position);
-    }
-
-    public class BigAlbumHolder extends ViewHolder {
-
-        public BigAlbumHolder(@NonNull View itemView) {
-            super(itemView);
+        AlbumHolder holder = (AlbumHolder) viewHolder;
+        Album album = list.get(position);
+        if (!album.isAdd()) {
+            Glide.with(activity)
+                    .load(album.getPath())
+                    .into(holder.cover);
+            holder.name.setText(album.getName());
+            holder.count.setText(album.getCount() + "张");
         }
     }
 
-    public class RollAlbumHolder extends ViewHolder {
+    @Override
+    public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
+        GridLayoutManager manager = (GridLayoutManager) recyclerView.getLayoutManager();
+        manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int i) {
+                return list.get(i).isAdd() ? ADD : NORMAL;
+            }
+        });
+    }
 
-        public RollAlbumHolder(@NonNull View itemView) {
-            super(itemView);
+    public void cutList() {
+        notifyDataSetChanged();
+    }
+
+    public class AlbumHolder extends ViewHolder {
+        RelativeLayout item;
+        ImageView cover;
+        TextView name;
+        TextView count;
+
+        public AlbumHolder(@NonNull View view) {
+            super(view);
         }
+    }
+
+
+    public class RollAlbumHolder extends AlbumHolder {
+
+        public RollAlbumHolder(@NonNull View view) {
+            super(view);
+            item = view.findViewById(R.id.item);
+            cover = view.findViewById(R.id.cover);
+            name = view.findViewById(R.id.name);
+            count = view.findViewById(R.id.picture_count);
+            item.setOnClickListener(v -> toast.showShort("roll打开"));
+        }
+
+    }
+
+    public class RollAlbumAddHolder extends AlbumHolder {
+
+        public RollAlbumAddHolder(@NonNull View view) {
+            super(view);
+            item = view.findViewById(R.id.item);
+            item.setOnClickListener(v -> toast.showShort("roll添加"));
+        }
+    }
+
+    public class BigAlbumAddHolder extends AlbumHolder {
+
+        public BigAlbumAddHolder(@NonNull View view) {
+            super(view);
+            item = view.findViewById(R.id.item);
+            int w = WindowUtil.getWindowWidth(activity);
+            int h = WindowUtil.getWindowHeight(activity);
+            ViewUtil.setWidthHeight(item, w / 2, h / 3);
+            item.setOnClickListener(v -> toast.showShort("big添加"));
+        }
+    }
+
+    public class BigAlbumHolder extends AlbumHolder {
+
+
+        public BigAlbumHolder(@NonNull View view) {
+            super(view);
+            item = view.findViewById(R.id.item);
+            cover = view.findViewById(R.id.cover);
+            name = view.findViewById(R.id.name);
+            count = view.findViewById(R.id.picture_count);
+
+            int w = WindowUtil.getWindowWidth(activity);
+            int h = WindowUtil.getWindowHeight(activity);
+            ViewUtil.setWidthHeight(item, w / 2, h / 3);
+
+            item.setOnClickListener(v -> toast.showShort("Big打开"));
+        }
+
     }
 }

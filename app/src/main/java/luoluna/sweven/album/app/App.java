@@ -43,7 +43,7 @@ public class App extends Application {
 
     public static final int BIG_ALBUM = 0x01;
     public static final int ROLL_ALBUM = 0x02;
-    public static int album = BIG_ALBUM;
+    public static int album = ROLL_ALBUM;
 
 
     @Override
@@ -86,7 +86,7 @@ public class App extends Application {
             list.add(album);
         }
         cursor.close();
-
+        list.add(new Album(true));
         return list;
     }
 }
