@@ -71,7 +71,7 @@ public class AlbumAdapter extends BaseRecyclerAdapter<Album> {
         Album album = list.get(position);
         if (!album.isAdd()) {
             Glide.with(activity)
-                    .load(album.getPath())
+                    .load(album.getCover())
                     .into(holder.cover);
             holder.name.setText(album.getName());
             holder.count.setText(album.getCount() + "张");

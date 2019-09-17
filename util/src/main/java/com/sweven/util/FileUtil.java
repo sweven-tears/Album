@@ -225,4 +225,14 @@ public class FileUtil {
         }
         return files;
     }
+
+    public static boolean isEndName(String path, String... endName) {
+        File file = new File(path);
+        for (String end : endName) {
+            if (!file.isDirectory() && file.getName().endsWith(end)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

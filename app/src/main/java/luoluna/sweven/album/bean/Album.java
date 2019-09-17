@@ -1,6 +1,5 @@
 package luoluna.sweven.album.bean;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -15,6 +14,7 @@ public class Album {
     private List<String> desktops;
     private String remark;
     private boolean add;
+    private String cover;
 
     public Album() {
     }
@@ -22,6 +22,20 @@ public class Album {
     public Album(int id, String name) {
         this.id = id;
         this.name = name;
+    }
+
+    public Album(int id, String name, String cover) {
+        this.id = id;
+        this.name = name;
+        this.cover = cover;
+    }
+
+    public String getCover() {
+        return cover;
+    }
+
+    public void setCover(String cover) {
+        this.cover = cover;
     }
 
     public Album(boolean add) {

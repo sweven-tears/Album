@@ -12,16 +12,17 @@
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_marginStart="@dimen/safe_dimen"
-        android:scaleType="fitXY" />
+        android:scaleType="centerCrop" />
 
     <TextView
         android:id="@+id/name"
         android:layout_width="match_parent"
-        android:layout_marginEnd="@dimen/safe_dimen"
-        android:ellipsize="middle"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/safe_dimen"
+        android:layout_marginEnd="@dimen/safe_dimen"
         android:layout_toEndOf="@id/cover"
+        android:ellipsize="end"
+        android:singleLine="true"
         android:textColor="@color/black"
         android:textSize="30sp" />
 

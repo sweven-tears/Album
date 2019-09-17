@@ -349,6 +349,14 @@ public class RefreshRecyclerView extends FrameLayout {
         return refreshLayout;
     }
 
+    public void addItemDecoration(RecyclerView.ItemDecoration itemDecoration) {
+        recyclerView.addItemDecoration(itemDecoration);
+    }
+
+    public void removeItemDecoration(RecyclerView.ItemDecoration itemDecoration) {
+        recyclerView.removeItemDecoration(itemDecoration);
+    }
+
     public interface OnRefreshListener {
         /**
          * 下拉中

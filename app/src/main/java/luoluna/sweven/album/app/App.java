@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 
-import com.bumptech.glide.Glide;
 import com.sweven.helper.DatabaseHelper;
 import com.sweven.helper.SQLite;
 import com.sweven.util.FileUtil;
@@ -19,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 
 import luoluna.sweven.album.bean.Album;
+import luoluna.sweven.album.manager.FileManager;
 import luoluna.sweven.album.manager.Setting;
 
 /**
@@ -45,6 +45,7 @@ public class App extends Application {
                     "count int default 0," +
                     "path varchar(80) default null," +
                     "remark varchar default ''," +
+                    "cover varchar default ''," +
                     "primary key (aid)" +
                     ")"
     };
@@ -62,6 +63,14 @@ public class App extends Application {
         DatabaseHelper.createSql = databaseSql;
         new DatabaseHelper(this, database);
         Setting.getInstance(this);
+        scanImageStore();
+    }
+
+    private void scanImageStore() {
+        List<Album> list = FileManager.getInstance(this).get();
+        for (Album album : list) {
+            App.addAlbum(this, album);
+        }
     }
 
     /**
@@ -125,10 +134,13 @@ public class App extends Application {
             int count = cursor.getInt(cursor.getColumnIndex("count"));
             String path = cursor.getString(cursor.getColumnIndex("path"));
             String remark = cursor.getString(cursor.getColumnIndex("remark"));
+            String cover = cursor.getString(cursor.getColumnIndex("cover"));
             Album album = new Album(aid, name);
             album.setCount(count);
             album.setPath(path);
             album.setRemark(remark);
+            album.setCover(cover);
+
             Cursor imageCursor = query(context, albumChildListTableName);
             List<String> images = new ArrayList<>();
             while (imageCursor.moveToNext()) {
@@ -168,6 +180,9 @@ public class App extends Application {
         Map<String, Object> map = new HashMap<>();
         map.put("aid", album.getId());
         map.put("name", album.getName());
+        map.put("cover", album.getCover());
+        map.put("path", album.getPath());
+        map.put("count",album.getCount());
         return new SQLite(context, database, albumListTableName, SQLite.UPDATE).insert(map);
     }
 
@@ -195,10 +210,13 @@ public class App extends Application {
             int count = cursor.getInt(cursor.getColumnIndex("count"));
             String path = cursor.getString(cursor.getColumnIndex("path"));
             String remark = cursor.getString(cursor.getColumnIndex("remark"));
+            String cover = cursor.getString(cursor.getColumnIndex("cover"));
             Album album = new Album(aid, name);
             album.setCount(count);
             album.setPath(path);
             album.setRemark(remark);
+            album.setCover(cover);
+
             Cursor imageCursor = query(context, albumChildListTableName);
             List<String> images = new ArrayList<>();
             while (imageCursor.moveToNext()) {

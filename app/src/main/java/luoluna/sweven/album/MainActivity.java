@@ -19,6 +19,7 @@ import luoluna.sweven.album.adapter.AlbumAdapter;
 import luoluna.sweven.album.app.App;
 import luoluna.sweven.album.bean.Album;
 import luoluna.sweven.album.manager.Setting;
+import luoluna.sweven.album.wigdet.RecyclerViewItemDecoration;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener {
 
@@ -30,12 +31,18 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     private RefreshRecyclerView recyclerView;
     private AlbumAdapter adapter;
+    private RecyclerViewItemDecoration itemDecoration;
+    private GridLayoutManager layoutManager;
     private List<Album> list = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if (!isTaskRoot()) {
+            finish();
+            return;
+        }
         bindView();
         initData();
     }
@@ -55,16 +62,24 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         doneIv.setImageResource(cutIv);
         doneRl.setOnClickListener(this);
 
+        itemDecoration = new RecyclerViewItemDecoration(10, 2);
+        layoutManager = new GridLayoutManager(this, App.album);
+        layoutManager.setOrientation(RecyclerView.VERTICAL);
+
+        recyclerView.setLayoutManager(layoutManager);
         recyclerView.defaultRecyclerView();
-        setAdapter();
+        setAdapter(false);
     }
 
-    private void setAdapter() {
+    private void setAdapter(boolean cut) {
         list = App.queryByAlbumList(this);
         adapter = new AlbumAdapter(this, list);
-        GridLayoutManager manager = new GridLayoutManager(this, App.album);
-        manager.setOrientation(RecyclerView.VERTICAL);
-        recyclerView.setLayoutManager(manager);
+        if (App.album == App.BIG_ALBUM) {
+            recyclerView.addItemDecoration(itemDecoration);
+        } else {
+            recyclerView.removeItemDecoration(itemDecoration);
+        }
+        layoutManager.setSpanCount(App.album);
         recyclerView.setAdapter(adapter);
     }
 
@@ -79,7 +94,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 App.album = App.BIG_ALBUM;
             }
             Setting.getInstance().save(this);
-            setAdapter();
+            setAdapter(true);
         }
     }
 
@@ -87,16 +102,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     protected void onStart() {
         super.onStart();
         try {
-            setAdapter();
+//            setAdapter();
         } catch (Exception e) {
             e.printStackTrace();
             log.e("为实例化无法加载");
         }
-    }
-
-    @Override
-    protected boolean onBack() {
-        moveTaskToBack(true);
-        return true;
     }
 }

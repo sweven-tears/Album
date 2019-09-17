@@ -2,33 +2,37 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/item"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:paddingBottom="@dimen/dp_10">
 
     <ImageView
         android:id="@+id/cover"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_above="@id/name"
+        android:layout_marginBottom="@dimen/dp_10"
+        android:scaleType="centerCrop" />
 
-        <TextView
-            android:id="@+id/name"
-            android:layout_alignParentBottom="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_marginStart="@dimen/safe_dimen"
-            android:layout_marginEnd="@dimen/safe_dimen"
-            android:singleLine="true"
-            android:ellipsize="middle"
-            android:layout_toStartOf="@id/picture_count"
-            android:textColor="@color/black"
-            android:textSize="20sp" />
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="@dimen/dp_10"
+        android:layout_marginEnd="@dimen/dp_10"
+        android:layout_toStartOf="@id/picture_count"
+        android:ellipsize="middle"
+        android:singleLine="true"
+        android:textColor="@color/black"
+        android:textSize="20sp" />
 
-        <TextView
-            android:id="@+id/picture_count"
-            android:layout_width="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_marginEnd="@dimen/safe_dimen"
-            android:textSize="14sp" />
+    <TextView
+        android:id="@+id/picture_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="@dimen/dp_10"
+        android:textSize="14sp" />
 </RelativeLayout>
