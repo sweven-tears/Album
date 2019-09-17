@@ -1,5 +1,6 @@
 package com.sweven.base;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
@@ -41,6 +42,36 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     protected void initData() {
+    }
+
+    /**
+     * @param cls 目标activity class
+     */
+    protected void startActivity(Class<?> cls) {
+        Intent intent = new Intent(this, cls);
+        startActivity(intent);
+    }
+
+    /**
+     * @param cls         目标activity class
+     * @param requestCode code
+     */
+    protected void startActivityForResult(Class<?> cls, int requestCode) {
+        Intent intent = new Intent(this, cls);
+        startActivityForResult(intent, requestCode);
+    }
+
+    /**
+     * @param cls   目标activity class
+     * @param value 键值对 例如：key:value
+     */
+    protected void startActivity(Class<?> cls, String... value) {
+        Intent intent = new Intent(this, cls);
+        for (String s : value) {
+            String[] v = s.split(":", 2);
+            intent.putExtra(v[0], v[1]);
+        }
+        startActivity(intent);
     }
 
     @Override

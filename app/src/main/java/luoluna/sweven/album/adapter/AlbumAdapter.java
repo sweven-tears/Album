@@ -2,6 +2,7 @@ package luoluna.sweven.album.adapter;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Intent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -21,6 +22,7 @@ import com.sweven.util.WindowUtil;
 import java.util.List;
 
 import luoluna.sweven.album.R;
+import luoluna.sweven.album.activity.AlbumActivity;
 import luoluna.sweven.album.app.App;
 import luoluna.sweven.album.bean.Album;
 
@@ -87,8 +89,16 @@ public class AlbumAdapter extends BaseRecyclerAdapter<Album> {
         });
     }
 
-    public void cutList() {
-        notifyDataSetChanged();
+    @Override
+    public void insert(Album album) {
+        long result = App.addAlbum(activity, album);
+        if (result > 0) {
+            super.insert(getItemCount() - 1, album);
+        } else if (result < 0) {
+            toast.showShort("图集名不能重复");
+        } else {
+            toast.showShort("创建失败");
+        }
     }
 
     public class AlbumHolder extends ViewHolder {
@@ -99,6 +109,41 @@ public class AlbumAdapter extends BaseRecyclerAdapter<Album> {
 
         public AlbumHolder(@NonNull View view) {
             super(view);
+        }
+
+        void showDialog() {
+            InputDialog dialog = new InputDialog(activity);
+            dialog.setLabel("图集名")
+                    .setHint("请输入")
+                    .setOnConfirmListener(input -> {
+                        if (input.isEmpty()) {
+                            toast.showShort("输入不能为空");
+                        } else {
+                            if (input.length() > 6) {
+                                toast.showShort("字符长度不能大于6个！");
+                                return;
+                            }
+                            Album album = new Album(App.getNextAlbumId(activity), input);
+                            insert(album);
+                            dialog.cancel();
+                        }
+                    });
+            dialog.show();
+        }
+
+        void openAlbum() {
+            Intent intent = new Intent(activity, AlbumActivity.class);
+            intent.putExtra("name", list.get(getAdapterPosition()).getName());
+            intent.putExtra("aid", list.get(getAdapterPosition()).getId());
+            List<String> desktops = list.get(getAdapterPosition()).getDesktops();
+            String[] images = new String[desktops == null ? 0 : desktops.size()];
+            if (images.length > 0) {
+                for (int i = desktops.size() - 1; i >= 0; i--) {
+                    images[i] = desktops.get(i);
+                }
+            }
+            intent.putExtra("images", images);
+            activity.startActivity(intent);
         }
     }
 
@@ -111,7 +156,7 @@ public class AlbumAdapter extends BaseRecyclerAdapter<Album> {
             cover = view.findViewById(R.id.cover);
             name = view.findViewById(R.id.name);
             count = view.findViewById(R.id.picture_count);
-            item.setOnClickListener(v -> toast.showShort("roll打开"));
+            item.setOnClickListener(v -> openAlbum());
         }
 
     }
@@ -121,7 +166,9 @@ public class AlbumAdapter extends BaseRecyclerAdapter<Album> {
         public RollAlbumAddHolder(@NonNull View view) {
             super(view);
             item = view.findViewById(R.id.item);
-            item.setOnClickListener(v -> toast.showShort("roll添加"));
+            item.setOnClickListener(v -> {
+                showDialog();
+            });
         }
     }
 
@@ -134,19 +181,7 @@ public class AlbumAdapter extends BaseRecyclerAdapter<Album> {
             int h = WindowUtil.getWindowHeight(activity);
             ViewUtil.setWidthHeight(item, w / 2, h / 3);
             item.setOnClickListener(v -> {
-                InputDialog dialog = new InputDialog(activity);
-                dialog.setLabel("图集名")
-                        .setHint("请输入")
-                        .setOnConfirmListener(input -> {
-                            if (input.isEmpty()) {
-                                toast.showShort("输入不能为空");
-                            } else {
-                                Album album = new Album(1, input);
-                                insert(0, album);
-                                dialog.cancel();
-                            }
-                        });
-                dialog.show();
+                showDialog();
             });
         }
     }
@@ -165,7 +200,7 @@ public class AlbumAdapter extends BaseRecyclerAdapter<Album> {
             int h = WindowUtil.getWindowHeight(activity);
             ViewUtil.setWidthHeight(item, w / 2, h / 3);
 
-            item.setOnClickListener(v -> toast.showShort("Big打开"));
+            item.setOnClickListener(v -> openAlbum());
         }
 
     }

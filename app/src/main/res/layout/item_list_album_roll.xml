@@ -16,7 +16,9 @@
 
     <TextView
         android:id="@+id/name"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginEnd="@dimen/safe_dimen"
+        android:ellipsize="middle"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/safe_dimen"
         android:layout_toEndOf="@id/cover"

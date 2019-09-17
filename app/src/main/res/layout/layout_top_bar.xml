@@ -49,10 +49,11 @@
         <RelativeLayout
             android:id="@+id/done"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:padding="5dp"
+            android:paddingEnd="@dimen/dp_20"
+            android:paddingStart="@dimen/dp_20"
             tools:ignore="RelativeOverlap">
 
             <ImageView
@@ -60,11 +61,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:visibility="gone"
+                android:layout_centerInParent="true"
                 tools:ignore="ContentDescription" />
 
             <TextView
                 android:id="@+id/done_text"
                 android:layout_width="wrap_content"
+                android:layout_centerInParent="true"
                 android:layout_height="wrap_content"
                 android:visibility="gone" />
         </RelativeLayout>

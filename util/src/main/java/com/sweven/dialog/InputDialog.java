@@ -78,6 +78,26 @@ public class InputDialog extends Dialog {
         }
     }
 
+    public TextView getLabel() {
+        return label;
+    }
+
+    public TextView getCancel() {
+        return cancel;
+    }
+
+    public TextView getConfirm() {
+        return confirm;
+    }
+
+    public View getLine1() {
+        return line1;
+    }
+
+    public View getLine2() {
+        return line2;
+    }
+
     public String getInput() {
         return input.getText().toString().intern();
     }

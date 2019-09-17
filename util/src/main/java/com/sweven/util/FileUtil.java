@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class FileUtil {
 
@@ -189,6 +190,27 @@ public class FileUtil {
      * @return 同后缀名的所有文件
      */
     public static List<String> getFilesByEndName(String folder, String... endName) {
+        List<String> files = new ArrayList<>();
+        File f = directory(folder);
+        if (f == null) {
+            return files;
+        }
+        for (File file : f.listFiles()) {
+            for (String end : endName) {
+                if (!file.isDirectory() && file.getName().endsWith(end)) {
+                    files.add(file.getPath());
+                }
+            }
+        }
+        return files;
+    }
+
+    /**
+     * @param folder  文件夹
+     * @param endName 后缀名
+     * @return 同后缀名的所有文件
+     */
+    public static List<String> getFilesByEndName(String folder, Set<String> endName) {
         List<String> files = new ArrayList<>();
         File f = directory(folder);
         if (f == null) {

@@ -17,9 +17,11 @@
             android:layout_alignParentStart="true"
             android:layout_marginStart="@dimen/safe_dimen"
             android:layout_marginEnd="@dimen/safe_dimen"
+            android:singleLine="true"
+            android:ellipsize="middle"
             android:layout_toStartOf="@id/picture_count"
             android:textColor="@color/black"
-            android:textSize="30sp" />
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/picture_count"
@@ -28,5 +30,5 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="@dimen/safe_dimen"
-            android:textSize="20sp" />
+            android:textSize="14sp" />
 </RelativeLayout>
