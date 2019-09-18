@@ -9,6 +9,8 @@ import com.sweven.helper.DatabaseHelper;
 import com.sweven.helper.SQLite;
 import com.sweven.util.FileUtil;
 import com.sweven.util.PreferenceUtil;
+import com.yanzhenjie.permission.AndPermission;
+import com.yanzhenjie.permission.Permission;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -63,7 +65,12 @@ public class App extends Application {
         DatabaseHelper.createSql = databaseSql;
         new DatabaseHelper(this, database);
         Setting.getInstance(this);
-        scanImageStore();
+        AndPermission.with(this)
+                .runtime()
+                .permission(Permission.WRITE_EXTERNAL_STORAGE, Permission.READ_EXTERNAL_STORAGE)
+                .onGranted(data -> scanImageStore())
+                .onDenied(data -> scanImageStore())
+                .start();
     }
 
     private void scanImageStore() {
@@ -182,7 +189,7 @@ public class App extends Application {
         map.put("name", album.getName());
         map.put("cover", album.getCover());
         map.put("path", album.getPath());
-        map.put("count",album.getCount());
+        map.put("count", album.getCount());
         return new SQLite(context, database, albumListTableName, SQLite.UPDATE).insert(map);
     }
 
@@ -233,7 +240,6 @@ public class App extends Application {
             list.add(album);
         }
         cursor.close();
-        list.add(new Album(true));
         return list;
     }
 }

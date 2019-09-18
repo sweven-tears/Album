@@ -11,7 +11,7 @@
         android:id="@+id/cover"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_marginStart="@dimen/safe_dimen"
+        android:layout_marginStart="@dimen/dp_10"
         android:scaleType="centerCrop" />
 
     <TextView
@@ -24,7 +24,7 @@
         android:ellipsize="end"
         android:singleLine="true"
         android:textColor="@color/black"
-        android:textSize="30sp" />
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/picture_count"
@@ -32,5 +32,5 @@
         android:layout_height="wrap_content"
         android:layout_alignStart="@id/name"
         android:layout_alignBottom="@id/cover"
-        android:textSize="20sp" />
+        android:textSize="16sp" />
 </RelativeLayout>

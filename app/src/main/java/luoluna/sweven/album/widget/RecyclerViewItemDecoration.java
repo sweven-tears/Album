@@ -1,4 +1,4 @@
-package luoluna.sweven.album.wigdet;
+package luoluna.sweven.album.widget;
 
 import android.graphics.Rect;
 import android.view.View;
@@ -13,6 +13,8 @@ public class RecyclerViewItemDecoration extends RecyclerView.ItemDecoration {
     private int space = 0;
     private int pos;
     private int decorate = 3;
+    private boolean hasSide;
+    private boolean hasTop;
 
     public RecyclerViewItemDecoration(int space, int decorate) {
         this.space = space;
@@ -23,22 +25,46 @@ public class RecyclerViewItemDecoration extends RecyclerView.ItemDecoration {
         this.space = space;
     }
 
+    public void setHasSide(boolean hasSide) {
+        this.hasSide = hasSide;
+    }
+
+    public void setHasTop(boolean hasTop) {
+        this.hasTop = hasTop;
+    }
+
     @Override
     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
 
-        outRect.top = space;
+        outRect.top = hasTop ? space : 0;
 
         //该View在整个RecyclerView中位置。
         pos = parent.getChildAdapterPosition(view);
 
-        //取模
-        if (decorate == 3) {
-            setSpace3(outRect);
-        } else if (decorate == 2) {
-            setSpace2(outRect);
+//        //取模
+//        if (decorate == 3) {
+//            setSpace3(outRect);
+//        } else if (decorate == 2) {
+//            setSpace2(outRect);
+//        }
+
+        setSpace(outRect);
+    }
+
+    private void setSpace(Rect rect) {
+        int all = decorate;
+        for (int i = 0; i < all; i++) {
+            if (pos % decorate == i && i == 0) {
+                rect.left = hasSide ? space : 0;
+                rect.right = space;
+            } else if (pos % decorate == i && i == all - 1) {
+                rect.left = space;
+                rect.right = hasSide ? space : 0;
+            } else {
+                rect.right = space;
+                rect.left = space;
+            }
         }
-
-
     }
 
     private void setSpace2(Rect outRect) {

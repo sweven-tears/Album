@@ -10,8 +10,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.sweven.base.BaseRecyclerAdapter;
@@ -25,15 +23,13 @@ import luoluna.sweven.album.R;
 import luoluna.sweven.album.activity.AlbumActivity;
 import luoluna.sweven.album.app.App;
 import luoluna.sweven.album.bean.Album;
+import luoluna.sweven.album.util.Verifier;
 
 /**
  * Created by Sweven on 2019/9/10--17:01.
  * Email: sweventears@foxmail.com
  */
 public class AlbumAdapter extends BaseRecyclerAdapter<Album> {
-    private static final int NORMAL = 1;
-    private static final int ADD = 0;
-
     public AlbumAdapter(Activity activity, List<Album> list) {
         super(activity, list);
     }
@@ -43,25 +39,12 @@ public class AlbumAdapter extends BaseRecyclerAdapter<Album> {
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view;
         if (App.album == App.BIG_ALBUM) {
-            if (viewType == NORMAL) {
-                view = inflater.inflate(R.layout.item_list_album_big, parent, false);
-                return new BigAlbumHolder(view);
-            }
-            view = inflater.inflate(R.layout.item_list_album_big_add, parent, false);
-            return new BigAlbumAddHolder(view);
+            view = inflater.inflate(R.layout.item_list_album_big, parent, false);
+            return new BigAlbumHolder(view);
         } else {
-            if (viewType == NORMAL) {
-                view = inflater.inflate(R.layout.item_list_album_roll, parent, false);
-                return new RollAlbumHolder(view);
-            }
-            view = inflater.inflate(R.layout.item_list_album_roll_add, parent, false);
-            return new RollAlbumAddHolder(view);
+            view = inflater.inflate(R.layout.item_list_album_roll, parent, false);
+            return new RollAlbumHolder(view);
         }
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        return list.get(position).isAdd() ? ADD : NORMAL;
     }
 
     @SuppressLint("SetTextI18n")
@@ -79,26 +62,42 @@ public class AlbumAdapter extends BaseRecyclerAdapter<Album> {
     }
 
     @Override
-    public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
-        GridLayoutManager manager = (GridLayoutManager) recyclerView.getLayoutManager();
-        manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-            @Override
-            public int getSpanSize(int i) {
-                return list.get(i).isAdd() ? ADD : NORMAL;
-            }
-        });
-    }
-
-    @Override
     public void insert(Album album) {
         long result = App.addAlbum(activity, album);
         if (result > 0) {
-            super.insert(getItemCount() - 1, album);
+            super.insert(getItemCount(), album);
         } else if (result < 0) {
             toast.showShort("图集名不能重复");
         } else {
             toast.showShort("创建失败");
         }
+    }
+
+    public void addAlbum() {
+        InputDialog dialog = new InputDialog(activity);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setLabel("图集名")
+                .setHint("请输入")
+                .setOnConfirmListener(input -> {
+                    if (input.trim().isEmpty()) {
+                        toast.showShort("输入不能为空");
+                    } else {
+                        if (input.trim().length() > 6) {
+                            toast.showShort("字符长度不能大于6个！");
+                            return;
+                        } else {
+                            String name = input.trim();
+                            if (Verifier.contains(list, name, "getName")) {
+                                toast.showShort("图集名已被占用");
+                                return;
+                            }
+                        }
+                        Album album = new Album(App.getNextAlbumId(activity), input);
+                        insert(album);
+                        dialog.cancel();
+                    }
+                });
+        dialog.show();
     }
 
     public class AlbumHolder extends ViewHolder {
@@ -111,25 +110,6 @@ public class AlbumAdapter extends BaseRecyclerAdapter<Album> {
             super(view);
         }
 
-        void showDialog() {
-            InputDialog dialog = new InputDialog(activity);
-            dialog.setLabel("图集名")
-                    .setHint("请输入")
-                    .setOnConfirmListener(input -> {
-                        if (input.isEmpty()) {
-                            toast.showShort("输入不能为空");
-                        } else {
-                            if (input.length() > 6) {
-                                toast.showShort("字符长度不能大于6个！");
-                                return;
-                            }
-                            Album album = new Album(App.getNextAlbumId(activity), input);
-                            insert(album);
-                            dialog.cancel();
-                        }
-                    });
-            dialog.show();
-        }
 
         void openAlbum() {
             Intent intent = new Intent(activity, AlbumActivity.class);
@@ -159,31 +139,6 @@ public class AlbumAdapter extends BaseRecyclerAdapter<Album> {
             item.setOnClickListener(v -> openAlbum());
         }
 
-    }
-
-    public class RollAlbumAddHolder extends AlbumHolder {
-
-        public RollAlbumAddHolder(@NonNull View view) {
-            super(view);
-            item = view.findViewById(R.id.item);
-            item.setOnClickListener(v -> {
-                showDialog();
-            });
-        }
-    }
-
-    public class BigAlbumAddHolder extends AlbumHolder {
-
-        public BigAlbumAddHolder(@NonNull View view) {
-            super(view);
-            item = view.findViewById(R.id.item);
-            int w = WindowUtil.getWindowWidth(activity);
-            int h = WindowUtil.getWindowHeight(activity);
-            ViewUtil.setWidthHeight(item, w / 2, h / 3);
-            item.setOnClickListener(v -> {
-                showDialog();
-            });
-        }
     }
 
     public class BigAlbumHolder extends AlbumHolder {

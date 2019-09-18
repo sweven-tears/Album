@@ -3,7 +3,6 @@ package luoluna.sweven.album;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -19,15 +18,14 @@ import luoluna.sweven.album.adapter.AlbumAdapter;
 import luoluna.sweven.album.app.App;
 import luoluna.sweven.album.bean.Album;
 import luoluna.sweven.album.manager.Setting;
-import luoluna.sweven.album.wigdet.RecyclerViewItemDecoration;
+import luoluna.sweven.album.widget.RecyclerViewItemDecoration;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     private static int cutIv = App.album == App.BIG_ALBUM ? R.drawable.ic_big_album_list : R.drawable.ic_roll_album_list;
 
     private TextView title;
-    private ImageView doneIv;
-    private RelativeLayout doneRl;
+    private ImageView doneIv, addIv;
 
     private RefreshRecyclerView recyclerView;
     private AlbumAdapter adapter;
@@ -50,8 +48,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @Override
     protected void bindView() {
         title = bindID(R.id.title);
-        doneRl = bindID(R.id.done);
         doneIv = bindID(R.id.done_image);
+        addIv = bindID(R.id.add_image);
         recyclerView = bindID(R.id.album_list);
     }
 
@@ -60,7 +58,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         title.setText(R.string.index_title);
         doneIv.setVisibility(View.VISIBLE);
         doneIv.setImageResource(cutIv);
-        doneRl.setOnClickListener(this);
+        doneIv.setOnClickListener(this);
+        addIv.setOnClickListener(this);
 
         itemDecoration = new RecyclerViewItemDecoration(10, 2);
         layoutManager = new GridLayoutManager(this, App.album);
@@ -72,9 +71,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     private void setAdapter(boolean cut) {
-        list = App.queryByAlbumList(this);
-        adapter = new AlbumAdapter(this, list);
+        if (cut) {
+            list = App.queryByAlbumList(this);
+            adapter = new AlbumAdapter(this, list);
+        }
         if (App.album == App.BIG_ALBUM) {
+            recyclerView.removeItemDecoration(itemDecoration);
             recyclerView.addItemDecoration(itemDecoration);
         } else {
             recyclerView.removeItemDecoration(itemDecoration);
@@ -85,7 +87,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
-        if (view.getId() == R.id.done) {
+        if (view.getId() == R.id.done_image) {
             if (App.album == App.BIG_ALBUM) {
                 doneIv.setImageResource(R.drawable.ic_roll_album_list);
                 App.album = App.ROLL_ALBUM;
@@ -95,6 +97,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             }
             Setting.getInstance().save(this);
             setAdapter(true);
+        } else if (view.getId() == R.id.add_image) {
+            adapter.addAlbum();
         }
     }
 
@@ -102,7 +106,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     protected void onStart() {
         super.onStart();
         try {
-//            setAdapter();
+            setAdapter(true);
         } catch (Exception e) {
             e.printStackTrace();
             log.e("为实例化无法加载");
