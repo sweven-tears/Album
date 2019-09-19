@@ -56,15 +56,20 @@ public class App extends Application {
     public static final int ROLL_ALBUM = 1;
 
     // 配置信息
+    public static boolean isFirst;
     public static int album = BIG_ALBUM;
     public static Set<String> supportFormat = new HashSet<>();
 
     @Override
     public void onCreate() {
         super.onCreate();
-        DatabaseHelper.createSql = databaseSql;
-        new DatabaseHelper(this, database);
         Setting.getInstance(this);
+        if (isFirst) {
+            DatabaseHelper.createSql = databaseSql;
+            new DatabaseHelper(this, database);
+        }
+        AppManager.getInstance().setAppStatus(AppStatus._LAUNCH);
+
         AndPermission.with(this)
                 .runtime()
                 .permission(Permission.WRITE_EXTERNAL_STORAGE, Permission.READ_EXTERNAL_STORAGE)

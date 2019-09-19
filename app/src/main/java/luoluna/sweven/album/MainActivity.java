@@ -65,9 +65,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         layoutManager = new GridLayoutManager(this, App.album);
         layoutManager.setOrientation(RecyclerView.VERTICAL);
 
+        adapter=new AlbumAdapter(this,list);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.defaultRecyclerView();
-        setAdapter(false);
+        setAdapter(true);
     }
 
     private void setAdapter(boolean cut) {
@@ -96,20 +97,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 App.album = App.BIG_ALBUM;
             }
             Setting.getInstance().save(this);
-            setAdapter(true);
+            setAdapter(false);
         } else if (view.getId() == R.id.add_image) {
             adapter.addAlbum();
-        }
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        try {
-            setAdapter(true);
-        } catch (Exception e) {
-            e.printStackTrace();
-            log.e("为实例化无法加载");
         }
     }
 }

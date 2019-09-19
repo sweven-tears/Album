@@ -2,4 +2,6 @@
     <string name="app_name">util</string>
     <string name="cancel_label">取消</string>
     <string name="confirm_label">确定</string>
+    <string name="choose_folder_label">选择文件夹...</string>
+    <string name="choose_label">选择</string>
 </resources>

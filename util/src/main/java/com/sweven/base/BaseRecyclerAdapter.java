@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.sweven.interf.OnClickItemListener;
 import com.sweven.util.LogUtil;
 import com.sweven.util.ToastUtil;
 
@@ -30,6 +31,8 @@ public class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<BaseRecyclerAda
     protected Activity activity;
     protected List<T> list;
     protected LayoutInflater inflater;
+
+    protected OnClickItemListener<T> onClickItemListener;
 
     public BaseRecyclerAdapter(Activity activity) {
         this.activity = activity;
@@ -121,6 +124,9 @@ public class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<BaseRecyclerAda
         }
     }
 
+    public void setOnClickItemListener(OnClickItemListener onClickItemListener) {
+        this.onClickItemListener = onClickItemListener;
+    }
 
     @Override
     public int getItemCount() {

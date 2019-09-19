@@ -39,4 +39,5 @@ dependencies {
     implementation 'com.google.zxing:core:3.4.0'
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
     implementation 'com.lcodecorex:tkrefreshlayout:1.0.7'
+    implementation 'androidx.cardview:cardview:1.0.0'
 }

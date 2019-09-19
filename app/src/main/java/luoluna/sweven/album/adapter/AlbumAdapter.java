@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 
 import com.bumptech.glide.Glide;
 import com.sweven.base.BaseRecyclerAdapter;
+import com.sweven.dialog.FolderChooser;
 import com.sweven.dialog.InputDialog;
 import com.sweven.util.ViewUtil;
 import com.sweven.util.WindowUtil;
@@ -66,8 +67,6 @@ public class AlbumAdapter extends BaseRecyclerAdapter<Album> {
         long result = App.addAlbum(activity, album);
         if (result > 0) {
             super.insert(getItemCount(), album);
-        } else if (result < 0) {
-            toast.showShort("图集名不能重复");
         } else {
             toast.showShort("创建失败");
         }
@@ -78,6 +77,7 @@ public class AlbumAdapter extends BaseRecyclerAdapter<Album> {
         dialog.setCanceledOnTouchOutside(false);
         dialog.setLabel("图集名")
                 .setHint("请输入")
+                .setConfirm("下一步")
                 .setOnConfirmListener(input -> {
                     if (input.trim().isEmpty()) {
                         toast.showShort("输入不能为空");
@@ -93,11 +93,17 @@ public class AlbumAdapter extends BaseRecyclerAdapter<Album> {
                             }
                         }
                         Album album = new Album(App.getNextAlbumId(activity), input);
-                        insert(album);
+                        nextStep(album);
                         dialog.cancel();
                     }
                 });
         dialog.show();
+    }
+
+    private void nextStep(Album album) {
+        FolderChooser chooser = new FolderChooser(activity);
+        chooser.setOnConfirm(path -> insert(Album.create(album, path)));
+        chooser.show();
     }
 
     public class AlbumHolder extends ViewHolder {

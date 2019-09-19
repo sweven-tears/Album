@@ -1,6 +1,10 @@
 package luoluna.sweven.album.bean;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import luoluna.sweven.album.manager.FileManager;
 
 /**
  * Created by Sweven on 2019/9/10--17:01.
@@ -17,6 +21,27 @@ public class Album {
     private String cover;
 
     public Album() {
+    }
+
+    /**
+     * 创建相册
+     *
+     * @param album 默认一定有id和name，否则会无法同步数据库
+     * @return 完整的album
+     */
+    public static Album create(Album album, String path) {
+        album.setPath(path);
+        String images = FileManager.getImgListByDir(path);
+        String[] desktops = images.split(";");
+        if (album.desktops == null) {
+            album.desktops = new ArrayList<>();
+        }
+        if (desktops.length > 0) {
+            album.setCover(desktops[0]);
+            album.desktops.addAll(Arrays.asList(desktops));
+        }
+        album.setCount(album.desktops.get(0).equals("") ? 0 : desktops.length);
+        return album;
     }
 
     public Album(int id, String name) {

@@ -145,7 +145,7 @@ public class FileManager {
     /**
      * 通过图片文件夹的路径获取该目录下的图片
      */
-    public String getImgListByDir(String dir) {
+    public static String getImgListByDir(String dir) {
         StringBuilder builder = new StringBuilder("");
         File directory = new File(dir);
         if (!directory.exists()) {
@@ -156,7 +156,7 @@ public class FileManager {
         Arrays.sort(Objects.requireNonNull(files), new FileComparator());
         for (File file : files) {
             String path = file.getAbsolutePath();
-            if (FileManager.isPicFile(path)) {
+            if (FileUtil.isEndName(path,App.supportFormat.toArray(new String[0]))) {
                 builder.append(path).append(";");
             }
         }
@@ -174,7 +174,7 @@ public class FileManager {
         return false;
     }
 
-    class FileComparator implements Comparator<File> {
+    static class FileComparator implements Comparator<File> {
 
         @Override
         public int compare(File lhs, File rhs) {

@@ -24,8 +24,7 @@ public class NoticeDialog extends Dialog {
     private CallBack callBack;
 
     public NoticeDialog(Context context) {
-        super(context);
-        init();
+        this(context,R.style.NormalDialogStyle);
     }
 
     public NoticeDialog(Context context, int themeResId) {

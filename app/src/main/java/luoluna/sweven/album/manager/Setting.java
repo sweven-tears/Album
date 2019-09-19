@@ -20,7 +20,9 @@ public class Setting {
     public static Setting getInstance() {
         if (instance == null) {
             synchronized (Setting.class) {
-                instance = new Setting();
+                if (instance==null) {
+                    instance = new Setting();
+                }
             }
         }
         return instance;
@@ -29,12 +31,15 @@ public class Setting {
     public static Setting getInstance(Context context) {
         if (instance == null) {
             synchronized (Setting.class) {
-                instance = new Setting();
+                if (instance==null) {
+                    instance = new Setting();
+                }
             }
         }
         PreferenceUtil preference = App.preference(context);
         App.album = preference.getInt("albumView", App.BIG_ALBUM);
         App.supportFormat = preference.getStringSet("supportFormat", defaultSupportFormat());
+        App.isFirst = preference.getBoolean("isFirst", true);
         return instance;
     }
 
@@ -51,6 +56,8 @@ public class Setting {
     public void save(Context context) {
         SharedPreferences.Editor editor = App.editor(context);
         editor.putInt("albumView", App.album);
+        editor.putStringSet("supportFormat", App.supportFormat);
+        editor.putBoolean("isFirst", App.isFirst);
         editor.apply();
     }
 }
