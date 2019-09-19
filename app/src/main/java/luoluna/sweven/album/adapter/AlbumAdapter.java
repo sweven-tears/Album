@@ -56,6 +56,7 @@ public class AlbumAdapter extends BaseRecyclerAdapter<Album> {
         if (!album.isAdd()) {
             Glide.with(activity)
                     .load(album.getCover())
+                    .error(R.drawable.ic_album_no_cover)
                     .into(holder.cover);
             holder.name.setText(album.getName());
             holder.count.setText(album.getCount() + "张");
