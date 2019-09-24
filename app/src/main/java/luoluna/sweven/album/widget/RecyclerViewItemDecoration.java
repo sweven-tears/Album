@@ -13,8 +13,8 @@ public class RecyclerViewItemDecoration extends RecyclerView.ItemDecoration {
     private int space = 0;
     private int pos;
     private int decorate = 3;
-    private boolean hasSide;
-    private boolean hasTop;
+    private boolean hasSide = false;
+    private boolean hasTop = false;
 
     public RecyclerViewItemDecoration(int space, int decorate) {
         this.space = space;
@@ -42,13 +42,11 @@ public class RecyclerViewItemDecoration extends RecyclerView.ItemDecoration {
         pos = parent.getChildAdapterPosition(view);
 
 //        //取模
-//        if (decorate == 3) {
-//            setSpace3(outRect);
-//        } else if (decorate == 2) {
-//            setSpace2(outRect);
-//        }
+        if (decorate == 2) {
+            setSpace2(outRect);
+        }
 
-        setSpace(outRect);
+//        setSpace(outRect);
     }
 
     private void setSpace(Rect rect) {
@@ -69,12 +67,12 @@ public class RecyclerViewItemDecoration extends RecyclerView.ItemDecoration {
 
     private void setSpace2(Rect outRect) {
         if (pos % decorate == 0) {
-            outRect.left = 0;
+            outRect.left = space*2;
             outRect.right = space;
         }
         if (pos % decorate == 1) {
             outRect.left = space;
-            outRect.right = 0;
+            outRect.right = space*2;
         }
     }
 

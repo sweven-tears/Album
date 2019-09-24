@@ -44,7 +44,6 @@ public class App extends Application {
             "create table " + albumListTableName + "(" +
                     "aid int not null ," +
                     "name varchar not null," +
-                    "count int default 0," +
                     "path varchar(80) default null," +
                     "remark varchar default ''," +
                     "cover varchar default ''," +
@@ -143,12 +142,10 @@ public class App extends Application {
                 return null;
             }
             String name = cursor.getString(cursor.getColumnIndex("name"));
-            int count = cursor.getInt(cursor.getColumnIndex("count"));
             String path = cursor.getString(cursor.getColumnIndex("path"));
             String remark = cursor.getString(cursor.getColumnIndex("remark"));
             String cover = cursor.getString(cursor.getColumnIndex("cover"));
             Album album = new Album(aid, name);
-            album.setCount(count);
             album.setPath(path);
             album.setRemark(remark);
             album.setCover(cover);
@@ -166,6 +163,7 @@ public class App extends Application {
                 images.addAll(FileUtil.getFilesByEndName(path, App.supportFormat));
             }
             album.setDesktops(images);
+            album.setCount(images.size());
             return album;
         }
         return null;

@@ -18,10 +18,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import luoluna.sweven.album.R;
-import luoluna.sweven.album.adapter.ImageAdapter;
+import luoluna.sweven.album.adapter.PictureAdapter;
 import luoluna.sweven.album.app.App;
 import luoluna.sweven.album.bean.Album;
-import luoluna.sweven.album.bean.Image;
+import luoluna.sweven.album.bean.Picture;
 
 public class AlbumActivity extends BaseActivity implements View.OnClickListener {
 
@@ -30,12 +30,12 @@ public class AlbumActivity extends BaseActivity implements View.OnClickListener 
     private ImageView backIv, doneIv;
 
     private RefreshRecyclerView recyclerView;
-    private ImageAdapter adapter;
+    private PictureAdapter adapter;
 
     private int aid;
     private String name;
     private String[] images;
-    private List<Image> list = new ArrayList<>();
+    private List<Picture> list = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +61,7 @@ public class AlbumActivity extends BaseActivity implements View.OnClickListener 
         }
         if (images != null && images.length > 0) {
             for (String image : images) {
-                list.add(new Image(image));
+                list.add(new Picture(image));
             }
         }
     }
@@ -84,7 +84,7 @@ public class AlbumActivity extends BaseActivity implements View.OnClickListener 
         doneIv.setVisibility(View.VISIBLE);
         doneIv.setImageResource(R.drawable.ic_settings);
 
-        adapter = new ImageAdapter(this, list);
+        adapter = new PictureAdapter(this, list);
         GridLayoutManager manager = new GridLayoutManager(this, 3);
         manager.setOrientation(RecyclerView.VERTICAL);
         recyclerView.setLayoutManager(manager);

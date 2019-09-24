@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.app.Activity;
+import android.content.res.Resources;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -12,6 +13,9 @@ import android.view.ViewGroup;
  * Email:sweventears@Foxmail.com
  */
 public class ViewUtil {
+    public static final int REAL_WINDOW_WIDTH = Resources.getSystem().getDisplayMetrics().widthPixels;
+    public static final int REAL_WINDOW_HEIGHT = Resources.getSystem().getDisplayMetrics().heightPixels;
+
     public static void notifyMeasure(View view) {
         ViewGroup.LayoutParams p = view.getLayoutParams();
         if (p == null) {
@@ -35,14 +39,13 @@ public class ViewUtil {
      * 好像不用啊？？
      * 设置 {@param scale=0} 即表示高度自适应
      *
-     * @param activity .
      * @param view     组件
-     * @param multiple 占真个屏幕宽度的倍数
+     * @param multiple 占显示区域屏幕宽度的倍数
      * @param scale    宽高比例 例：宽高比例为16:9则输入16/9.0
      */
     public static void setWidthHeight(Activity activity, View view, double multiple, double scale) {
         ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
-        int width = (int) (WindowUtil.getWindowWidth(activity) * multiple);
+        int width = (int) (activity.getResources().getDisplayMetrics().widthPixels * multiple);
         layoutParams.width = width;
         if (scale != 0) {
             layoutParams.height = (int) (width / scale);
@@ -53,14 +56,45 @@ public class ViewUtil {
     /**
      * 同时为多个组件设置相同宽高
      *
-     * @param activity .
      * @param views    多个组件
-     * @param multiple 占真个屏幕宽度的倍数
+     * @param multiple 占显示区域屏幕宽度的倍数
      * @param scale    宽高比例 例：宽高比例为16:9则输入16/9.0
      */
     public static void setWidthHeightForViews(Activity activity, View[] views, double multiple, double scale) {
         for (View view : views) {
             setWidthHeight(activity, view, multiple, scale);
+        }
+    }
+
+    /**
+     * {@link View view}的父类组件必须是{@link ViewGroup}类型的才行
+     * 好像不用啊？？
+     * 设置 {@param scale=0} 即表示高度自适应
+     *
+     * @param view     组件
+     * @param multiple 占真实屏幕宽度的倍数
+     * @param scale    宽高比例 例：宽高比例为16:9则输入16/9.0
+     */
+    public static void setWidthHeight(View view, double multiple, double scale) {
+        ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
+        int width = (int) (REAL_WINDOW_WIDTH * multiple);
+        layoutParams.width = width;
+        if (scale != 0) {
+            layoutParams.height = (int) (width / scale);
+        }
+        view.setLayoutParams(layoutParams);
+    }
+
+    /**
+     * 同时为多个组件设置相同宽高
+     *
+     * @param views    多个组件
+     * @param multiple 占真实屏幕宽度的倍数
+     * @param scale    宽高比例 例：宽高比例为16:9则输入16/9.0
+     */
+    public static void setWidthHeightForViews(View[] views, double multiple, double scale) {
+        for (View view : views) {
+            setWidthHeight(view, multiple, scale);
         }
     }
 

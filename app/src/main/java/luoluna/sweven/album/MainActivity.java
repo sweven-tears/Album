@@ -18,7 +18,6 @@ import luoluna.sweven.album.adapter.AlbumAdapter;
 import luoluna.sweven.album.app.App;
 import luoluna.sweven.album.bean.Album;
 import luoluna.sweven.album.manager.Setting;
-import luoluna.sweven.album.widget.RecyclerViewItemDecoration;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener {
 
@@ -29,7 +28,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     private RefreshRecyclerView recyclerView;
     private AlbumAdapter adapter;
-    private RecyclerViewItemDecoration itemDecoration;
     private GridLayoutManager layoutManager;
     private List<Album> list = new ArrayList<>();
 
@@ -61,7 +59,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         doneIv.setOnClickListener(this);
         addIv.setOnClickListener(this);
 
-        itemDecoration = new RecyclerViewItemDecoration(10, 2);
         layoutManager = new GridLayoutManager(this, App.album);
         layoutManager.setOrientation(RecyclerView.VERTICAL);
 
@@ -75,12 +72,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         if (cut) {
             list = App.queryByAlbumList(this);
             adapter = new AlbumAdapter(this, list);
-        }
-        if (App.album == App.BIG_ALBUM) {
-            recyclerView.removeItemDecoration(itemDecoration);
-            recyclerView.addItemDecoration(itemDecoration);
-        } else {
-            recyclerView.removeItemDecoration(itemDecoration);
         }
         layoutManager.setSpanCount(App.album);
         recyclerView.setAdapter(adapter);

@@ -3,13 +3,16 @@
     android:id="@+id/item"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:paddingBottom="@dimen/dp_10">
+    android:paddingStart="5dp"
+    android:paddingEnd="5dp"
+    android:layout_marginBottom="@dimen/dp_10">
 
     <ImageView
         android:id="@+id/cover"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/name"
+        android:background="#11000000"
         android:layout_marginBottom="@dimen/dp_10"
         android:scaleType="centerCrop" />
 

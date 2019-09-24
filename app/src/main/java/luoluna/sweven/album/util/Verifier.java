@@ -20,7 +20,7 @@ public class Verifier {
         for (E e : list) {
             try {
                 Class cls = e.getClass();
-                Method[] methods = cls.getMethods();
+                Method[] methods = cls.getDeclaredMethods();
                 for (Method method : methods) {
                     if (method.getName().equals(methodName)) {
                         Object value = method.invoke(e);
@@ -37,4 +37,41 @@ public class Verifier {
         }
         return false;
     }
+
+    /**
+     * 判断list中某一对象是否与
+     * {@linkplain R r}对象中所有值相同
+     */
+    public static <R> boolean contains(List<R> list, R r) {
+        for (R i : list) {
+            try {
+                Class cls = r.getClass();
+                Class cls2=i.getClass();
+                Method[] methods = cls.getDeclaredMethods();
+                Method[] methods2 = cls2.getDeclaredMethods();
+                int result = 0;
+                for (Method method : methods) {
+                    if (Objects.equals(method.invoke(i), method.invoke(r))) {
+                        result++;
+                    }
+                }
+                for (int i1 = 0; i1 < methods.length; i1++) {
+
+                }
+                if (result == methods.length) {
+                    return true;
+                }
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+    public void delAlbum(){
+
+    }
+
 }

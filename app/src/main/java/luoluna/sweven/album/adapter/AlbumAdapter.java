@@ -16,7 +16,6 @@ import com.sweven.base.BaseRecyclerAdapter;
 import com.sweven.dialog.FolderChooser;
 import com.sweven.dialog.InputDialog;
 import com.sweven.util.ViewUtil;
-import com.sweven.util.WindowUtil;
 
 import java.util.List;
 
@@ -107,13 +106,13 @@ public class AlbumAdapter extends BaseRecyclerAdapter<Album> {
         chooser.show();
     }
 
-    public class AlbumHolder extends ViewHolder {
+    class AlbumHolder extends ViewHolder {
         RelativeLayout item;
         ImageView cover;
         TextView name;
         TextView count;
 
-        public AlbumHolder(@NonNull View view) {
+        AlbumHolder(@NonNull View view) {
             super(view);
         }
 
@@ -132,12 +131,18 @@ public class AlbumAdapter extends BaseRecyclerAdapter<Album> {
             intent.putExtra("images", images);
             activity.startActivity(intent);
         }
+
+        void onLongClick(int position) {
+            if (onClickItemListener != null) {
+                onClickItemListener.onClick(list.get(position));
+            }
+        }
     }
 
 
     public class RollAlbumHolder extends AlbumHolder {
 
-        public RollAlbumHolder(@NonNull View view) {
+        RollAlbumHolder(@NonNull View view) {
             super(view);
             item = view.findViewById(R.id.item);
             cover = view.findViewById(R.id.cover);
@@ -151,16 +156,14 @@ public class AlbumAdapter extends BaseRecyclerAdapter<Album> {
     public class BigAlbumHolder extends AlbumHolder {
 
 
-        public BigAlbumHolder(@NonNull View view) {
+        BigAlbumHolder(@NonNull View view) {
             super(view);
             item = view.findViewById(R.id.item);
             cover = view.findViewById(R.id.cover);
             name = view.findViewById(R.id.name);
             count = view.findViewById(R.id.picture_count);
 
-            int w = WindowUtil.getWindowWidth(activity);
-            int h = WindowUtil.getWindowHeight(activity);
-            ViewUtil.setWidthHeight(item, w / 2, h / 3);
+            ViewUtil.setWidthHeight(item, 0.5, 0.8);
 
             item.setOnClickListener(v -> openAlbum());
         }
