@@ -197,7 +197,7 @@ public class SQLite {
         return db.query(tableName, columns, selection, selectionArgs, null, null, orderBy);
     }
 
-    public Cursor query(String selection, String... selectionArgs) {
+    public Cursor query(String selection, String[] selectionArgs) {
         return db.query(tableName, null, selection, selectionArgs, null, null, null);
     }
 

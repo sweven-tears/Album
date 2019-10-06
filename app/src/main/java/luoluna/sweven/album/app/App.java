@@ -9,8 +9,6 @@ import com.sweven.helper.DatabaseHelper;
 import com.sweven.helper.SQLite;
 import com.sweven.util.FileUtil;
 import com.sweven.util.PreferenceUtil;
-import com.yanzhenjie.permission.AndPermission;
-import com.yanzhenjie.permission.Permission;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,7 +18,6 @@ import java.util.Map;
 import java.util.Set;
 
 import luoluna.sweven.album.bean.Album;
-import luoluna.sweven.album.manager.FileManager;
 import luoluna.sweven.album.manager.Setting;
 
 /**
@@ -63,25 +60,10 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         Setting.getInstance(this);
-        if (isFirst) {
-            DatabaseHelper.createSql = databaseSql;
-            new DatabaseHelper(this, database);
-        }
+        DatabaseHelper.createSql = databaseSql;
+        new DatabaseHelper(this, database);
         AppManager.getInstance().setAppStatus(AppStatus._LAUNCH);
 
-        AndPermission.with(this)
-                .runtime()
-                .permission(Permission.WRITE_EXTERNAL_STORAGE, Permission.READ_EXTERNAL_STORAGE)
-                .onGranted(data -> scanImageStore())
-                .onDenied(data -> scanImageStore())
-                .start();
-    }
-
-    private void scanImageStore() {
-        List<Album> list = FileManager.getInstance(this).get();
-        for (Album album : list) {
-            App.addAlbum(this, album);
-        }
     }
 
     /**
@@ -129,6 +111,22 @@ public class App extends Application {
     }
 
     /**
+     * 条件查询查询某张表
+     *
+     * @param context 上下文
+     * @param table   数据库表名
+     * @return SQLite查询指针Cursor
+     */
+    public static Cursor query(Context context, String table, String where, Object... whereArgs) {
+        // object转字符串
+        String[] args = new String[whereArgs.length];
+        for (int i = 0; i < whereArgs.length; i++) {
+            args[i] = String.valueOf(whereArgs[i]);
+        }
+        return new SQLite(context, database, table, SQLite.QUERY).query(where, args);
+    }
+
+    /**
      * 通过id查询图集信息
      *
      * @param context 上下文
@@ -136,7 +134,7 @@ public class App extends Application {
      * @return 图集信息
      */
     public static Album getAlbumByAid(Context context, int aid) {
-        Cursor cursor = new SQLite(context, database, albumListTableName, SQLite.QUERY).query("aid=?", String.valueOf(aid));
+        Cursor cursor = query(context, albumListTableName, "aid=?", aid);
         if (cursor.moveToFirst()) {
             if (aid != cursor.getInt(cursor.getColumnIndex("aid"))) {
                 return null;
@@ -150,14 +148,11 @@ public class App extends Application {
             album.setRemark(remark);
             album.setCover(cover);
 
-            Cursor imageCursor = query(context, albumChildListTableName);
+            Cursor imageCursor = query(context, albumChildListTableName, "aid=?", aid);
             List<String> images = new ArrayList<>();
             while (imageCursor.moveToNext()) {
                 String uri = imageCursor.getString(imageCursor.getColumnIndex("uri"));
-                int _aid = imageCursor.getInt(imageCursor.getColumnIndex("aid"));
-                if (aid == _aid) {
-                    images.add(uri);
-                }
+                images.add(uri);
             }
             if (path != null && !path.isEmpty()) {
                 images.addAll(FileUtil.getFilesByEndName(path, App.supportFormat));
@@ -227,15 +222,14 @@ public class App extends Application {
             album.setRemark(remark);
             album.setCover(cover);
 
-            Cursor imageCursor = query(context, albumChildListTableName);
+            // 遍历图片表，所属图集
+            Cursor imageCursor = query(context, albumChildListTableName, "aid=?", aid);
             List<String> images = new ArrayList<>();
             while (imageCursor.moveToNext()) {
                 String uri = imageCursor.getString(imageCursor.getColumnIndex("uri"));
-                int _aid = imageCursor.getInt(imageCursor.getColumnIndex("aid"));
-                if (aid == _aid) {
-                    images.add(uri);
-                }
+                images.add(uri);
             }
+            // 判断路径是否存在，存在则添加路径下的图像文件
             if (path != null && !path.isEmpty()) {
                 images.addAll(FileUtil.getFilesByEndName(path, App.supportFormat));
             }

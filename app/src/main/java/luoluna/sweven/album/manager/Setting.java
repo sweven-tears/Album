@@ -49,7 +49,6 @@ public class Setting {
         set.add("png");
         set.add("jpeg");
         set.add("gif");
-        set.add("bmp");
         return set;
     }
 

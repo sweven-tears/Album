@@ -34,13 +34,24 @@ public class BaseActivity extends AppCompatActivity {
         log = new LogUtil(TAG);
     }
 
+    /**
+     * @param res 资源id
+     * @param <T> 子类view
+     * @return view
+     */
     protected <T extends View> T bindID(@IdRes int res) {
         return findViewById(res);
     }
 
+    /**
+     * 绑定组件id
+     */
     protected void bindView() {
     }
 
+    /**
+     * 初始化数据
+     */
     protected void initData() {
     }
 

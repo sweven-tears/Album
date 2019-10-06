@@ -49,18 +49,15 @@ public class FileManager {
         Cursor cursor = mContentResolver.query(
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 null,
-                null
-                , null,
+                "mime_type=? or mime_type=? or mime_type=?",
+                new String[]{"image/jpeg", "image/png", "image/gif"},
                 "date_modified desc");
         if (cursor != null) {
             Set<String> set = new HashSet<>();
             while (cursor.moveToNext()) {
                 String filePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
-                String[] supports = App.supportFormat.toArray(new String[0]);
-                if (FileUtil.isEndName(filePath, supports)) {
-                    File file = new File(filePath);
-                    set.add(Objects.requireNonNull(file.getParentFile()).getAbsolutePath());
-                }
+                File file = new File(filePath);
+                set.add(Objects.requireNonNull(file.getParentFile()).getAbsolutePath());
             }
             String[] arrays = set.toArray(new String[0]);
             for (int i = 0; i < arrays.length; i++) {
@@ -156,7 +153,7 @@ public class FileManager {
         Arrays.sort(Objects.requireNonNull(files), new FileComparator());
         for (File file : files) {
             String path = file.getAbsolutePath();
-            if (FileUtil.isEndName(path,App.supportFormat.toArray(new String[0]))) {
+            if (FileUtil.isEndName(path, App.supportFormat.toArray(new String[0]))) {
                 builder.append(path).append(";");
             }
         }

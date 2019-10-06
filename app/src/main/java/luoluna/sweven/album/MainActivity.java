@@ -35,10 +35,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if (!isTaskRoot()) {
-            finish();
-            return;
-        }
         bindView();
         initData();
     }
