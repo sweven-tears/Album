@@ -22,6 +22,7 @@ import java.util.List;
 import luoluna.sweven.album.R;
 import luoluna.sweven.album.activity.AlbumActivity;
 import luoluna.sweven.album.app.App;
+import luoluna.sweven.album.app.Helper;
 import luoluna.sweven.album.bean.Album;
 import luoluna.sweven.album.util.Verifier;
 
@@ -64,7 +65,7 @@ public class AlbumAdapter extends BaseRecyclerAdapter<Album> {
 
     @Override
     public void insert(Album album) {
-        long result = App.addAlbum(activity, album);
+        long result = Helper.with().addAlbum(activity, album);
         if (result > 0) {
             super.insert(getItemCount(), album);
         } else {
@@ -82,8 +83,8 @@ public class AlbumAdapter extends BaseRecyclerAdapter<Album> {
                     if (input.trim().isEmpty()) {
                         toast.showShort("输入不能为空");
                     } else {
-                        if (input.trim().length() > 6) {
-                            toast.showShort("字符长度不能大于6个！");
+                        if (input.trim().length() > App.ALBUM_NAME_LENGTH) {
+                            toast.showShort("字符长度不能大于" + App.ALBUM_NAME_LENGTH + "个！");
                             return;
                         } else {
                             String name = input.trim();
@@ -92,7 +93,7 @@ public class AlbumAdapter extends BaseRecyclerAdapter<Album> {
                                 return;
                             }
                         }
-                        Album album = new Album(App.getNextAlbumId(activity), input);
+                        Album album = new Album(Helper.with().getNextAlbumId(activity), input);
                         nextStep(album);
                         dialog.cancel();
                     }
@@ -104,6 +105,11 @@ public class AlbumAdapter extends BaseRecyclerAdapter<Album> {
         FolderChooser chooser = new FolderChooser(activity);
         chooser.setOnConfirm(path -> insert(Album.create(album, path)));
         chooser.show();
+    }
+
+    public void updateAll(List<Album> list) {
+        this.list = list;
+        notifyDataSetChanged();
     }
 
     class AlbumHolder extends ViewHolder {

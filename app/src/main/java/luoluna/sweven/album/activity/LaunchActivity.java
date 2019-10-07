@@ -12,7 +12,7 @@ import java.util.List;
 
 import luoluna.sweven.album.MainActivity;
 import luoluna.sweven.album.R;
-import luoluna.sweven.album.app.App;
+import luoluna.sweven.album.app.Helper;
 import luoluna.sweven.album.bean.Album;
 import luoluna.sweven.album.manager.FileManager;
 
@@ -42,8 +42,9 @@ public class LaunchActivity extends BaseActivity {
             e.printStackTrace();
         }
         for (Album album : list) {
-            App.addAlbum(this, album);
+            Helper.with().addAlbum(this, album);
         }
         startActivity(MainActivity.class);
+        finish();
     }
 }

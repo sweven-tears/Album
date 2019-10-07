@@ -25,28 +25,22 @@
             android:textSize="@dimen/title_size" />
 
         <RelativeLayout
-            android:id="@+id/back"
+            android:id="@+id/refresh"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
             android:gravity="center"
-            android:paddingStart="@dimen/dp_20"
-            android:paddingEnd="@dimen/dp_20">
+            android:paddingStart="@dimen/dp_10"
+            android:paddingEnd="@dimen/dp_10">
 
             <ImageView
-                android:id="@+id/back_image"
+                android:id="@+id/refresh_image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_back_white"
-                android:visibility="gone"
+                android:src="@drawable/ic_refresh"
                 tools:ignore="ContentDescription" />
 
-            <TextView
-                android:id="@+id/back_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone" />
         </RelativeLayout>
 
         <RelativeLayout

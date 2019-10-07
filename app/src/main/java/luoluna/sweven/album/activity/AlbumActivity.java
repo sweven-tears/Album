@@ -19,7 +19,7 @@ import java.util.List;
 
 import luoluna.sweven.album.R;
 import luoluna.sweven.album.adapter.PictureAdapter;
-import luoluna.sweven.album.app.App;
+import luoluna.sweven.album.app.Helper;
 import luoluna.sweven.album.bean.Album;
 import luoluna.sweven.album.bean.Picture;
 
@@ -101,7 +101,7 @@ public class AlbumActivity extends BaseActivity implements View.OnClickListener 
                 finish();
                 break;
             case R.id.done:
-                Album album = App.getAlbumByAid(this, aid);
+                Album album = Helper.with().getAlbumByAid(this, aid);
                 startActivity(AlbumSettingActivity.class,
                         "name:" + name,
                         "path:" + album.getPath(),

@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.sweven.base.BaseActivity;
+import com.sweven.util.AnimationUtil;
 import com.sweven.widget.RefreshRecyclerView;
 
 import java.util.ArrayList;
@@ -16,15 +17,17 @@ import java.util.List;
 
 import luoluna.sweven.album.adapter.AlbumAdapter;
 import luoluna.sweven.album.app.App;
+import luoluna.sweven.album.app.Helper;
 import luoluna.sweven.album.bean.Album;
 import luoluna.sweven.album.manager.Setting;
+import luoluna.sweven.album.util.ScanCamera;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     private static int cutIv = App.album == App.BIG_ALBUM ? R.drawable.ic_big_album_list : R.drawable.ic_roll_album_list;
 
     private TextView title;
-    private ImageView doneIv, addIv;
+    private ImageView doneIv, addIv, refreshIv;
 
     private RefreshRecyclerView recyclerView;
     private AlbumAdapter adapter;
@@ -42,6 +45,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @Override
     protected void bindView() {
         title = bindID(R.id.title);
+        refreshIv = bindID(R.id.refresh_image);
         doneIv = bindID(R.id.done_image);
         addIv = bindID(R.id.add_image);
         recyclerView = bindID(R.id.album_list);
@@ -52,25 +56,36 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         title.setText(R.string.index_title);
         doneIv.setVisibility(View.VISIBLE);
         doneIv.setImageResource(cutIv);
+        refreshIv.setOnClickListener(this);
         doneIv.setOnClickListener(this);
         addIv.setOnClickListener(this);
 
         layoutManager = new GridLayoutManager(this, App.album);
         layoutManager.setOrientation(RecyclerView.VERTICAL);
 
-        adapter=new AlbumAdapter(this,list);
+        adapter = new AlbumAdapter(this, list);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.defaultRecyclerView();
+        recyclerView.setAdapter(adapter);
         setAdapter(true);
     }
 
-    private void setAdapter(boolean cut) {
-        if (cut) {
-            list = App.queryByAlbumList(this);
-            adapter = new AlbumAdapter(this, list);
+    /**
+     * @param refresh 是否刷新图集
+     */
+    private void setAdapter(boolean refresh) {
+        if (refresh) {
+            ScanCamera scanCamera = new ScanCamera(this, refreshIv, list.size());
+            scanCamera.execute();
+            scanCamera.setCallBack(() -> {
+                updateAlbums = false;
+                list = Helper.with().queryByAlbumList(this);
+                adapter.updateAll(list);
+            });
+        } else {
+            layoutManager.setSpanCount(App.album);
+            recyclerView.setAdapter(adapter);
         }
-        layoutManager.setSpanCount(App.album);
-        recyclerView.setAdapter(adapter);
     }
 
     @Override
@@ -87,6 +102,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             setAdapter(false);
         } else if (view.getId() == R.id.add_image) {
             adapter.addAlbum();
+        } else if (view.getId() == R.id.refresh_image) {
+            if (updateAlbums = !updateAlbums) {
+                AnimationUtil.with().rotateSameSpeed(this, refreshIv);
+                setAdapter(true);
+            }
         }
     }
+
+    private boolean updateAlbums = false;
 }

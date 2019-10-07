@@ -1,23 +1,12 @@
 package luoluna.sweven.album.app;
 
 import android.app.Application;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.database.Cursor;
 
 import com.sweven.helper.DatabaseHelper;
-import com.sweven.helper.SQLite;
-import com.sweven.util.FileUtil;
-import com.sweven.util.PreferenceUtil;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import luoluna.sweven.album.bean.Album;
 import luoluna.sweven.album.manager.Setting;
 
 /**
@@ -43,6 +32,7 @@ public class App extends Application {
                     "name varchar not null," +
                     "path varchar(80) default null," +
                     "remark varchar default ''," +
+                    "count int default 0," +
                     "cover varchar default ''," +
                     "primary key (aid)" +
                     ")"
@@ -50,6 +40,9 @@ public class App extends Application {
 
     public static final int BIG_ALBUM = 2;
     public static final int ROLL_ALBUM = 1;
+
+    // 图集名称长度
+    public static final int ALBUM_NAME_LENGTH = 10;
 
     // 配置信息
     public static boolean isFirst;
@@ -63,180 +56,5 @@ public class App extends Application {
         DatabaseHelper.createSql = databaseSql;
         new DatabaseHelper(this, database);
         AppManager.getInstance().setAppStatus(AppStatus._LAUNCH);
-
-    }
-
-    /**
-     * 获取preference对象
-     *
-     * @param context 上下文
-     * @return PreferenceUtil
-     */
-    public static PreferenceUtil preference(Context context) {
-        return new PreferenceUtil(context, App.preference);
-    }
-
-    /**
-     * 获取editor对象
-     *
-     * @param context 上下文
-     * @return 获取preference的editor
-     */
-    public static SharedPreferences.Editor editor(Context context) {
-        return preference(context).getEditor();
-    }
-
-    /**
-     * @param context 上下文
-     * @return 下一次创建album的id
-     */
-    public static int getNextAlbumId(Context context) {
-        int nextAlbumId = 0;
-        Cursor cursor = new SQLite(context, database, albumListTableName, SQLite.QUERY).query("aid desc");
-        if (cursor.moveToFirst()) {
-            nextAlbumId = cursor.getInt(cursor.getColumnIndex("aid"));
-        }
-        return nextAlbumId + 1;
-    }
-
-    /**
-     * 查询某张表
-     *
-     * @param context 上下文
-     * @param table   数据库表名
-     * @return SQLite查询指针Cursor
-     */
-    public static Cursor query(Context context, String table) {
-        return new SQLite(context, database, table, SQLite.QUERY).query();
-    }
-
-    /**
-     * 条件查询查询某张表
-     *
-     * @param context 上下文
-     * @param table   数据库表名
-     * @return SQLite查询指针Cursor
-     */
-    public static Cursor query(Context context, String table, String where, Object... whereArgs) {
-        // object转字符串
-        String[] args = new String[whereArgs.length];
-        for (int i = 0; i < whereArgs.length; i++) {
-            args[i] = String.valueOf(whereArgs[i]);
-        }
-        return new SQLite(context, database, table, SQLite.QUERY).query(where, args);
-    }
-
-    /**
-     * 通过id查询图集信息
-     *
-     * @param context 上下文
-     * @param aid     图集id
-     * @return 图集信息
-     */
-    public static Album getAlbumByAid(Context context, int aid) {
-        Cursor cursor = query(context, albumListTableName, "aid=?", aid);
-        if (cursor.moveToFirst()) {
-            if (aid != cursor.getInt(cursor.getColumnIndex("aid"))) {
-                return null;
-            }
-            String name = cursor.getString(cursor.getColumnIndex("name"));
-            String path = cursor.getString(cursor.getColumnIndex("path"));
-            String remark = cursor.getString(cursor.getColumnIndex("remark"));
-            String cover = cursor.getString(cursor.getColumnIndex("cover"));
-            Album album = new Album(aid, name);
-            album.setPath(path);
-            album.setRemark(remark);
-            album.setCover(cover);
-
-            Cursor imageCursor = query(context, albumChildListTableName, "aid=?", aid);
-            List<String> images = new ArrayList<>();
-            while (imageCursor.moveToNext()) {
-                String uri = imageCursor.getString(imageCursor.getColumnIndex("uri"));
-                images.add(uri);
-            }
-            if (path != null && !path.isEmpty()) {
-                images.addAll(FileUtil.getFilesByEndName(path, App.supportFormat));
-            }
-            album.setDesktops(images);
-            album.setCount(images.size());
-            return album;
-        }
-        return null;
-    }
-
-    /**
-     * 创建新的相册
-     *
-     * @param context 上下文
-     * @param album   新建album信息
-     * @return 是否创建成功
-     */
-    public static long addAlbum(Context context, Album album) {
-        List<Album> list = queryByAlbumList(context);
-        Set<String> set = new HashSet<>();
-        for (Album a : list) {
-            set.add(a.getName());
-        }
-        int count = set.size();
-        set.add(album.getName());
-        if (set.size() == count) {
-            return -1;
-        }
-        Map<String, Object> map = new HashMap<>();
-        map.put("aid", album.getId());
-        map.put("name", album.getName());
-        map.put("cover", album.getCover());
-        map.put("path", album.getPath());
-        map.put("count", album.getCount());
-        return new SQLite(context, database, albumListTableName, SQLite.UPDATE).insert(map);
-    }
-
-    /**
-     * 删除图集
-     *
-     * @param context 上下文
-     * @param aid     相册id
-     * @return 是否删除成功
-     */
-    public static boolean delAlbum(Context context, int aid) {
-        return new SQLite(context, database, albumListTableName, SQLite.UPDATE).delete("aid", aid) > 1;
-    }
-
-    /**
-     * @param context 上下文
-     * @return 获取相册列表
-     */
-    public static List<Album> queryByAlbumList(Context context) {
-        List<Album> list = new ArrayList<>();
-        Cursor cursor = query(context, albumListTableName);
-        while (cursor.moveToNext()) {
-            int aid = cursor.getInt(cursor.getColumnIndex("aid"));
-            String name = cursor.getString(cursor.getColumnIndex("name"));
-            int count = cursor.getInt(cursor.getColumnIndex("count"));
-            String path = cursor.getString(cursor.getColumnIndex("path"));
-            String remark = cursor.getString(cursor.getColumnIndex("remark"));
-            String cover = cursor.getString(cursor.getColumnIndex("cover"));
-            Album album = new Album(aid, name);
-            album.setCount(count);
-            album.setPath(path);
-            album.setRemark(remark);
-            album.setCover(cover);
-
-            // 遍历图片表，所属图集
-            Cursor imageCursor = query(context, albumChildListTableName, "aid=?", aid);
-            List<String> images = new ArrayList<>();
-            while (imageCursor.moveToNext()) {
-                String uri = imageCursor.getString(imageCursor.getColumnIndex("uri"));
-                images.add(uri);
-            }
-            // 判断路径是否存在，存在则添加路径下的图像文件
-            if (path != null && !path.isEmpty()) {
-                images.addAll(FileUtil.getFilesByEndName(path, App.supportFormat));
-            }
-            album.setDesktops(images);
-            list.add(album);
-        }
-        cursor.close();
-        return list;
     }
 }

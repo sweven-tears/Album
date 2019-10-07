@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import luoluna.sweven.album.app.App;
+import luoluna.sweven.album.app.Helper;
 
 /**
  * Created by Sweven on 2019/9/10--17:11.
@@ -36,7 +37,7 @@ public class Setting {
                 }
             }
         }
-        PreferenceUtil preference = App.preference(context);
+        PreferenceUtil preference = Helper.preference(context);
         App.album = preference.getInt("albumView", App.BIG_ALBUM);
         App.supportFormat = preference.getStringSet("supportFormat", defaultSupportFormat());
         App.isFirst = preference.getBoolean("isFirst", true);
@@ -53,7 +54,7 @@ public class Setting {
     }
 
     public void save(Context context) {
-        SharedPreferences.Editor editor = App.editor(context);
+        SharedPreferences.Editor editor = Helper.editor(context);
         editor.putInt("albumView", App.album);
         editor.putStringSet("supportFormat", App.supportFormat);
         editor.putBoolean("isFirst", App.isFirst);
