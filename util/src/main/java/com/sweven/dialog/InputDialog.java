@@ -2,7 +2,6 @@ package com.sweven.dialog;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
@@ -53,7 +52,8 @@ public class InputDialog extends Dialog {
             }
         });
         input.setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId== EditorInfo.IME_ACTION_DONE){
+//            回车键操作
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
                 if (onConfirmListener != null) {
                     onConfirmListener.confirm(getInput());
                 }
@@ -101,10 +101,16 @@ public class InputDialog extends Dialog {
         return confirm;
     }
 
+    /**
+     * @return 横向的分割线
+     */
     public View getLine1() {
         return line1;
     }
 
+    /**
+     * @return 纵向的分割线
+     */
     public View getLine2() {
         return line2;
     }

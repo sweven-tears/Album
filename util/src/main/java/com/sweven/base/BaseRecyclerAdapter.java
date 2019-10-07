@@ -65,10 +65,18 @@ public class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<BaseRecyclerAda
 //        T t=list.get(position);
     }
 
+    /**
+     * @param position 位置
+     * @return 对应position的对象
+     */
     public T query(int position) {
         return list.get(position);
     }
 
+    /**
+     * @param t 对象
+     * @return 是否存在 -1为不存在
+     */
     public int query(T t) {
         for (int i = 0; i < list.size(); i++) {
             if (query(i) == t) {
@@ -78,11 +86,20 @@ public class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<BaseRecyclerAda
         return -1;
     }
 
+    /**
+     * 队列插入一个新的对象
+     * @param t 对象
+     */
     public void insert(T t) {
         list.add(t);
         notifyDataSetChanged();
     }
 
+    /**
+     * 向第position位插入新的t
+     * @param position 位置
+     * @param t 对象
+     */
     public void insert(int position, T t) {
         if (position > getItemCount()) {
             log.e("position数组越界");
@@ -92,6 +109,11 @@ public class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<BaseRecyclerAda
         notifyItemInserted(position);
     }
 
+    /**
+     * 修改某个位置的对象
+     * @param position 位置
+     * @param t 对象
+     */
     public void update(int position, T t) {
         if (position >= getItemCount()) {
             log.e("position数组越界");
@@ -101,6 +123,10 @@ public class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<BaseRecyclerAda
         notifyItemChanged(position);
     }
 
+    /**
+     * 从list中移除第position位的对象
+     * @param position 位置
+     */
     public void del(int position) {
         if (position >= getItemCount()) {
             log.e("position数组越界");
@@ -114,6 +140,10 @@ public class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<BaseRecyclerAda
         notifyItemRemoved(position);
     }
 
+    /**
+     * 删除某个t
+     * @param t 对象
+     */
     public void del(T t) {
         for (int i = list.size() - 1; i >= 0; i--) {
             if (t == list.get(i)) {
@@ -133,6 +163,9 @@ public class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<BaseRecyclerAda
         return list == null ? 0 : list.size();
     }
 
+    /**
+     * 重写RecyclerView.ViewHolder
+     */
     public abstract static class ViewHolder extends RecyclerView.ViewHolder{
 
         public ViewHolder(@NonNull View view) {

@@ -189,19 +189,41 @@ public class SQLite {
         return db.query(tableName, columns, selection, selectionArgs, groupBy, having, orderBy, null);
     }
 
+    /**
+     * @param columns       需要查询出的列，为null则为全部
+     * @param selection     条件
+     * @param selectionArgs 条件对应的值
+     * @return cursor
+     */
     public Cursor query(String[] columns, String selection, String[] selectionArgs) {
         return db.query(tableName, columns, selection, selectionArgs, null, null, null);
     }
 
+    /**
+     * @param columns       需要查询出的列，为null则为全部
+     * @param selection     条件
+     * @param selectionArgs 条件对应的值
+     * @param orderBy       排序
+     * @return cursor
+     */
     public Cursor query(String[] columns, String selection, String[] selectionArgs, String orderBy) {
         return db.query(tableName, columns, selection, selectionArgs, null, null, orderBy);
     }
 
+    /**
+     * 查询一张表
+     *
+     * @param selection     条件
+     * @param selectionArgs 条件对应的值
+     * @return cursor
+     */
     public Cursor query(String selection, String[] selectionArgs) {
         return db.query(tableName, null, selection, selectionArgs, null, null, null);
     }
 
     /**
+     * 按一定顺序完整查询一张表
+     *
      * @param orderBy 排序
      * @return cursor
      */

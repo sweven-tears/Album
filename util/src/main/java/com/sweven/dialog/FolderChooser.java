@@ -22,14 +22,15 @@ import com.sweven.util.R;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
+/**
+ * 文件夹选择器
+ */
 public class FolderChooser extends Dialog {
 
     private Activity activity;
 
-    private static final String ROOT_DIR = FileUtil.getSDCard().getAbsolutePath();
+    private static String ROOT_DIR = FileUtil.getSDCard().getAbsolutePath();
 
     private TextView title;
 
@@ -42,6 +43,18 @@ public class FolderChooser extends Dialog {
 
     private OnClickItemListener<String> onClickItemListener;
 
+    public FolderChooser(@NonNull Activity context, String rootDir, String presentDir) {
+        this(context);
+        FolderChooser.ROOT_DIR = rootDir;
+//        判断是否有当前目录
+        if (presentDir == null || presentDir.equals("")) {
+//            设置当前目录即为根目录
+            this.presentDir = rootDir;
+        } else {
+            this.presentDir = presentDir;
+        }
+    }
+
     public FolderChooser(@NonNull Activity context, String presentDir) {
         this(context);
         this.presentDir = presentDir;
@@ -53,7 +66,7 @@ public class FolderChooser extends Dialog {
     }
 
     private FolderChooser(@NonNull Activity context, int themeResId) {
-        super(context, R.style.Theme_AppCompat);
+        super(context, themeResId);
         this.activity = context;
     }
 
@@ -104,30 +117,38 @@ public class FolderChooser extends Dialog {
         adapter.setOnClickItemListener(dir -> showDirs(((Folder) dir).getPath()));
     }
 
-    private void showDirs(String presentDir) {
-        this.presentDir = presentDir;
-        presentDirs = getDirs(presentDir);
+    /**
+     * 更新adapter，渲染新的目录
+     *
+     * @param dir 目录
+     */
+    private void showDirs(String dir) {
+        this.presentDir = dir;
+        presentDirs = getDirs(dir);
         adapter.replace(presentDirs);
     }
 
+    /**
+     * @param dir 目录
+     * @return 当前目录下的文件夹
+     */
     private List<Folder> getDirs(String dir) {
 
         List<Folder> list = new ArrayList<>();
-        Map<String, String> map = new TreeMap<>();
 
         File file = new File(dir);
+//        是否为根目录
         if (!dir.equals(ROOT_DIR)) {
             list.add(new Folder("返回上一级", file.getParentFile().getAbsolutePath()));
         }
 
+//        遍历目录下的所有的文件夹
         for (File f : file.listFiles()) {
+//            判断是否是文件夹且不是隐藏文件
             if (f.isDirectory() && !f.isHidden()) {
-                map.put(f.getName(), f.getAbsolutePath());
+                Folder folder = new Folder(f.getName(), f.getAbsolutePath());
+                list.add(folder);
             }
-        }
-        for (String key : map.keySet()) {
-            Folder folder = new Folder(key, map.get(key));
-            list.add(folder);
         }
         return list;
     }
@@ -140,9 +161,10 @@ public class FolderChooser extends Dialog {
     @Override
     public void cancel() {
         if (presentDir.equals(ROOT_DIR)) {
-
+//            当前目录为根目录时直接取消
             super.cancel();
         } else {
+//            当前目录非根目录时返回上一个目录
             showDirs(presentDirs.get(0).getPath());
         }
     }
@@ -160,8 +182,8 @@ public class FolderChooser extends Dialog {
         //根据x，y坐标设置窗口需要显示的位置
         wl.x = x; //x小于0左移，大于0右移
         wl.y = y; //y小于0上移，大于0下移
-//            wl.alpha = 0.6f; //设置透明度
-//            wl.gravity = Gravity.BOTTOM; //设置重力
+//      wl.alpha = 0.6f; //设置透明度
+//      wl.gravity = Gravity.BOTTOM; //设置重力
         window.setAttributes(wl);
     }
 }

@@ -45,6 +45,7 @@ public class TextImageView extends TextView {
     private void init(Context context, AttributeSet attrs) {
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.TextImageView);
 
+//        自定义属性
         mStartWidth = typedArray.getDimensionPixelOffset(R.styleable.TextImageView_drawableStartWidth, 0);
         mStartHeight = typedArray.getDimensionPixelOffset(R.styleable.TextImageView_drawableStartHeight, 0);
         mTopWidth = typedArray.getDimensionPixelOffset(R.styleable.TextImageView_drawableTopWidth, 0);

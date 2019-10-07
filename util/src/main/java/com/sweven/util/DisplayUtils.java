@@ -6,21 +6,10 @@ import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.core.view.MotionEventCompat;
 
 public class DisplayUtils {
-
-    public static Toast mToast;
-
-    public static void showToast(Context mContext, String msg) {
-        if (mToast == null) {
-            mToast = Toast.makeText(mContext, "", Toast.LENGTH_SHORT);
-        }
-        mToast.setText(msg);
-        mToast.show();
-    }
 
     /**
      * dip 转换成 px

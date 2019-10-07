@@ -129,6 +129,9 @@ public class BaseActivity extends AppCompatActivity {
         return super.onKeyDown(keyCode, event);
     }
 
+    /**
+     * 返回键的事件
+     */
     protected boolean onBack() {
         finish();
         log.v("onBack()");
