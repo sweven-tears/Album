@@ -33,6 +33,7 @@ public class App extends Application {
                     "path varchar(80) default null," +
                     "remark varchar default ''," +
                     "count int default 0," +
+                    "system int not null default 1," +
                     "cover varchar default ''," +
                     "primary key (aid)" +
                     ")"

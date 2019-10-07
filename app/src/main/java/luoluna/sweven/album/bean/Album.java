@@ -1,9 +1,13 @@
 package luoluna.sweven.album.bean;
 
+import android.content.Context;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import luoluna.sweven.album.activity.AlbumActivity;
+import luoluna.sweven.album.app.Helper;
 import luoluna.sweven.album.manager.FileManager;
 
 /**
@@ -15,6 +19,7 @@ public class Album {
     private String name;
     private String path;
     private long count;
+    private boolean system;
     private List<String> desktops;
     private String remark;
     private boolean add;
@@ -53,6 +58,11 @@ public class Album {
         this.id = id;
         this.name = name;
         this.cover = cover;
+    }
+
+    public static Album config(Context context, int aid) {
+        Album album = Helper.with().getAlbumByAid(context, aid);
+        return album;
     }
 
     public String getCover() {
@@ -123,6 +133,14 @@ public class Album {
         this.remark = remark;
     }
 
+    public boolean isSystem() {
+        return system;
+    }
+
+    public void setSystem(boolean system) {
+        this.system = system;
+    }
+
     @Override
     public String toString() {
         return "Album{" +
@@ -130,8 +148,10 @@ public class Album {
                 ", name='" + name + '\'' +
                 ", path='" + path + '\'' +
                 ", count=" + count +
+                ", system=" + system +
                 ", desktops=" + desktops +
                 ", remark='" + remark + '\'' +
+                ", cover='" + cover + '\'' +
                 '}';
     }
 }

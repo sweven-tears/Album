@@ -94,6 +94,7 @@ public class AlbumAdapter extends BaseRecyclerAdapter<Album> {
                             }
                         }
                         Album album = new Album(Helper.with().getNextAlbumId(activity), input);
+                        album.setSystem(false);
                         nextStep(album);
                         dialog.cancel();
                     }
@@ -127,6 +128,7 @@ public class AlbumAdapter extends BaseRecyclerAdapter<Album> {
             Intent intent = new Intent(activity, AlbumActivity.class);
             intent.putExtra("name", list.get(getAdapterPosition()).getName());
             intent.putExtra("aid", list.get(getAdapterPosition()).getId());
+            intent.putExtra("count", list.get(getAdapterPosition()).getCount());
             List<String> desktops = list.get(getAdapterPosition()).getDesktops();
             String[] images = new String[desktops == null ? 0 : desktops.size()];
             if (images.length > 0) {

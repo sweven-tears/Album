@@ -52,49 +52,6 @@ public class Helper {
 
     /**
      * @param context 上下文
-     * @return 图集数量
-     */
-    public int scanImageStore(Context context) {
-        List<Album> list = new ArrayList<>();
-        try {
-            list = FileManager.getInstance(context).get();
-        } catch (Exception e) {
-            ToastUtil.showShort(context, "权限不足，无法扫描相册");
-            e.printStackTrace();
-        }
-        int success = 0;
-        for (Album album : list) {
-            List<Album> albums = queryByAlbumNameList(context);
-            Set<String> set = new HashSet<>();
-            for (Album a : albums) {
-                set.add(a.getName());
-            }
-            if (!set.add(album.getName())) {
-                int same = 0;
-                Set<String> path = new HashSet<>();
-                for (String s : set) {
-                    if (s.startsWith(album.getName())) {
-                        path.add(album.getName());
-                        same++;
-                    }
-                }
-                if (same > 1) {
-                    // 判断路径是否也相同
-                    if (!path.add(album.getPath())) {
-                        continue;
-                    } else {
-                        // 相同名的图集改名
-//                    album.setName(album.getName() + " [" + (same + 1) + "]");
-                    }
-                }
-            }
-            success = success + ((int) addAlbum(context, album));
-        }
-        return success;
-    }
-
-    /**
-     * @param context 上下文
      * @return 下一次创建album的id
      */
     public int getNextAlbumId(Context context) {
@@ -144,9 +101,6 @@ public class Helper {
     public Album getAlbumByAid(Context context, int aid) {
         Cursor cursor = query(context, albumListTableName, "aid=?", aid);
         if (cursor.moveToFirst()) {
-            if (aid != cursor.getInt(cursor.getColumnIndex("aid"))) {
-                return null;
-            }
             String name = cursor.getString(cursor.getColumnIndex("name"));
             String path = cursor.getString(cursor.getColumnIndex("path"));
             String remark = cursor.getString(cursor.getColumnIndex("remark"));
@@ -174,6 +128,27 @@ public class Helper {
     }
 
     /**
+     * 查询用户自定义图集地址集合
+     *
+     * @param context 上下文
+     * @return 图集信息
+     */
+    public List<Album> getAlbumByCustomer(Context context) {
+        Cursor cursor = query(context, albumListTableName, "system=?", 0);
+        List<Album> paths = new ArrayList<>();
+        if (cursor.moveToFirst()) {
+            int aid = cursor.getInt(cursor.getColumnIndex("aid"));
+            String name = cursor.getString(cursor.getColumnIndex("name"));
+            String path = cursor.getString(cursor.getColumnIndex("path"));
+            Album album = new Album(aid, name);
+            album.setPath(path);
+            paths.add(album);
+        }
+        cursor.close();
+        return paths;
+    }
+
+    /**
      * 创建新的相册
      *
      * @param context 上下文
@@ -181,39 +156,39 @@ public class Helper {
      * @return 是否创建成功
      */
     public long addAlbum(Context context, Album album) {
-        List<Album> list = queryByAlbumNameList(context);
-        Set<String> set = new HashSet<>();
-        for (Album a : list) {
-            set.add(a.getName());
-        }
-        if (!set.add(album.getName())) {
-            int same = 0;
-            Set<String> path = new HashSet<>();
-            for (String s : set) {
-                if (s.startsWith(album.getName())) {
-                    path.add(album.getName());
-                    same++;
-                }
-            }
-            if (same > 1) {
-                // 判断路径是否也相同
-                if (!path.add(album.getPath())) {
-                    return -1;
-                } else {
-                    // 相同名的图集改名
-//                    album.setName(album.getName() + " [" + (same + 1) + "]");
-                }
-
-            }
-        }
-
         Map<String, Object> map = new HashMap<>();
         map.put("aid", album.getId());
         map.put("name", album.getName());
         map.put("cover", album.getCover());
         map.put("path", album.getPath());
         map.put("count", album.getCount());
+        map.put("system", album.isSystem() ? 1 : 0);
+
         return new SQLite(context, database, albumListTableName, SQLite.UPDATE).insert(map);
+    }
+
+    /**
+     * 更新图集信息
+     *
+     * @param context 上下文
+     * @param album   album
+     */
+    public long updateAlbum(Context context, Album album) {
+        Map<String, Object> map = new HashMap<>();
+        if (album.getName() != null) {
+            map.put("name", album.getName());
+        }
+        if (album.getCover() != null) {
+            map.put("cover", album.getCover());
+        }
+        if (album.getPath() != null) {
+            map.put("path", album.getPath());
+        }
+        if (album.getCount() != -1) {
+            map.put("count", album.getCount());
+        }
+        return new SQLite(context, database, albumListTableName, SQLite.UPDATE)
+                .update(map, "aid=?", String.valueOf(album.getId()));
     }
 
     /**
@@ -241,29 +216,14 @@ public class Helper {
             String path = cursor.getString(cursor.getColumnIndex("path"));
             String remark = cursor.getString(cursor.getColumnIndex("remark"));
             String cover = cursor.getString(cursor.getColumnIndex("cover"));
+            boolean system = cursor.getInt(cursor.getColumnIndex("system")) == 1;
             Album album = new Album(aid, name);
             album.setCount(count);
             album.setPath(path);
             album.setRemark(remark);
             album.setCover(cover);
+            album.setSystem(system);
 
-            list.add(album);
-        }
-        cursor.close();
-        return list;
-    }
-
-    /**
-     * @param context 上下文
-     * @return 获取相册列表
-     */
-    public List<Album> queryByAlbumNameList(Context context) {
-        List<Album> list = new ArrayList<>();
-        Cursor cursor = query(context, albumListTableName);
-        while (cursor.moveToNext()) {
-            int aid = cursor.getInt(cursor.getColumnIndex("aid"));
-            String name = cursor.getString(cursor.getColumnIndex("name"));
-            Album album = new Album(aid, name);
             list.add(album);
         }
         cursor.close();

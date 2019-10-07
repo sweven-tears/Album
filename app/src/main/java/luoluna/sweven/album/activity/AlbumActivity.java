@@ -33,8 +33,9 @@ public class AlbumActivity extends BaseActivity implements View.OnClickListener 
     private PictureAdapter adapter;
 
     private int aid;
+    private Album album;
     private String name;
-    private String[] images;
+    private List<String> desktops = new ArrayList<>();
     private List<Picture> list = new ArrayList<>();
 
     @Override
@@ -49,21 +50,22 @@ public class AlbumActivity extends BaseActivity implements View.OnClickListener 
     private void getBundle() {
         Intent intent = getIntent();
         aid = intent.getIntExtra("aid", 0);
-        images = intent.getStringArrayExtra("images");
-        name = intent.getStringExtra("name");
-        if (aid == 0) {
+        album = Album.config(this, aid);
+        if (album == null) {
             NoticeDialog dialog = new NoticeDialog(this);
             dialog.setTitle("错误！请退出重试！")
                     .setCallBack(this::finish)
                     .show();
-        } else if (name == null || name.isEmpty()) {
-            name = "图片";
-        }
-        if (images != null && images.length > 0) {
-            for (String image : images) {
-                list.add(new Picture(image));
+        } else {
+            name = album.getName();
+            desktops = album.getDesktops();
+            if (desktops != null && desktops.size() > 0) {
+                for (String image : desktops) {
+                    list.add(new Picture(image));
+                }
             }
         }
+
     }
 
     @Override
@@ -79,7 +81,7 @@ public class AlbumActivity extends BaseActivity implements View.OnClickListener 
 
     @Override
     protected void initData() {
-        title.setText(getString(R.string.imageTitle, name, images.length));
+        title.setText(getString(R.string.imageTitle, name, desktops.size()));
         backIv.setVisibility(View.VISIBLE);
         doneIv.setVisibility(View.VISIBLE);
         doneIv.setImageResource(R.drawable.ic_settings);

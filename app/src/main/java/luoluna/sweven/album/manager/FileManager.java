@@ -26,30 +26,26 @@ import luoluna.sweven.album.bean.Album;
 public class FileManager {
 
     private static FileManager mInstance;
-    private static Context mContext;
-    private static ContentResolver mContentResolver;
 
-    public static FileManager getInstance(Context context) {
+    public static FileManager getInstance() {
         if (mInstance == null) {
             synchronized (FileManager.class) {
                 if (mInstance == null) {
                     mInstance = new FileManager();
-                    mContext = context;
-                    mContentResolver = context.getContentResolver();
                 }
             }
         }
         return mInstance;
     }
 
-    public List<Album> get() {
+    public List<Album> get(Context context) {
         List<Album> albums = new ArrayList<>();
 
-        String selection = MediaStore.Images.Media.MIME_TYPE;
-        Cursor cursor = mContentResolver.query(
+        String selection = MediaStore.Images.Media.MIME_TYPE + "=? or " + MediaStore.Images.Media.MIME_TYPE + "=? or " + MediaStore.Images.Media.MIME_TYPE + "=?";
+        Cursor cursor = context.getContentResolver().query(
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 null,
-                "mime_type=? or mime_type=? or mime_type=?",
+                selection,
                 new String[]{"image/jpeg", "image/png", "image/gif"},
                 "date_modified desc");
         if (cursor != null) {
@@ -68,6 +64,7 @@ public class FileManager {
                 album.setPath(file.getAbsolutePath());
                 album.setCount(desktops.length);
                 album.setCover(desktops[0]);
+                album.setSystem(true);
                 albums.add(album);
             }
             cursor.close();

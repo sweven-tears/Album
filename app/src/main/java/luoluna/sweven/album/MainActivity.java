@@ -14,13 +14,15 @@ import com.sweven.widget.RefreshRecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import luoluna.sweven.album.adapter.AlbumAdapter;
 import luoluna.sweven.album.app.App;
 import luoluna.sweven.album.app.Helper;
 import luoluna.sweven.album.bean.Album;
 import luoluna.sweven.album.manager.Setting;
-import luoluna.sweven.album.util.ScanCamera;
+import luoluna.sweven.album.util.ScanPhotoAsync;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener {
 
@@ -75,9 +77,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
      */
     private void setAdapter(boolean refresh) {
         if (refresh) {
-            ScanCamera scanCamera = new ScanCamera(this, refreshIv, list.size());
-            scanCamera.execute();
-            scanCamera.setCallBack(() -> {
+            ScanPhotoAsync scanPhotoAsync = new ScanPhotoAsync(this, list.size());
+            scanPhotoAsync.execute();
+            scanPhotoAsync.setCallBack(() -> {
+                AnimationUtil.with().stopRotateSameSpeed(refreshIv);
                 updateAlbums = false;
                 list = Helper.with().queryByAlbumList(this);
                 adapter.updateAll(list);
@@ -105,7 +108,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         } else if (view.getId() == R.id.refresh_image) {
             if (updateAlbums = !updateAlbums) {
                 AnimationUtil.with().rotateSameSpeed(this, refreshIv);
-                setAdapter(true);
+                new Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        setAdapter(true);
+                    }
+                }, 500);
             }
         }
     }
