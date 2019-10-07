@@ -1,9 +1,13 @@
 package com.sweven.util;
 
+import android.content.Context;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LinearInterpolator;
 import android.view.animation.TranslateAnimation;
+import android.widget.ImageView;
 
 /**
  * View 动画效果
@@ -21,6 +25,28 @@ public class AnimationUtil {
             }
         }
         return mInstance;
+    }
+
+    /**
+     * 绘制匀速旋转的ImageView
+     *
+     * @param context   上下文
+     * @param imageView ImageView
+     */
+    public void rotateSameSpeed(Context context, final ImageView imageView) {
+        Animation animation = AnimationUtils.loadAnimation(context, R.anim.circle_rotation);
+        LinearInterpolator lin = new LinearInterpolator();//设置动画匀速运动
+        animation.setInterpolator(lin);
+        imageView.startAnimation(animation);
+    }
+
+    /**
+     * 关闭动画
+     *
+     * @param imageView imageView
+     */
+    public void stopRotateSameSpeed(final ImageView imageView) {
+        imageView.clearAnimation();
     }
 
     /**

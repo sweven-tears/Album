@@ -120,7 +120,9 @@ public class SQLite {
             }
 
         }
-        return db.insert(tableName, null, values);
+        long result = db.insert(tableName, null, values);
+        db.close();
+        return result;
     }
 
     /**
@@ -159,7 +161,9 @@ public class SQLite {
             }
 
         }
-        return db.update(tableName, values, whereClause, whereArgs);
+        int result = db.update(tableName, values, whereClause, whereArgs);
+        db.close();
+        return result;
     }
 
     /**
@@ -257,7 +261,9 @@ public class SQLite {
      * @return 影响行数
      */
     public int delete(String where, Object value) {
-        return db.delete(tableName, where + "=?", new String[]{String.valueOf(value)});
+        int result = db.delete(tableName, where + "=?", new String[]{String.valueOf(value)});
+        db.close();
+        return result;
     }
 
 
@@ -285,6 +291,7 @@ public class SQLite {
      */
     public void exec(String sql) {
         db.execSQL(sql);
+        db.close();
     }
 
     public SQLiteDatabase db() {
