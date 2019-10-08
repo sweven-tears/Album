@@ -7,7 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.sweven.util.LogUtil;
 
-import java.sql.Date;
 import java.util.Map;
 
 /**
@@ -96,27 +95,34 @@ public class SQLite {
             Object o = map.get(key);
             if (o == null) {
                 values.putNull(key);//注意值的类型要匹配
-            } else if (o instanceof Byte) {
-                values.put(key, (Byte) map.get(key));
-            } else if (o instanceof Long) {
-                values.put(key, (Long) map.get(key));
-            } else if (o instanceof Float) {
-                values.put(key, (Float) map.get(key));
-            } else if (o instanceof Short) {
-                values.put(key, (Short) map.get(key));
-            } else if (o instanceof byte[]) {
-                values.put(key, (byte[]) map.get(key));
-            } else if (o instanceof Double) {
-                values.put(key, (Double) map.get(key));
-            } else if (o instanceof String) {
-                values.put(key, (String) map.get(key));
-            } else if (o instanceof Boolean) {
-                values.put(key, (Boolean) map.get(key));
-            } else if (o instanceof Integer) {
-                values.put(key, (Integer) map.get(key));
-            } else if (o instanceof Date) {
-                String date = map.get(key).toString();
-                values.put(key, date);
+            } else {
+                String className = o.getClass().getSimpleName();
+                switch (className) {
+                    case "Long":
+                        values.put(key, (Long) map.get(key));
+                        break;
+                    case "Float":
+                        values.put(key, (Float) map.get(key));
+                        break;
+                    case "Short":
+                        values.put(key, (Short) map.get(key));
+                        break;
+                    case "Byte[]":
+                        values.put(key, (byte[]) map.get(key));
+                        break;
+                    case "Double":
+                        values.put(key, (Double) map.get(key));
+                        break;
+                    case "String":
+                        values.put(key, (String) map.get(key));
+                        break;
+                    case "Boolean":
+                        values.put(key, (Boolean) map.get(key));
+                        break;
+                    case "Integer":
+                        values.put(key, (Integer) map.get(key));
+                        break;
+                }
             }
 
         }
@@ -137,29 +143,35 @@ public class SQLite {
             Object o = map.get(key);
             if (o == null) {
                 values.putNull(key);//注意值的类型要匹配
-            } else if (o instanceof Byte) {
-                values.put(key, (Byte) map.get(key));
-            } else if (o instanceof Long) {
-                values.put(key, (Long) map.get(key));
-            } else if (o instanceof Float) {
-                values.put(key, (Float) map.get(key));
-            } else if (o instanceof Short) {
-                values.put(key, (Short) map.get(key));
-            } else if (o instanceof byte[]) {
-                values.put(key, (byte[]) map.get(key));
-            } else if (o instanceof Double) {
-                values.put(key, (Double) map.get(key));
-            } else if (o instanceof String) {
-                values.put(key, (String) map.get(key));
-            } else if (o instanceof Boolean) {
-                values.put(key, (Boolean) map.get(key));
-            } else if (o instanceof Integer) {
-                values.put(key, (Integer) map.get(key));
-            } else if (o instanceof Date) {
-                String date = map.get(key).toString();
-                values.put(key, date);
+            } else {
+                String className = o.getClass().getSimpleName();
+                switch (className) {
+                    case "Long":
+                        values.put(key, (Long) map.get(key));
+                        break;
+                    case "Float":
+                        values.put(key, (Float) map.get(key));
+                        break;
+                    case "Short":
+                        values.put(key, (Short) map.get(key));
+                        break;
+                    case "Byte[]":
+                        values.put(key, (byte[]) map.get(key));
+                        break;
+                    case "Double":
+                        values.put(key, (Double) map.get(key));
+                        break;
+                    case "String":
+                        values.put(key, (String) map.get(key));
+                        break;
+                    case "Boolean":
+                        values.put(key, (Boolean) map.get(key));
+                        break;
+                    case "Integer":
+                        values.put(key, (Integer) map.get(key));
+                        break;
+                }
             }
-
         }
         int result = db.update(tableName, values, whereClause, whereArgs);
         db.close();

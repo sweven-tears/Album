@@ -88,6 +88,7 @@ public class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<BaseRecyclerAda
 
     /**
      * 队列插入一个新的对象
+     *
      * @param t 对象
      */
     public void insert(T t) {
@@ -97,8 +98,9 @@ public class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<BaseRecyclerAda
 
     /**
      * 向第position位插入新的t
+     *
      * @param position 位置
-     * @param t 对象
+     * @param t        对象
      */
     public void insert(int position, T t) {
         if (position > getItemCount()) {
@@ -111,8 +113,9 @@ public class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<BaseRecyclerAda
 
     /**
      * 修改某个位置的对象
+     *
      * @param position 位置
-     * @param t 对象
+     * @param t        对象
      */
     public void update(int position, T t) {
         if (position >= getItemCount()) {
@@ -125,6 +128,7 @@ public class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<BaseRecyclerAda
 
     /**
      * 从list中移除第position位的对象
+     *
      * @param position 位置
      */
     public void del(int position) {
@@ -142,6 +146,7 @@ public class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<BaseRecyclerAda
 
     /**
      * 删除某个t
+     *
      * @param t 对象
      */
     public void del(T t) {
@@ -158,6 +163,15 @@ public class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<BaseRecyclerAda
         this.onClickItemListener = onClickItemListener;
     }
 
+    /**
+     * 获取adapter中的list
+     *
+     * @return list
+     */
+    public List<T> getList() {
+        return list;
+    }
+
     @Override
     public int getItemCount() {
         return list == null ? 0 : list.size();
@@ -166,7 +180,7 @@ public class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<BaseRecyclerAda
     /**
      * 重写RecyclerView.ViewHolder
      */
-    public abstract static class ViewHolder extends RecyclerView.ViewHolder{
+    public abstract static class ViewHolder extends RecyclerView.ViewHolder {
 
         public ViewHolder(@NonNull View view) {
             super(view);
