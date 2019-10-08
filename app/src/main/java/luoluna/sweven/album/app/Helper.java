@@ -7,17 +7,13 @@ import android.database.Cursor;
 import com.sweven.helper.SQLite;
 import com.sweven.util.FileUtil;
 import com.sweven.util.PreferenceUtil;
-import com.sweven.util.ToastUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import luoluna.sweven.album.bean.Album;
-import luoluna.sweven.album.manager.FileManager;
 
 import static luoluna.sweven.album.app.App.albumChildListTableName;
 import static luoluna.sweven.album.app.App.albumListTableName;
@@ -163,6 +159,10 @@ public class Helper {
         map.put("path", album.getPath());
         map.put("count", album.getCount());
         map.put("system", album.isSystem() ? 1 : 0);
+
+        if (getAlbumByAid(context, album.getId()) != null) {
+            return -1;
+        }
 
         return new SQLite(context, database, albumListTableName, SQLite.UPDATE).insert(map);
     }

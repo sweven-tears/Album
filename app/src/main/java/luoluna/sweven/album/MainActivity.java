@@ -14,8 +14,6 @@ import com.sweven.widget.RefreshRecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import luoluna.sweven.album.adapter.AlbumAdapter;
 import luoluna.sweven.album.app.App;
@@ -65,6 +63,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         layoutManager = new GridLayoutManager(this, App.album);
         layoutManager.setOrientation(RecyclerView.VERTICAL);
 
+        list = Helper.with().queryByAlbumList(this);
         adapter = new AlbumAdapter(this, list);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.defaultRecyclerView();
@@ -76,12 +75,19 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
      * @param refresh 是否刷新图集
      */
     private void setAdapter(boolean refresh) {
-        if (refresh) {
+        if (refresh || App.isFirst) {
+            if (refreshIv.getAnimation() == null) {
+                AnimationUtil.with().rotateSameSpeed(this, refreshIv);
+            }
+            if (App.isFirst) {
+                Setting.getInstance().nonFirst(this);
+            }
             ScanPhotoAsync scanPhotoAsync = new ScanPhotoAsync(this, list.size());
             scanPhotoAsync.execute();
             scanPhotoAsync.setCallBack(() -> {
                 AnimationUtil.with().stopRotateSameSpeed(refreshIv);
-                updateAlbums = false;
+                refreshing = false;
+                list.clear();
                 list = Helper.with().queryByAlbumList(this);
                 adapter.updateAll(list);
             });
@@ -89,6 +95,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             layoutManager.setSpanCount(App.album);
             recyclerView.setAdapter(adapter);
         }
+        layoutManager.scrollToPositionWithOffset(getLastPosition(), 0);
     }
 
     @Override
@@ -104,19 +111,20 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             Setting.getInstance().save(this);
             setAdapter(false);
         } else if (view.getId() == R.id.add_image) {
-            adapter.addAlbum();
+            adapter.addAlbum(() -> layoutManager.scrollToPositionWithOffset(getLastPosition(), 0));
         } else if (view.getId() == R.id.refresh_image) {
-            if (updateAlbums = !updateAlbums) {
+            if (refreshing = !refreshing) {
                 AnimationUtil.with().rotateSameSpeed(this, refreshIv);
-                new Timer().schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        setAdapter(true);
-                    }
-                }, 500);
+                setAdapter(true);
             }
         }
     }
 
-    private boolean updateAlbums = false;
+    private int getLastPosition() {
+        list.clear();
+        list = adapter.getList();
+        return list.size() - 1;
+    }
+
+    private boolean refreshing = false;
 }

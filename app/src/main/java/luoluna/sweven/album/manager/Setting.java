@@ -53,6 +53,11 @@ public class Setting {
         return set;
     }
 
+    public void nonFirst(Context context){
+        App.isFirst=false;
+        save(context);
+    }
+
     public void save(Context context) {
         SharedPreferences.Editor editor = Helper.editor(context);
         editor.putInt("albumView", App.album);

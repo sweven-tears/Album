@@ -15,6 +15,7 @@ import com.bumptech.glide.Glide;
 import com.sweven.base.BaseRecyclerAdapter;
 import com.sweven.dialog.FolderChooser;
 import com.sweven.dialog.InputDialog;
+import com.sweven.interf.CallBack;
 import com.sweven.util.ViewUtil;
 
 import java.util.List;
@@ -73,7 +74,7 @@ public class AlbumAdapter extends BaseRecyclerAdapter<Album> {
         }
     }
 
-    public void addAlbum() {
+    public void addAlbum(CallBack callBack) {
         InputDialog dialog = new InputDialog(activity);
         dialog.setCanceledOnTouchOutside(false);
         dialog.setLabel("图集名")
@@ -95,16 +96,21 @@ public class AlbumAdapter extends BaseRecyclerAdapter<Album> {
                         }
                         Album album = new Album(Helper.with().getNextAlbumId(activity), input);
                         album.setSystem(false);
-                        nextStep(album);
+                        nextStep(album, callBack);
                         dialog.cancel();
                     }
                 });
         dialog.show();
     }
 
-    private void nextStep(Album album) {
+    private void nextStep(Album album, CallBack callBack) {
         FolderChooser chooser = new FolderChooser(activity);
-        chooser.setOnConfirm(path -> insert(Album.create(album, path)));
+        chooser.setOnConfirm(path -> {
+            insert(Album.create(album, path));
+            if (callBack != null) {
+                callBack.call();
+            }
+        });
         chooser.show();
     }
 

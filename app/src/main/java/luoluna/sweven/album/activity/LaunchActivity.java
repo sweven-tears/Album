@@ -4,13 +4,11 @@ import android.os.Bundle;
 
 import com.sweven.base.BaseActivity;
 import com.sweven.dialog.NoticeDialog;
-import com.sweven.util.ToastUtil;
 import com.yanzhenjie.permission.AndPermission;
 import com.yanzhenjie.permission.Permission;
 
 import luoluna.sweven.album.MainActivity;
 import luoluna.sweven.album.R;
-import luoluna.sweven.album.util.ScanPhotoAsync;
 
 public class LaunchActivity extends BaseActivity {
 
@@ -28,7 +26,7 @@ public class LaunchActivity extends BaseActivity {
 
     private void showTips() {
         NoticeDialog noticeDialog = new NoticeDialog(this);
-        noticeDialog.setTitle("需获取以下权限才能使用本应用：\n\t读写权限");
+        noticeDialog.setTitle("需获取以下权限\n\r才能使用本应用：\n\r读写权限");
         noticeDialog.setCallBack(() -> {
             AndPermission.with(this)
                     .runtime()
@@ -41,11 +39,7 @@ public class LaunchActivity extends BaseActivity {
     }
 
     private void init() {
-        ScanPhotoAsync scanPhotoAsync = new ScanPhotoAsync(this, -1);
-        scanPhotoAsync.execute();
-        scanPhotoAsync.setCallBack(() -> {
-            startActivity(MainActivity.class);
-            finish();
-        });
+        startActivity(MainActivity.class);
+        finish();
     }
 }

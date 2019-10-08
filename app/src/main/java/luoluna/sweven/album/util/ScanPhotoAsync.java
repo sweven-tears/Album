@@ -7,12 +7,8 @@ import android.os.AsyncTask;
 import com.sweven.interf.CallBack;
 import com.sweven.util.ToastUtil;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import luoluna.sweven.album.app.Helper;
 import luoluna.sweven.album.bean.Album;
@@ -33,18 +29,17 @@ public class ScanPhotoAsync extends AsyncTask<String, String, Integer> {
 
     @Override
     protected Integer doInBackground(String... strings) {
-        List<Album> systemAlbums = new ArrayList<>();
+        List<Album> systemAlbums = FileManager.getInstance().get(context);
+
         try {
-            systemAlbums = FileManager.getInstance().get(context);
-        } catch (Exception e) {
-            ToastUtil.showShort(context, "权限不足，无法扫描相册");
-            e.printStackTrace();
-        }
-        for (Album album : systemAlbums) {
-            if (Helper.with().addAlbum(context, album) < 1) {
-                album.setCover(null);
-                Helper.with().updateAlbum(context, album);
+            for (Album album : systemAlbums) {
+                if (Helper.with().addAlbum(context, album) < 1) {
+                    album.setCover(null);
+                    Helper.with().updateAlbum(context, album);
+                }
             }
+        } catch (Exception e) {
+
         }
         List<Album> customerAlbums = Helper.with().getAlbumByCustomer(context);
         for (int i = 0; i < customerAlbums.size(); i++) {
