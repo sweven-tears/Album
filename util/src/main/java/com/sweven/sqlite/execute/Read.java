@@ -1,50 +1,28 @@
 package com.sweven.sqlite.execute;
 
-import android.database.Cursor;
-
 import com.sweven.sqlite.SQLite;
+import com.sweven.sqlite.bean.Rows;
 
 /**
  * Created by Sweven on 2019/10/8--23:36.
  * Email: sweventears@foxmail.com
  */
-public class Read {
-    private SQLite sqLite;
-    private String[] columns;
-    private String selection;
-    private String[] selectionArgs;
+public class Read extends Execute {
     private String groupBy;
     private String having;
     private String orderBy;
     private String limit;
 
     public Read(SQLite sqLite) {
-        this.sqLite = sqLite;
-    }
-
-    /**
-     * 添加要查询的列
-     *
-     * @param columns 列
-     */
-    public Read columns(String... columns) {
-        this.columns = columns;
-        return this;
+        super(sqLite);
     }
 
     /**
      * 添加条件语句
      */
-    public SelectionArgs selection(String selection) {
-        this.selection = selection;
-        return new SelectionArgs(this);
-    }
-
-    /**
-     * 添加条件
-     */
-    private void setSelectionArgs(String[] selectionArgs) {
-        this.selectionArgs = selectionArgs;
+    public WhereArgs<Read> where(String where) {
+        this.where = where;
+        return new WhereArgs<>(this);
     }
 
     /**
@@ -82,36 +60,7 @@ public class Read {
         return this;
     }
 
-    /**
-     * 进行查询
-     *
-     * @return cursor
-     */
-    public Cursor query() {
-        return sqLite.query(columns, selection, selectionArgs, groupBy, having, orderBy, limit);
-    }
-
-    public class SelectionArgs {
-
-        private Read read;
-
-        SelectionArgs(Read read) {
-            this.read = read;
-        }
-
-        /**
-         * 添加条件语句对应的条件
-         */
-        public Read selectionArgs(Object... selectionArgs) {
-            String[] args = new String[selectionArgs.length];
-            for (int i = 0; i < selectionArgs.length; i++) {
-                Object selectionArg = selectionArgs[i];
-                args[i] = String.valueOf(selectionArg);
-
-            }
-            read.setSelectionArgs(args);
-            return read;
-        }
-
+    public Rows query() {
+        return new Rows(sqLite.query(columns, where, whereArgs, groupBy, having, orderBy, limit));
     }
 }
