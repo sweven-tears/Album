@@ -60,9 +60,8 @@ public class Album {
         this.cover = cover;
     }
 
-    public static Album config(Context context, int aid) {
-        Album album = Helper.with().getAlbumByAid(context, aid);
-        return album;
+    public static Album find(Context context, int aid) {
+        return Helper.with().getAlbumByAid(context, aid);
     }
 
     public String getCover() {

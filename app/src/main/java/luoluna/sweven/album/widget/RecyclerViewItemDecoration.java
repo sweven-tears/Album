@@ -44,6 +44,8 @@ public class RecyclerViewItemDecoration extends RecyclerView.ItemDecoration {
 //        //取模
         if (decorate == 2) {
             setSpace2(outRect);
+        } else if (decorate == 3) {
+            setSpace3(outRect);
         }
 
 //        setSpace(outRect);
@@ -67,12 +69,12 @@ public class RecyclerViewItemDecoration extends RecyclerView.ItemDecoration {
 
     private void setSpace2(Rect outRect) {
         if (pos % decorate == 0) {
-            outRect.left = space*2;
+            outRect.left = space * 2;
             outRect.right = space;
         }
         if (pos % decorate == 1) {
             outRect.left = space;
-            outRect.right = space*2;
+            outRect.right = space * 2;
         }
     }
 

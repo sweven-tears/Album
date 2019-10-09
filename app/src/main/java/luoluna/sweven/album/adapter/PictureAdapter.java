@@ -1,6 +1,9 @@
 package luoluna.sweven.album.adapter;
 
 import android.app.Activity;
+import android.app.ActivityOptions;
+import android.content.Intent;
+import android.net.Uri;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -12,7 +15,9 @@ import com.sweven.base.BaseRecyclerAdapter;
 
 import java.util.List;
 
+import luoluna.sweven.album.MainActivity;
 import luoluna.sweven.album.R;
+import luoluna.sweven.album.activity.PictureLookActivity;
 import luoluna.sweven.album.bean.Picture;
 
 /**
@@ -37,20 +42,24 @@ public class PictureAdapter extends BaseRecyclerAdapter<Picture> {
         PictureViewHolder holder = (PictureViewHolder) viewHolder;
         Picture picture = list.get(position);
 
-        Glide.with(activity)
-                .load(picture)
-                .placeholder(R.drawable.ic_album_no_cover)
-                .error(R.drawable.ic_broken_image)
-                .into(holder.image);
+        holder.image.setImageURI(Uri.parse(picture.getUri()));
     }
 
     public class PictureViewHolder extends ViewHolder {
 
         private ImageView image;
 
-        public PictureViewHolder(@NonNull View view) {
+        PictureViewHolder(@NonNull View view) {
             super(view);
             image = view.findViewById(R.id.image);
+
+            image.setOnClickListener(v -> {
+                Intent intent = new Intent(activity, PictureLookActivity.class);
+                intent.putExtra("picture_uri", list.get(getAdapterPosition()).getUri());
+                activity.startActivity(intent, ActivityOptions.
+                        makeSceneTransitionAnimation(activity, image, "big_look")
+                        .toBundle());
+            });
         }
     }
 }

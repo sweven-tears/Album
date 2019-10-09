@@ -76,7 +76,6 @@ public class AlbumAdapter extends BaseRecyclerAdapter<Album> {
 
     public void addAlbum(CallBack callBack) {
         InputDialog dialog = new InputDialog(activity);
-        dialog.setCanceledOnTouchOutside(false);
         dialog.setLabel("图集名")
                 .setHint("请输入")
                 .setConfirm("下一步")
