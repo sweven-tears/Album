@@ -2,6 +2,7 @@ package com.sweven.dialog;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
@@ -23,21 +24,24 @@ public class InputDialog extends Dialog {
 
     public InputDialog(Context context) {
         super(context);
-        init();
     }
 
     public InputDialog(Context context, int themeResId) {
         super(context, themeResId);
-        init();
     }
 
     protected InputDialog(Context context, boolean cancelable, OnCancelListener cancelListener) {
         super(context, cancelable, cancelListener);
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.view_input);
         init();
     }
 
     private void init() {
-        setContentView(R.layout.view_input);
         label = findViewById(R.id.label);
         cancel = findViewById(R.id.cancel);
         confirm = findViewById(R.id.confirm);
