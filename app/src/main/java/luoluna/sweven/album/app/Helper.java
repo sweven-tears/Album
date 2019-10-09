@@ -2,9 +2,9 @@ package luoluna.sweven.album.app;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 
-import com.sweven.helper.SQLite;
+import com.sweven.sqlite.SQLite;
+import com.sweven.sqlite.bean.Rows;
 import com.sweven.util.FileUtil;
 import com.sweven.util.PreferenceUtil;
 
@@ -52,11 +52,14 @@ public class Helper {
      */
     public int getNextAlbumId(Context context) {
         int nextAlbumId = 0;
-        Cursor cursor = new SQLite(context, database, albumListTableName, SQLite.QUERY).query("aid desc");
-        if (cursor.moveToFirst()) {
-            nextAlbumId = cursor.getInt(cursor.getColumnIndex("aid"));
+
+        Rows column = SQLite.with(context)
+                .readTable(database, albumListTableName)
+                .orderBy("aid desc")
+                .query();
+        if (column.size() > 0) {
+            nextAlbumId = column.getInt(0, "aid");
         }
-        cursor.close();
         return nextAlbumId + 1;
     }
 
@@ -67,8 +70,10 @@ public class Helper {
      * @param table   数据库表名
      * @return Cursor
      */
-    public Cursor query(Context context, String table) {
-        return new SQLite(context, database, table, SQLite.QUERY).query();
+    public Rows query(Context context, String table) {
+        return SQLite.with(context)
+                .readTable(database, table)
+                .query();
     }
 
     /**
@@ -78,13 +83,12 @@ public class Helper {
      * @param table   数据库表名
      * @return Cursor
      */
-    public Cursor query(Context context, String table, String where, Object... whereArgs) {
-        // object转字符串
-        String[] args = new String[whereArgs.length];
-        for (int i = 0; i < whereArgs.length; i++) {
-            args[i] = String.valueOf(whereArgs[i]);
-        }
-        return new SQLite(context, database, table, SQLite.QUERY).query(where, args);
+    public Rows query(Context context, String table, String where, Object... whereArgs) {
+        return SQLite.with(context)
+                .readTable(database, table)
+                .where(where)
+                .selectionArgs(whereArgs)
+                .query();
     }
 
     /**
@@ -95,22 +99,23 @@ public class Helper {
      * @return 图集信息
      */
     public Album getAlbumByAid(Context context, int aid) {
-        Cursor cursor = query(context, albumListTableName, "aid=?", aid);
-        if (cursor.moveToFirst()) {
-            String name = cursor.getString(cursor.getColumnIndex("name"));
-            String path = cursor.getString(cursor.getColumnIndex("path"));
-            String remark = cursor.getString(cursor.getColumnIndex("remark"));
-            String cover = cursor.getString(cursor.getColumnIndex("cover"));
+        Rows rows = query(context, albumListTableName, "aid=?", aid);
+        if (rows.size() > 0) {
+            String name = rows.getString(0, "name");
+            String path = rows.getString(0, "path");
+            String remark = rows.getString(0, "remark");
+            String cover = rows.getString(0, "cover");
             Album album = new Album(aid, name);
             album.setPath(path);
             album.setRemark(remark);
             album.setCover(cover);
 
-            Cursor imageCursor = query(context, albumChildListTableName, "aid=?", aid);
+            Rows rows1 = query(context, albumChildListTableName, "aid=?", aid);
             List<String> images = new ArrayList<>();
-            while (imageCursor.moveToNext()) {
-                String uri = imageCursor.getString(imageCursor.getColumnIndex("uri"));
+            for (int i = 0; i < rows1.size(); i++) {
+                String uri = rows.getString(i, "uri");
                 images.add(uri);
+
             }
             if (path != null && !path.isEmpty()) {
                 images.addAll(FileUtil.getFilesByEndName(path, App.supportFormat));
@@ -119,7 +124,6 @@ public class Helper {
             album.setCount(images.size());
             return album;
         }
-        cursor.close();
         return null;
     }
 
@@ -130,17 +134,16 @@ public class Helper {
      * @return 图集信息
      */
     public List<Album> getAlbumByCustomer(Context context) {
-        Cursor cursor = query(context, albumListTableName, "system=?", 0);
+        Rows rows = query(context, albumListTableName, "system=?", 0);
         List<Album> paths = new ArrayList<>();
-        if (cursor.moveToFirst()) {
-            int aid = cursor.getInt(cursor.getColumnIndex("aid"));
-            String name = cursor.getString(cursor.getColumnIndex("name"));
-            String path = cursor.getString(cursor.getColumnIndex("path"));
+        for (int i = 0; i < rows.size(); i++) {
+            int aid = rows.getInt(i, "aid");
+            String name = rows.getString(i, "name");
+            String path = rows.getString(i, "path");
             Album album = new Album(aid, name);
             album.setPath(path);
             paths.add(album);
         }
-        cursor.close();
         return paths;
     }
 
@@ -164,7 +167,9 @@ public class Helper {
             return -1;
         }
 
-        return new SQLite(context, database, albumListTableName, SQLite.UPDATE).insert(map);
+        return SQLite.with(context)
+                .writeTable(database, albumListTableName)
+                .insert(map);
     }
 
     /**
@@ -187,8 +192,11 @@ public class Helper {
         if (album.getCount() != -1) {
             map.put("count", album.getCount());
         }
-        return new SQLite(context, database, albumListTableName, SQLite.UPDATE)
-                .update(map, "aid=?", String.valueOf(album.getId()));
+        return SQLite.with(context)
+                .writeTable(database, albumListTableName)
+                .where("aid=?")
+                .selectionArgs(album.getId())
+                .update(map);
     }
 
     /**
@@ -199,7 +207,11 @@ public class Helper {
      * @return 是否删除成功
      */
     public boolean delAlbum(Context context, int aid) {
-        return new SQLite(context, database, albumListTableName, SQLite.UPDATE).delete("aid", aid) > 1;
+        return SQLite.with(context)
+                .writeTable(database, albumListTableName)
+                .where("aid=?")
+                .selectionArgs(aid)
+                .del() > 0;
     }
 
     /**
@@ -208,15 +220,16 @@ public class Helper {
      */
     public List<Album> queryByAlbumList(Context context) {
         List<Album> list = new ArrayList<>();
-        Cursor cursor = query(context, albumListTableName);
-        while (cursor.moveToNext()) {
-            int aid = cursor.getInt(cursor.getColumnIndex("aid"));
-            String name = cursor.getString(cursor.getColumnIndex("name"));
-            int count = cursor.getInt(cursor.getColumnIndex("count"));
-            String path = cursor.getString(cursor.getColumnIndex("path"));
-            String remark = cursor.getString(cursor.getColumnIndex("remark"));
-            String cover = cursor.getString(cursor.getColumnIndex("cover"));
-            boolean system = cursor.getInt(cursor.getColumnIndex("system")) == 1;
+        Rows rows = query(context, albumListTableName);
+        for (int i = 0; i < rows.size(); i++) {
+            int aid = rows.getInt(i, "aid");
+            String name = rows.getString(i, "name");
+            int count = rows.getInt(i, "count");
+            String path = rows.getString(i, "path");
+            String remark = rows.getString(i, "remark");
+            String cover = rows.getString(i, "cover");
+            boolean system = rows.getInt(i, "system") == 1;
+
             Album album = new Album(aid, name);
             album.setCount(count);
             album.setPath(path);
@@ -226,7 +239,6 @@ public class Helper {
 
             list.add(album);
         }
-        cursor.close();
         return list;
     }
 }

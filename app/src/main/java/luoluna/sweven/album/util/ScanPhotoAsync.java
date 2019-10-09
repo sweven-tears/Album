@@ -30,16 +30,11 @@ public class ScanPhotoAsync extends AsyncTask<String, String, Integer> {
     @Override
     protected Integer doInBackground(String... strings) {
         List<Album> systemAlbums = FileManager.getInstance().get(context);
-
-        try {
-            for (Album album : systemAlbums) {
-                if (Helper.with().addAlbum(context, album) < 1) {
-                    album.setCover(null);
-                    Helper.with().updateAlbum(context, album);
-                }
+        for (Album album : systemAlbums) {
+            if (Helper.with().addAlbum(context, album) < 1) {
+                album.setCover(null);
+                Helper.with().updateAlbum(context, album);
             }
-        } catch (Exception e) {
-
         }
         List<Album> customerAlbums = Helper.with().getAlbumByCustomer(context);
         for (int i = 0; i < customerAlbums.size(); i++) {

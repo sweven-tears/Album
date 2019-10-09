@@ -90,12 +90,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 list.clear();
                 list = Helper.with().queryByAlbumList(this);
                 adapter.updateAll(list);
+                layoutManager.scrollToPositionWithOffset(adapter.getItemCount() - 1, 0);
             });
         } else {
             layoutManager.setSpanCount(App.album);
             recyclerView.setAdapter(adapter);
         }
-        layoutManager.scrollToPositionWithOffset(getLastPosition(), 0);
+        layoutManager.scrollToPositionWithOffset(adapter.getItemCount() - 1, 0);
     }
 
     @Override
@@ -111,19 +112,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             Setting.getInstance().save(this);
             setAdapter(false);
         } else if (view.getId() == R.id.add_image) {
-            adapter.addAlbum(() -> layoutManager.scrollToPositionWithOffset(getLastPosition(), 0));
+            adapter.addAlbum(() -> layoutManager.scrollToPositionWithOffset(adapter.getItemCount() - 1, 0));
         } else if (view.getId() == R.id.refresh_image) {
             if (refreshing = !refreshing) {
                 AnimationUtil.with().rotateSameSpeed(this, refreshIv);
                 setAdapter(true);
             }
         }
-    }
-
-    private int getLastPosition() {
-        list.clear();
-        list = adapter.getList();
-        return list.size() - 1;
     }
 
     private boolean refreshing = false;

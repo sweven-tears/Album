@@ -1,6 +1,5 @@
 package luoluna.sweven.album.manager;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.provider.MediaStore;
@@ -73,74 +72,10 @@ public class FileManager {
     }
 
     /**
-     * 得到图片文件夹集合
-     */
-//    public List<Album> getAlbumList() {
-//
-//        List<Album> albums = new ArrayList<>();
-//        // 扫描图片
-//        Cursor c = null;
-//        try {
-//            c = mContentResolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null,
-//                    MediaStore.Images.Media.MIME_TYPE + "= ? or " + MediaStore.Images.Media.MIME_TYPE + "= ?",
-//                    new String[]{"image/jpeg", "image/png"}, "date_modified desc");
-//            List<String> mDirs = new ArrayList<>();//用于保存已经添加过的文件夹目录
-//            if (c != null) {
-//                while (c.moveToNext()) {
-//                    String path = c.getString(c.getColumnIndex(MediaStore.Images.Media.DATA));// 路径
-//
-//                    File parentFile = new File(path).getParentFile();
-//                    if (parentFile == null)
-//                        continue;
-//
-//                    String dir = parentFile.getAbsolutePath();
-//                    if (mDirs.contains(dir)) {//如果已经添加过
-//                        //追加三张图片
-//                        for (Album folder : albums) {
-//                            if (folder.getDir().equals(dir)) {//取出当前文件夹
-//                                String[] imgPaths = folder.getPreFourImgPath().split(",");
-//                                if (imgPaths.length >= 4) {
-//                                    break;
-//                                } else {
-//                                    folder.setPreFourImgPath(folder.getPreFourImgPath() + path + ",");
-//                                }
-//                            }
-//                        }
-//                        continue;
-//                    }
-//
-//                    mDirs.add(dir);//添加到保存目录的集合中
-//                    Album folderBean = new Album();
-//                    folderBean.setDir(dir);
-//                    folderBean.setPreFourImgPath(path + ",");
-//                    if (parentFile.list() == null)
-//                        continue;
-//                    int count = Objects.requireNonNull(parentFile.list((dir1, filename) -> {
-//                        if (filename.endsWith(".jpeg") || filename.endsWith(".jpg") || filename.endsWith(".png")) {
-//                            return true;
-//                        }
-//                        return false;
-//                    })).length;
-//
-//                    folderBean.setCount(count);
-//                    albums.add(folderBean);
-//                }
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        } finally {
-//            if (c != null) {
-//                c.close();
-//            }
-//        }
-//        return albums;
-//    }
-
-    /**
      * 通过图片文件夹的路径获取该目录下的图片
      */
     public static String getImgListByDir(String dir) {
-        StringBuilder builder = new StringBuilder("");
+        StringBuilder builder = new StringBuilder();
         File directory = new File(dir);
         if (!directory.exists()) {
             return builder.toString();
@@ -162,10 +97,7 @@ public class FileManager {
      */
     public static boolean isPicFile(String path) {
         path = path.toLowerCase();
-        if (path.endsWith(".jpg") || path.endsWith(".jpeg") || path.endsWith(".png")) {
-            return true;
-        }
-        return false;
+        return path.endsWith(".jpg") || path.endsWith(".jpeg") || path.endsWith(".png");
     }
 
     static class FileComparator implements Comparator<File> {
