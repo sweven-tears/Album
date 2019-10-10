@@ -4,19 +4,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".activity.AlbumActivity">
+    tools:context=".activity.PictureActivity">
 
     <include layout="@layout/layout_top_bar" />
 
     <RelativeLayout
         android:layout_width="match_parent"
+        android:overScrollMode="never"
         android:layout_height="match_parent">
 
         <androidx.recyclerview.widget.RecyclerView
             android:overScrollMode="never"
             android:id="@+id/image_list"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="wrap_content" />
 
     </RelativeLayout>
 </LinearLayout>

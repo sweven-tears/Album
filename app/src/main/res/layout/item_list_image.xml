@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/item"
-    android:layout_width="wrap_content"
+<ImageView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/image"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
-
-    <ImageView
-        android:id="@+id/image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:scaleType="fitCenter"
-        android:transitionName="big_look" />
-</RelativeLayout>
+    android:scaleType="fitCenter"
+    android:transitionName="big_look"
+    android:paddingStart="2dp"
+    android:paddingEnd="2dp"
+    android:adjustViewBounds="true"
+    android:orientation="vertical"
+    tools:ignore="ContentDescription" />

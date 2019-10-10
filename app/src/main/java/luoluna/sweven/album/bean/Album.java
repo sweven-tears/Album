@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import luoluna.sweven.album.activity.AlbumActivity;
 import luoluna.sweven.album.app.Helper;
 import luoluna.sweven.album.manager.FileManager;
 

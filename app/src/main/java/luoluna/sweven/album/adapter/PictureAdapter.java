@@ -10,12 +10,11 @@ import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 
-import com.bumptech.glide.Glide;
 import com.sweven.base.BaseRecyclerAdapter;
+import com.sweven.util.ViewUtil;
 
 import java.util.List;
 
-import luoluna.sweven.album.MainActivity;
 import luoluna.sweven.album.R;
 import luoluna.sweven.album.activity.PictureLookActivity;
 import luoluna.sweven.album.bean.Picture;
@@ -43,6 +42,8 @@ public class PictureAdapter extends BaseRecyclerAdapter<Picture> {
         Picture picture = list.get(position);
 
         holder.image.setImageURI(Uri.parse(picture.getUri()));
+
+        ViewUtil.notifyMeasure(holder.image);
     }
 
     public class PictureViewHolder extends ViewHolder {

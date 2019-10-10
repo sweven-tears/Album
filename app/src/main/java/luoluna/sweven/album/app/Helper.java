@@ -220,7 +220,10 @@ public class Helper {
      */
     public List<Album> queryByAlbumList(Context context) {
         List<Album> list = new ArrayList<>();
-        Rows rows = query(context, albumListTableName);
+        Rows rows = SQLite.with(context)
+                .readTable(database, albumListTableName)
+                .orderBy("aid desc")
+                .query();
         for (int i = 0; i < rows.size(); i++) {
             int aid = rows.getInt(i, "aid");
             String name = rows.getString(i, "name");

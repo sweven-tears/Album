@@ -34,12 +34,12 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:launchMode="singleTop"></activity>
+            android:launchMode="singleTop" />
         <activity
             android:name=".activity.AlbumSettingActivity"
             android:launchMode="singleTop" />
         <activity
-            android:name=".activity.AlbumActivity"
+            android:name=".activity.PictureActivity"
             android:launchMode="singleTop" />
     </application>
 

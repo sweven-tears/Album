@@ -7,9 +7,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.sweven.base.BaseActivity;
 import com.sweven.dialog.NoticeDialog;
@@ -19,12 +18,11 @@ import java.util.List;
 
 import luoluna.sweven.album.R;
 import luoluna.sweven.album.adapter.PictureAdapter;
-import luoluna.sweven.album.app.Helper;
 import luoluna.sweven.album.bean.Album;
 import luoluna.sweven.album.bean.Picture;
 import luoluna.sweven.album.widget.RecyclerViewItemDecoration;
 
-public class AlbumActivity extends BaseActivity implements View.OnClickListener {
+public class PictureActivity extends BaseActivity implements View.OnClickListener {
 
     private TextView title;
     private RelativeLayout back, done;
@@ -39,7 +37,7 @@ public class AlbumActivity extends BaseActivity implements View.OnClickListener 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_album);
+        setContentView(R.layout.activity_picture);
         getBundle();
         bindView();
         initData();
@@ -55,7 +53,6 @@ public class AlbumActivity extends BaseActivity implements View.OnClickListener 
                     .setCallBack(this::finish)
                     .show();
         } else {
-            String name = album.getName();
             List<String> desktops = album.getDesktops();
             if (desktops != null && desktops.size() > 0) {
                 for (String image : desktops) {
@@ -85,11 +82,10 @@ public class AlbumActivity extends BaseActivity implements View.OnClickListener 
         doneIv.setImageResource(R.drawable.ic_album_info);
 
         adapter = new PictureAdapter(this, list);
-        GridLayoutManager manager = new GridLayoutManager(this, 3);
-
-        manager.setOrientation(RecyclerView.VERTICAL);
+        StaggeredGridLayoutManager manager =
+                new StaggeredGridLayoutManager(2, RecyclerView.VERTICAL);
         recyclerView.setLayoutManager(manager);
-        recyclerView.addItemDecoration(new RecyclerViewItemDecoration(10));
+        recyclerView.addItemDecoration(new RecyclerViewItemDecoration());
 
         recyclerView.setAdapter(adapter);
 

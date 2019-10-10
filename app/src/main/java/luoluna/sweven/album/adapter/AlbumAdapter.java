@@ -21,7 +21,7 @@ import com.sweven.util.ViewUtil;
 import java.util.List;
 
 import luoluna.sweven.album.R;
-import luoluna.sweven.album.activity.AlbumActivity;
+import luoluna.sweven.album.activity.PictureActivity;
 import luoluna.sweven.album.app.App;
 import luoluna.sweven.album.app.Helper;
 import luoluna.sweven.album.bean.Album;
@@ -130,7 +130,7 @@ public class AlbumAdapter extends BaseRecyclerAdapter<Album> {
 
 
         void openAlbum() {
-            Intent intent = new Intent(activity, AlbumActivity.class);
+            Intent intent = new Intent(activity, PictureActivity.class);
             intent.putExtra("name", list.get(getAdapterPosition()).getName());
             intent.putExtra("aid", list.get(getAdapterPosition()).getId());
             intent.putExtra("count", list.get(getAdapterPosition()).getCount());

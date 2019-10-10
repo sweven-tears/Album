@@ -90,13 +90,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 list.clear();
                 list = Helper.with().queryByAlbumList(this);
                 adapter.updateAll(list);
-                layoutManager.scrollToPositionWithOffset(adapter.getItemCount() - 1, 0);
             });
         } else {
             layoutManager.setSpanCount(App.album);
             recyclerView.setAdapter(adapter);
         }
-        layoutManager.scrollToPositionWithOffset(adapter.getItemCount() - 1, 0);
     }
 
     @Override
