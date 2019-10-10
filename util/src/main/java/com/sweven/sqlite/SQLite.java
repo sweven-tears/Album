@@ -148,9 +148,11 @@ public class SQLite {
     }
 
     private void close() {
-        sqLite.db.close();
-        sqLite.database_helper.close();
-        sqLite = null;
+        if (sqLite != null) {
+            sqLite.db.close();
+            sqLite.database_helper.close();
+            sqLite = null;
+        }
     }
 
     /**
