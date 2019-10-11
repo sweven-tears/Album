@@ -6,12 +6,14 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.sweven.base.BaseActivity;
 import com.sweven.dialog.NoticeDialog;
+import com.sweven.util.Console;
 import com.sweven.util.WindowUtil;
 
 import java.util.ArrayList;
@@ -83,6 +85,20 @@ public class PictureLookActivity extends BaseActivity {
         recyclerView.setAdapter(adapter);
 
         manager.scrollToPositionWithOffset(index, 0);
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                Console.log(newState);
+            }
+
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+//                Console.log(dx,dy);
+            }
+        });
     }
 
     @Override
