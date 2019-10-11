@@ -29,7 +29,6 @@ public class PictureActivity extends BaseActivity implements View.OnClickListene
     private ImageView backIv, doneIv;
 
     private RecyclerView recyclerView;
-    private PictureAdapter adapter;
 
     private Album album;
     private List<Picture> list = new ArrayList<>();
@@ -81,12 +80,11 @@ public class PictureActivity extends BaseActivity implements View.OnClickListene
         doneIv.setVisibility(View.VISIBLE);
         doneIv.setImageResource(R.drawable.ic_album_info);
 
-        adapter = new PictureAdapter(this, list);
+        PictureAdapter adapter = new PictureAdapter(this, list, album.getId());
         StaggeredGridLayoutManager manager =
                 new StaggeredGridLayoutManager(2, RecyclerView.VERTICAL);
         recyclerView.setLayoutManager(manager);
         recyclerView.addItemDecoration(new RecyclerViewItemDecoration());
-
         recyclerView.setAdapter(adapter);
 
         back.setOnClickListener(this);

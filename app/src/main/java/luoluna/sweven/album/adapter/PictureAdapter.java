@@ -25,8 +25,11 @@ import luoluna.sweven.album.bean.Picture;
  */
 public class PictureAdapter extends BaseRecyclerAdapter<Picture> {
 
-    public PictureAdapter(Activity activity, List<Picture> list) {
+    private int aid;
+
+    public PictureAdapter(Activity activity, List<Picture> list, int id) {
         super(activity, list);
+        this.aid = id;
     }
 
     @NonNull
@@ -57,6 +60,8 @@ public class PictureAdapter extends BaseRecyclerAdapter<Picture> {
             image.setOnClickListener(v -> {
                 Intent intent = new Intent(activity, PictureLookActivity.class);
                 intent.putExtra("picture_uri", list.get(getAdapterPosition()).getUri());
+                intent.putExtra("aid", aid);
+                intent.putExtra("present",getAdapterPosition());
                 activity.startActivity(intent, ActivityOptions.
                         makeSceneTransitionAnimation(activity, image, "big_look")
                         .toBundle());

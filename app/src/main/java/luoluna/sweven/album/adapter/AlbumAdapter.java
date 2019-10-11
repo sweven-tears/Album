@@ -76,6 +76,7 @@ public class AlbumAdapter extends BaseRecyclerAdapter<Album> {
 
     public void addAlbum(CallBack callBack) {
         InputDialog dialog = new InputDialog(activity);
+        dialog.show();
         dialog.setLabel("图集名")
                 .setHint("请输入")
                 .setConfirm("下一步")
@@ -99,7 +100,6 @@ public class AlbumAdapter extends BaseRecyclerAdapter<Album> {
                         dialog.cancel();
                     }
                 });
-        dialog.show();
     }
 
     private void nextStep(Album album, CallBack callBack) {
