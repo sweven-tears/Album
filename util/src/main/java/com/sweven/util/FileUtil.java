@@ -196,10 +196,8 @@ public class FileUtil {
             return files;
         }
         for (File file : f.listFiles()) {
-            for (String end : endName) {
-                if (!file.isDirectory() && file.getName().endsWith("."+end)) {
-                    files.add(file.getPath());
-                }
+            if (isEndName(file.getPath(),endName)) {
+                files.add(file.getPath());
             }
         }
         return files;
@@ -217,10 +215,8 @@ public class FileUtil {
             return files;
         }
         for (File file : f.listFiles()) {
-            for (String end : endName) {
-                if (!file.isDirectory() && file.getName().endsWith("."+end)) {
-                    files.add(file.getPath());
-                }
+            if (isEndName(file.getPath(), endName.toArray(new String[0]))) {
+                files.add(file.getPath());
             }
         }
         return files;
@@ -228,8 +224,14 @@ public class FileUtil {
 
     public static boolean isEndName(String path, String... endName) {
         File file = new File(path);
+        if (file.isDirectory()) {
+//            throw new Exception("path is directory, isn't file");
+            return false;
+        }
         for (String end : endName) {
-            if (!file.isDirectory() && file.getName().endsWith("."+end)) {
+            end = end.toLowerCase();
+            String name = file.getName().toLowerCase();
+            if (name.endsWith("." + end)) {
                 return true;
             }
         }

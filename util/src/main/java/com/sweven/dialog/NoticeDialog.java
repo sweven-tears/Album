@@ -67,7 +67,7 @@ public class NoticeDialog extends Dialog {
         title.setTextSize(size);
     }
 
-    public NoticeDialog setCallBack(CallBack callBack) {
+    public NoticeDialog setEnterListener(CallBack callBack) {
         this.callBack = callBack;
         return this;
     }
