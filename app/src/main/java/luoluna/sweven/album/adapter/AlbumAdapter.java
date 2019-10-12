@@ -32,12 +32,11 @@ import luoluna.sweven.album.util.Verifier;
  * Email: sweventears@foxmail.com
  */
 public class AlbumAdapter extends BaseRecyclerAdapter<Album> {
-    public AlbumAdapter(Activity activity) {
-        super(activity);
-    }
+    private int type;
 
-    public AlbumAdapter(Activity activity, List<Album> list) {
-        super(activity, list);
+    public AlbumAdapter(Activity activity, int type) {
+        super(activity);
+        this.type = type;
     }
 
     @NonNull
@@ -134,11 +133,13 @@ public class AlbumAdapter extends BaseRecyclerAdapter<Album> {
 
 
         void openAlbum() {
+            Album album = list.get(getAdapterPosition());
             Intent intent = new Intent(activity, PictureActivity.class);
-            intent.putExtra("name", list.get(getAdapterPosition()).getName());
-            intent.putExtra("aid", list.get(getAdapterPosition()).getId());
-            intent.putExtra("count", list.get(getAdapterPosition()).getCount());
-            List<String> desktops = list.get(getAdapterPosition()).getDesktops();
+            intent.putExtra("type", type);
+            intent.putExtra("name", album.getName());
+            intent.putExtra("aid", album.getId());
+            intent.putExtra("uri", album.getPath());
+            List<String> desktops = album.getDesktops();
             String[] images = new String[desktops == null ? 0 : desktops.size()];
             if (images.length > 0) {
                 for (int i = desktops.size() - 1; i >= 0; i--) {

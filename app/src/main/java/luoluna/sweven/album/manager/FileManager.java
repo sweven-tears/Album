@@ -2,6 +2,7 @@ package luoluna.sweven.album.manager;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.provider.MediaStore;
 
 import com.sweven.util.FileUtil;
@@ -37,7 +38,11 @@ public class FileManager {
         return mInstance;
     }
 
-    public List<Album> get(Context context) {
+    /**
+     * @param context 上下文
+     * @return 获取系统相册列表
+     */
+    public List<Album> getSystemAlbums(Context context) {
         List<Album> albums = new ArrayList<>();
 
         String selection = MediaStore.Images.Media.MIME_TYPE + "=? or " + MediaStore.Images.Media.MIME_TYPE + "=? or " + MediaStore.Images.Media.MIME_TYPE + "=?";
@@ -47,57 +52,46 @@ public class FileManager {
                 selection,
                 new String[]{"image/jpeg", "image/png", "image/gif"},
                 "date_modified desc");
-        if (cursor != null) {
-            Set<String> set = new HashSet<>();
-            while (cursor.moveToNext()) {
-                String filePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
-                File file = new File(filePath);
-                set.add(Objects.requireNonNull(file.getParentFile()).getAbsolutePath());
-            }
-            String[] arrays = set.toArray(new String[0]);
-            for (int i = 0; i < arrays.length; i++) {
-                File file = new File(arrays[i]);
-                Album album = new Album(i + 1, file.getName());
-                String[] desktops = getImgListByDir(arrays[i]).split(";");
-                album.setDesktops(Arrays.asList(desktops));
-                album.setPath(file.getAbsolutePath());
-                album.setCount(desktops.length);
-                album.setCover(desktops[0]);
-                album.setSystem(true);
-                albums.add(album);
-            }
-            cursor.close();
+        Set<String> set = new HashSet<>();
+        if (cursor == null) {
+            return null;
+        }
+        while (cursor.moveToNext()) {
+            String filePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+            File file = new File(filePath);
+            set.add(Objects.requireNonNull(file.getParentFile()).getAbsolutePath());
+        }
+        cursor.close();
+        String[] arrays = set.toArray(new String[0]);
+        for (int i = 0; i < arrays.length; i++) {
+            File file = new File(arrays[i]);
+            Album album = new Album(i + 1, file.getName());
+            List<String> desktops = FileUtil.getFilesByEndName(file.getPath(), App.supportFormat);
+            album.setDesktops(desktops);
+            album.setPath(file.getAbsolutePath());
+            album.setCount(desktops.size());
+            album.setCover(desktops.get(0));
+            album.setSystem(true);
+            albums.add(album);
         }
         return albums;
     }
 
     /**
-     * 通过图片文件夹的路径获取该目录下的图片
+     * 通过路径获取album信息
+     *
+     * @param context 上下文
+     * @param folder  文件夹路径
+     * @return album
      */
-    public static String getImgListByDir(String dir) {
-        StringBuilder builder = new StringBuilder();
-        File directory = new File(dir);
-        if (!directory.exists()) {
-            return builder.toString();
-        }
-        File[] files = directory.listFiles();
-        //对文件进行排序
-        Arrays.sort(Objects.requireNonNull(files), new FileComparator());
-        for (File file : files) {
-            String path = file.getAbsolutePath();
-            if (FileUtil.isEndName(path, App.supportFormat.toArray(new String[0]))) {
-                builder.append(path).append(";");
-            }
-        }
-        return builder.toString();
-    }
-
-    /**
-     * 是否是图片文件
-     */
-    public static boolean isPicFile(String path) {
-        path = path.toLowerCase();
-        return path.endsWith(".jpg") || path.endsWith(".jpeg") || path.endsWith(".png");
+    public Album getAlbumByFolder(Context context, String folder) {
+        Album album = new Album(0, null);
+        List<String> desktops = FileUtil.getFilesByEndName(folder, App.supportFormat);
+        album.setDesktops(desktops);
+        album.setCount(desktops.size());
+        album.setPath(folder);
+        album.setCover(desktops.get(0));
+        return album;
     }
 
     static class FileComparator implements Comparator<File> {

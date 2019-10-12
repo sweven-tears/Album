@@ -1,5 +1,6 @@
 package luoluna.sweven.album.fragment.main;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -72,7 +73,6 @@ public class AlbumFragment extends BaseFragment {
         Bundle bundle = getArguments();
         if (bundle != null) {
             type = bundle.getInt(KEY);
-            label = type == SYSTEM_ALBUM ? getString(R.string.no_album_tips) : getString(R.string.no_atlas_tips);
         }
     }
 
@@ -89,15 +89,19 @@ public class AlbumFragment extends BaseFragment {
         tips = bindId(R.id.tips);
     }
 
+    @SuppressLint("ResourceAsColor")
     @Override
     protected void initData() {
-        adapter = new AlbumAdapter(activity);
+        adapter = new AlbumAdapter(activity,type);
         layoutManager = new GridLayoutManager(activity, App.album);
         layoutManager.setOrientation(RecyclerView.VERTICAL);
 
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.defaultRecyclerView();
         recyclerView.setAdapter(adapter);
+
+        recyclerView.setBackground(type==SYSTEM_ALBUM?R.color.appColor:R.color.yellow);
+        tips.setBackgroundColor(type==SYSTEM_ALBUM?R.color.appColor:R.color.yellow);
 
         setAdapter(null, true, null);
     }
@@ -135,6 +139,7 @@ public class AlbumFragment extends BaseFragment {
                 }
                 if (list.size() == 0) {// not null
                     // show tips
+                    label = type == SYSTEM_ALBUM ? getString(R.string.no_album_tips) : getString(R.string.no_atlas_tips);
                     tips.setVisibility(View.VISIBLE);
                     tips.setText(label);
                     recyclerView.setVisibility(View.GONE);

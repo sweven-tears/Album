@@ -27,7 +27,7 @@ public class LaunchActivity extends BaseActivity {
     private void showTips() {
         NoticeDialog noticeDialog = new NoticeDialog(this);
         noticeDialog.setTitle("需获取以下权限\n\r才能使用本应用：\n\r读写权限");
-        noticeDialog.setCallBack(() -> {
+        noticeDialog.setEnterListener(() -> {
             AndPermission.with(this)
                     .runtime()
                     .permission(Permission.READ_EXTERNAL_STORAGE, Permission.WRITE_EXTERNAL_STORAGE)

@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.sweven.base.BaseActivity;
 import com.sweven.dialog.NoticeDialog;
+import com.sweven.interf.CallBack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,9 @@ import luoluna.sweven.album.adapter.PictureAdapter;
 import luoluna.sweven.album.bean.Album;
 import luoluna.sweven.album.bean.Picture;
 import luoluna.sweven.album.widget.RecyclerViewItemDecoration;
+
+import static luoluna.sweven.album.fragment.main.AlbumFragment.CUSTOMER_ATLAS;
+import static luoluna.sweven.album.fragment.main.AlbumFragment.SYSTEM_ALBUM;
 
 public class PictureActivity extends BaseActivity implements View.OnClickListener {
 
@@ -37,26 +41,45 @@ public class PictureActivity extends BaseActivity implements View.OnClickListene
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_picture);
-        getBundle();
         bindView();
-        initData();
+        getBundle(this::initData);
     }
 
-    private void getBundle() {
+    /**
+     * 获取intent传递的参数
+     *
+     * @param callBack 完成bundle读取后的回调
+     */
+    private void getBundle(CallBack callBack) {
         Intent intent = getIntent();
-        int aid = intent.getIntExtra("aid", 0);
-        album = Album.find(this, aid);
-        if (album == null) {
-            NoticeDialog dialog = new NoticeDialog(this);
-            dialog.setTitle("错误！请退出重试！")
-                    .setCallBack(this::finish)
-                    .show();
+        int type = intent.getIntExtra("type", -1);
+        String name = intent.getStringExtra("name");
+
+        // 判断类型
+        if (type == SYSTEM_ALBUM) {//album
+            String uri = intent.getStringExtra("uri");
+            album = Album.find(this, uri);
+        } else if (type == CUSTOMER_ATLAS) {//atlas
+            int aid = intent.getIntExtra("aid", 0);
+            album = Album.find(this, aid);
         } else {
+            error();
+            return;
+        }
+
+        if (album == null) {
+            error();
+        } else {
+            album.setName(name);
             List<String> desktops = album.getDesktops();
             if (desktops != null && desktops.size() > 0) {
                 for (String image : desktops) {
                     list.add(new Picture(image));
                 }
+            }
+            // getBundle后的操作
+            if (callBack != null) {
+                callBack.call();
             }
         }
 
@@ -70,6 +93,7 @@ public class PictureActivity extends BaseActivity implements View.OnClickListene
         done = bindId(R.id.done);
         doneIv = bindId(R.id.done_image);
 
+
         recyclerView = bindId(R.id.image_list);
     }
 
@@ -80,7 +104,7 @@ public class PictureActivity extends BaseActivity implements View.OnClickListene
         doneIv.setVisibility(View.VISIBLE);
         doneIv.setImageResource(R.drawable.ic_album_info);
 
-        PictureAdapter adapter = new PictureAdapter(this, list, album.getId());
+        PictureAdapter adapter = new PictureAdapter(this, list,album.getDesktops());
         StaggeredGridLayoutManager manager =
                 new StaggeredGridLayoutManager(2, RecyclerView.VERTICAL);
         recyclerView.setLayoutManager(manager);
@@ -89,6 +113,16 @@ public class PictureActivity extends BaseActivity implements View.OnClickListene
 
         back.setOnClickListener(this);
         done.setOnClickListener(this);
+    }
+
+    /**
+     * 打开activity有错误的弹窗
+     */
+    private void error() {
+        NoticeDialog dialog = new NoticeDialog(this);
+        dialog.setTitle("错误！请退出重试！")
+                .setEnterListener(this::finish)
+                .show();
     }
 
     @Override

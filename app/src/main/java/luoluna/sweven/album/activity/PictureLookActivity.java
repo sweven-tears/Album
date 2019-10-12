@@ -16,18 +16,17 @@ import com.sweven.util.Console;
 import com.sweven.util.WindowUtil;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import luoluna.sweven.album.R;
 import luoluna.sweven.album.adapter.PictureLookAdapter;
-import luoluna.sweven.album.bean.Album;
 import luoluna.sweven.album.bean.Picture;
 
 public class PictureLookActivity extends BaseActivity {
 
     private RecyclerView recyclerView;
 
-    private Uri uri;
     private int index;
     private List<Picture> list = new ArrayList<>();
 
@@ -44,19 +43,17 @@ public class PictureLookActivity extends BaseActivity {
 
     private void getBundle() {
         Intent intent = getIntent();
-        uri = Uri.parse(intent.getStringExtra("picture_uri"));
         index = intent.getIntExtra("present", 0);
-        int aid = intent.getIntExtra("aid", 0);
-        if (aid == 0) {
+        String[] images=intent.getStringArrayExtra("images");
+        if (images==null || images.length==0){
             NoticeDialog dialog = new NoticeDialog(this);
             dialog.setTitle("错误！请退出重试！")
-                    .setCallBack(this::finish)
+                    .setEnterListener(this::finish)
                     .show();
-        } else {
-            Album album = Album.find(this, aid);
-            for (String desktop : album.getDesktops()) {
-                list.add(new Picture(desktop));
-            }
+            return;
+        }
+        for (String image : images) {
+            list.add(new Picture(image));
         }
     }
 

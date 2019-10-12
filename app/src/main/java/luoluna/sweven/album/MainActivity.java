@@ -29,7 +29,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private FragmentManager fragmentManager = getSupportFragmentManager();
     private AlbumFragment systemAlbum = AlbumFragment.newInstance(SYSTEM_ALBUM);
     private AlbumFragment customerAtlas = AlbumFragment.newInstance(CUSTOMER_ATLAS);
-    private AlbumFragment currentFragment = new AlbumFragment();
+    private AlbumFragment currentFragment = systemAlbum;
 
     private boolean refreshing = false;
 
@@ -134,7 +134,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     .show(fragment);
         } else {
             transaction.hide(currentFragment)
-                    .add(R.id.main_panel, fragment, index + "");
+                    .add(R.id.main_panel, fragment, index + "")
+                    .show(fragment);
         }
         currentFragment = fragment;
         transaction.commit();
