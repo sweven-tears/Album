@@ -9,6 +9,8 @@ import android.view.animation.LinearInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 
+import androidx.annotation.AnimRes;
+
 /**
  * View 动画效果
  */
@@ -27,13 +29,21 @@ public class AnimationUtil {
         return mInstance;
     }
 
+    public void loadAnimation(Context context, final ImageView imageView, @AnimRes int animId) {
+        Animation animation = AnimationUtils.loadAnimation(context, animId);
+        LinearInterpolator lin = new LinearInterpolator();
+        animation.setInterpolator(lin);
+        animation.setFillAfter(true);
+        imageView.startAnimation(animation);
+    }
+
     /**
      * 绘制匀速旋转的ImageView
      *
      * @param context   上下文
      * @param imageView ImageView
      */
-    public void rotateSameSpeed(Context context, final ImageView imageView) {
+    public void rotateConstantSpeed(Context context, final ImageView imageView) {
         Animation animation = AnimationUtils.loadAnimation(context, R.anim.circle_rotation);
         LinearInterpolator lin = new LinearInterpolator();//设置动画匀速运动
         animation.setInterpolator(lin);
@@ -45,7 +55,7 @@ public class AnimationUtil {
      *
      * @param imageView imageView
      */
-    public void stopRotateSameSpeed(final ImageView imageView) {
+    public void stopRotateConstantSpeed(final ImageView imageView) {
         imageView.clearAnimation();
     }
 

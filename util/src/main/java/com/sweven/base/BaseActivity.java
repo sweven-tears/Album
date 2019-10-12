@@ -39,7 +39,7 @@ public class BaseActivity extends AppCompatActivity {
      * @param <T> 子类view
      * @return view
      */
-    protected <T extends View> T bindID(@IdRes int res) {
+    protected <T extends View> T bindId(@IdRes int res) {
         return findViewById(res);
     }
 

@@ -12,6 +12,7 @@ import com.sweven.interf.OnClickItemListener;
 import com.sweven.util.LogUtil;
 import com.sweven.util.ToastUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,6 +37,7 @@ public class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<BaseRecyclerAda
 
     public BaseRecyclerAdapter(Activity activity) {
         this.activity = activity;
+        this.list = new ArrayList<>();
         init();
     }
 
