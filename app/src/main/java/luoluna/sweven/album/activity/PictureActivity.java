@@ -64,13 +64,13 @@ public class PictureActivity extends BaseActivity implements View.OnClickListene
 
     @Override
     protected void bindView() {
-        title = bindID(R.id.title);
-        back = bindID(R.id.back);
-        backIv = bindID(R.id.back_image);
-        done = bindID(R.id.done);
-        doneIv = bindID(R.id.done_image);
+        title = bindId(R.id.title);
+        back = bindId(R.id.back);
+        backIv = bindId(R.id.back_image);
+        done = bindId(R.id.done);
+        doneIv = bindId(R.id.done_image);
 
-        recyclerView = bindID(R.id.image_list);
+        recyclerView = bindId(R.id.image_list);
     }
 
     @Override

@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -26,7 +25,6 @@ import luoluna.sweven.album.bean.Picture;
 
 public class PictureLookActivity extends BaseActivity {
 
-    private ImageView picture;
     private RecyclerView recyclerView;
 
     private Uri uri;
@@ -64,16 +62,12 @@ public class PictureLookActivity extends BaseActivity {
 
     @Override
     protected void bindView() {
-        picture = bindID(R.id.picture);
-        recyclerView = bindID(R.id.picture_look_list);
+        recyclerView = bindId(R.id.picture_look_list);
     }
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void initData() {
-        picture.setImageURI(uri);
-
-
         PictureLookAdapter adapter = new PictureLookAdapter(this, list);
         // 让 RecyclerView 像 PagerView 的翻页效果
         new PagerSnapHelper().attachToRecyclerView(recyclerView);

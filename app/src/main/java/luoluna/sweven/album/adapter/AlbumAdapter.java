@@ -32,6 +32,10 @@ import luoluna.sweven.album.util.Verifier;
  * Email: sweventears@foxmail.com
  */
 public class AlbumAdapter extends BaseRecyclerAdapter<Album> {
+    public AlbumAdapter(Activity activity) {
+        super(activity);
+    }
+
     public AlbumAdapter(Activity activity, List<Album> list) {
         super(activity, list);
     }
@@ -68,7 +72,7 @@ public class AlbumAdapter extends BaseRecyclerAdapter<Album> {
     public void insert(Album album) {
         long result = Helper.with().addAlbum(activity, album);
         if (result > 0) {
-            super.insert(getItemCount(), album);
+            super.insert(0, album);
         } else {
             toast.showShort("创建失败");
         }

@@ -26,9 +26,9 @@ public class AlbumSettingActivity extends BaseActivity implements View.OnClickLi
 
     @Override
     protected void bindView() {
-        title = bindID(R.id.title);
-        back = bindID(R.id.back);
-        backIv = bindID(R.id.back_image);
+        title = bindId(R.id.title);
+        back = bindId(R.id.back);
+        backIv = bindId(R.id.back_image);
     }
 
     @Override

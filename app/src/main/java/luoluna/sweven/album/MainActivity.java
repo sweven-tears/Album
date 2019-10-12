@@ -5,34 +5,33 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.sweven.base.BaseActivity;
 import com.sweven.util.AnimationUtil;
-import com.sweven.widget.RefreshRecyclerView;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import luoluna.sweven.album.adapter.AlbumAdapter;
 import luoluna.sweven.album.app.App;
-import luoluna.sweven.album.app.Helper;
-import luoluna.sweven.album.bean.Album;
+import luoluna.sweven.album.fragment.main.AlbumFragment;
 import luoluna.sweven.album.manager.Setting;
-import luoluna.sweven.album.util.ScanPhotoAsync;
+
+import static luoluna.sweven.album.fragment.main.AlbumFragment.CUSTOMER_ATLAS;
+import static luoluna.sweven.album.fragment.main.AlbumFragment.SYSTEM_ALBUM;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     private static int cutIv = App.album == App.BIG_ALBUM ? R.drawable.ic_big_album_list : R.drawable.ic_roll_album_list;
 
     private TextView title;
-    private ImageView doneIv, addIv, refreshIv;
+    private ImageView addIv, doneIv, refreshIv, arrow;
 
-    private RefreshRecyclerView recyclerView;
-    private AlbumAdapter adapter;
-    private GridLayoutManager layoutManager;
-    private List<Album> list = new ArrayList<>();
+    private FragmentManager fragmentManager = getSupportFragmentManager();
+    private AlbumFragment systemAlbum = AlbumFragment.newInstance(SYSTEM_ALBUM);
+    private AlbumFragment customerAtlas = AlbumFragment.newInstance(CUSTOMER_ATLAS);
+    private AlbumFragment currentFragment = new AlbumFragment();
+
+    private boolean refreshing = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,80 +43,100 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     @Override
     protected void bindView() {
-        title = bindID(R.id.title);
-        refreshIv = bindID(R.id.refresh_image);
-        doneIv = bindID(R.id.done_image);
-        addIv = bindID(R.id.add_image);
-        recyclerView = bindID(R.id.album_list);
+        title = bindId(R.id.title);
+        refreshIv = bindId(R.id.refresh_image);
+        doneIv = bindId(R.id.done_image);
+        addIv = bindId(R.id.add_image);
+        arrow = bindId(R.id.pucker_arrow);
     }
 
     @Override
     protected void initData() {
         title.setText(R.string.index_title);
-        doneIv.setVisibility(View.VISIBLE);
         doneIv.setImageResource(cutIv);
-        refreshIv.setOnClickListener(this);
-        doneIv.setOnClickListener(this);
-        addIv.setOnClickListener(this);
 
-        layoutManager = new GridLayoutManager(this, App.album);
-        layoutManager.setOrientation(RecyclerView.VERTICAL);
+        // default system album no add
+        addIv.setVisibility(View.GONE);
 
-        list = Helper.with().queryByAlbumList(this);
-        adapter = new AlbumAdapter(this, list);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.defaultRecyclerView();
-        recyclerView.setAdapter(adapter);
-        setAdapter(true);
-    }
-
-    /**
-     * @param refresh 是否刷新图集
-     */
-    private void setAdapter(boolean refresh) {
-        if (refresh || App.isFirst) {
-            if (refreshIv.getAnimation() == null) {
-                AnimationUtil.with().rotateSameSpeed(this, refreshIv);
-            }
-            if (App.isFirst) {
-                Setting.getInstance().nonFirst(this);
-            }
-            ScanPhotoAsync scanPhotoAsync = new ScanPhotoAsync(this, list.size());
-            scanPhotoAsync.execute();
-            scanPhotoAsync.setCallBack(() -> {
-                AnimationUtil.with().stopRotateSameSpeed(refreshIv);
-                refreshing = false;
-                list.clear();
-                list = Helper.with().queryByAlbumList(this);
-                adapter.updateAll(list);
-            });
-        } else {
-            layoutManager.setSpanCount(App.album);
-            recyclerView.setAdapter(adapter);
-        }
+        setFragment(SYSTEM_ALBUM);
     }
 
     @Override
     public void onClick(View view) {
-        if (view.getId() == R.id.done_image) {
-            if (App.album == App.BIG_ALBUM) {
-                doneIv.setImageResource(R.drawable.ic_roll_album_list);
-                App.album = App.ROLL_ALBUM;
-            } else {
-                doneIv.setImageResource(R.drawable.ic_big_album_list);
-                App.album = App.BIG_ALBUM;
-            }
-            Setting.getInstance().save(this);
-            setAdapter(false);
-        } else if (view.getId() == R.id.add_image) {
-            adapter.addAlbum(() -> layoutManager.scrollToPositionWithOffset(adapter.getItemCount() - 1, 0));
-        } else if (view.getId() == R.id.refresh_image) {
-            if (refreshing = !refreshing) {
-                AnimationUtil.with().rotateSameSpeed(this, refreshIv);
-                setAdapter(true);
-            }
+        switch (view.getId()) {
+            case R.id.done_image:
+                if (App.album == App.BIG_ALBUM) {
+                    doneIv.setImageResource(R.drawable.ic_roll_album_list);
+                    App.album = App.ROLL_ALBUM;
+                } else {
+                    doneIv.setImageResource(R.drawable.ic_big_album_list);
+                    App.album = App.BIG_ALBUM;
+                }
+                Setting.getInstance().save(this);
+                currentFragment.setAdapter(refreshIv, false, null);
+                break;
+            case R.id.add_image:
+                currentFragment.addAlbum();
+                break;
+            case R.id.refresh_image:
+                if (refreshing = !refreshing) {
+                    AnimationUtil.with().rotateConstantSpeed(this, refreshIv);
+                    currentFragment.setAdapter(refreshIv, true, () -> refreshing = false);
+                }
+                break;
+            case R.id.title_panel:
+                showPopupMenu(title);
+//                Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+//                startActivity(i);
+                break;
         }
     }
 
-    private boolean refreshing = false;
+    /**
+     * 唤出菜单
+     *
+     * @param view 绑定菜单的组件
+     */
+    private void showPopupMenu(View view) {
+        // 展开时 arrow 的动画
+        AnimationUtil.with().loadAnimation(this, arrow, R.anim.expand_menu);
+
+        // View当前PopupMenu显示的相对View的位置
+        PopupMenu popupMenu = new PopupMenu(this, view);
+        popupMenu.getMenuInflater().inflate(R.menu.choose_menu, popupMenu.getMenu());
+
+        popupMenu.setOnMenuItemClickListener(item -> {
+            title.setText(item.getTitle());
+            switch (item.getItemId()) {
+                case R.id.system_album:
+                    addIv.setVisibility(View.GONE);
+                    setFragment(SYSTEM_ALBUM);
+                    break;
+                case R.id.customer_atlas:
+                    addIv.setVisibility(View.VISIBLE);
+                    setFragment(CUSTOMER_ATLAS);
+                    break;
+            }
+            return false;
+        });
+        popupMenu.setOnDismissListener(menu ->
+                // menu 关闭时 arrow 的动画
+                AnimationUtil.with().loadAnimation(this, arrow, R.anim.collapse_menu));
+
+        popupMenu.show();
+    }
+
+    public void setFragment(int index) {
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        AlbumFragment fragment = index == SYSTEM_ALBUM ? systemAlbum : customerAtlas;
+        if (fragment.isAdded()) {
+            transaction.hide(currentFragment)
+                    .show(fragment);
+        } else {
+            transaction.hide(currentFragment)
+                    .add(R.id.main_panel, fragment, index + "");
+        }
+        currentFragment = fragment;
+        transaction.commit();
+    }
 }

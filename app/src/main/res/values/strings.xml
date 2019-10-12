@@ -1,9 +1,11 @@
 <resources>
     <string name="app_name">Album</string>
-    <string name="index_title">相册集</string>
+    <string name="index_title">相册</string>
     <string name="addAlbumLabel">添加新图集</string>
-    <string name="imageTitle">%s(%d)</string>
+    <string name="imageTitle">%s (%d)</string>
     <string name="image_settingTitle">属性</string>
     <string name="album_string">相册</string>
     <string name="atlas_string">图集</string>
+    <string name="no_atlas_tips">当前还没有图集，\n快来创建吧！</string>
+    <string name="no_album_tips">手机中还没有图片呢，\n快去照几张美照吧！</string>
 </resources>

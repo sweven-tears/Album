@@ -46,7 +46,7 @@ public class PictureLookActivity_copy extends BaseActivity implements View.OnTou
 
     @Override
     protected void bindView() {
-        imageView = bindID(R.id.picture);
+        imageView = bindId(R.id.picture);
     }
 
     @SuppressLint("ClickableViewAccessibility")

@@ -1,7 +1,6 @@
 package luoluna.sweven.album.adapter;
 
 import android.app.Activity;
-import android.app.ActivityOptions;
 import android.content.Intent;
 import android.net.Uri;
 import android.view.View;
@@ -61,10 +60,11 @@ public class PictureAdapter extends BaseRecyclerAdapter<Picture> {
                 Intent intent = new Intent(activity, PictureLookActivity.class);
                 intent.putExtra("picture_uri", list.get(getAdapterPosition()).getUri());
                 intent.putExtra("aid", aid);
-                intent.putExtra("present",getAdapterPosition());
-                activity.startActivity(intent, ActivityOptions.
-                        makeSceneTransitionAnimation(activity, image, "big_look")
-                        .toBundle());
+                intent.putExtra("present", getAdapterPosition());
+//                activity.startActivity(intent, ActivityOptions.
+//                        makeSceneTransitionAnimation(activity, image, "big_look")
+//                        .toBundle());
+                activity.startActivity(intent);
             });
         }
     }
