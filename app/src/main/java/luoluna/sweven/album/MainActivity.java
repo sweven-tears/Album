@@ -14,14 +14,16 @@ import com.sweven.util.AnimationUtil;
 
 import luoluna.sweven.album.app.App;
 import luoluna.sweven.album.fragment.main.AlbumFragment;
-import luoluna.sweven.album.manager.Setting;
 
 import static luoluna.sweven.album.fragment.main.AlbumFragment.CUSTOMER_ATLAS;
 import static luoluna.sweven.album.fragment.main.AlbumFragment.SYSTEM_ALBUM;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener {
 
-    private static int cutIv = App.album == App.BIG_ALBUM ? R.drawable.ic_big_album_list : R.drawable.ic_roll_album_list;
+    private static int cutIv =
+            App.album == App.BIG_ALBUM ?
+                    R.drawable.ic_big_album_list :
+                    R.drawable.ic_roll_album_list;
 
     private TextView title;
     private ImageView addIv, doneIv, refreshIv, arrow;
@@ -29,7 +31,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private FragmentManager fragmentManager = getSupportFragmentManager();
     private AlbumFragment systemAlbum = AlbumFragment.newInstance(SYSTEM_ALBUM);
     private AlbumFragment customerAtlas = AlbumFragment.newInstance(CUSTOMER_ATLAS);
-    private AlbumFragment currentFragment = systemAlbum;
+    private AlbumFragment currentFragment = new AlbumFragment();
 
     private boolean refreshing = false;
 
@@ -53,27 +55,30 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @Override
     protected void initData() {
         title.setText(R.string.index_title);
-        doneIv.setImageResource(cutIv);
 
         // default system album no add
         addIv.setVisibility(View.GONE);
 
         setFragment(SYSTEM_ALBUM);
+
+        refreshShowViewType();
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.done_image:
-                if (App.album == App.BIG_ALBUM) {
+                if (currentFragment.getShowViewType() == App.BIG_ALBUM) {
                     doneIv.setImageResource(R.drawable.ic_roll_album_list);
-                    App.album = App.ROLL_ALBUM;
+//                    App.album = App.ROLL_ALBUM;
+                    currentFragment.setShowViewType(App.ROLL_ALBUM);
                 } else {
                     doneIv.setImageResource(R.drawable.ic_big_album_list);
-                    App.album = App.BIG_ALBUM;
+//                    App.album = App.BIG_ALBUM;
+                    currentFragment.setShowViewType(App.BIG_ALBUM);
                 }
-                Setting.getInstance().save(this);
-                currentFragment.setAdapter(refreshIv, false, null);
+//                Setting.getInstance().save(this);
+//                currentFragment.setAdapter(null, false, null);
                 break;
             case R.id.add_image:
                 currentFragment.addAlbum();
@@ -81,7 +86,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             case R.id.refresh_image:
                 if (refreshing = !refreshing) {
                     AnimationUtil.with().rotateConstantSpeed(this, refreshIv);
-                    currentFragment.setAdapter(refreshIv, true, () -> refreshing = false);
+//                    currentFragment.setAdapter(refreshIv, true, () -> refreshing = false);
                 }
                 break;
             case R.id.title_panel:
@@ -128,16 +133,25 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     public void setFragment(int index) {
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        AlbumFragment fragment = index == SYSTEM_ALBUM ? systemAlbum : customerAtlas;
-        if (fragment.isAdded()) {
+        AlbumFragment nextFragment = index == SYSTEM_ALBUM ? systemAlbum : customerAtlas;
+        if (!nextFragment.isAdded()) {
             transaction.hide(currentFragment)
-                    .show(fragment);
+                    .add(R.id.main_panel, nextFragment, index + "")
+                    .show(nextFragment);
         } else {
             transaction.hide(currentFragment)
-                    .add(R.id.main_panel, fragment, index + "")
-                    .show(fragment);
+                    .show(nextFragment);
         }
-        currentFragment = fragment;
         transaction.commit();
+        currentFragment = nextFragment;
+        refreshShowViewType();
+    }
+
+    private void refreshShowViewType() {
+        if (currentFragment.getShowViewType() == App.BIG_ALBUM) {
+            doneIv.setImageResource(R.drawable.ic_big_album_list);
+        } else {
+            doneIv.setImageResource(R.drawable.ic_roll_album_list);
+        }
     }
 }

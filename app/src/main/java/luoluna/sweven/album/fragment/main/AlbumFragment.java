@@ -1,6 +1,5 @@
 package luoluna.sweven.album.fragment.main;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.sweven.base.BaseFragment;
 import com.sweven.interf.CallBack;
 import com.sweven.util.AnimationUtil;
-import com.sweven.widget.RefreshRecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,19 +29,21 @@ import luoluna.sweven.album.util.ScanPhotoAsync;
 public class AlbumFragment extends BaseFragment {
     public static int SYSTEM_ALBUM = 1;
     public static int CUSTOMER_ATLAS = 2;
-    public static final String KEY = "type";
+    private static final String KEY = "type";
 
     private int type;
 
     private View view;
 
     private TextView tips;
-    private RefreshRecyclerView recyclerView;
+    private RecyclerView recyclerView;
     private AlbumAdapter adapter;
     private GridLayoutManager layoutManager;
     private List<Album> list = new ArrayList<>();
 
     private String label;
+
+    private int showViewType = App.BIG_ALBUM;
 
     public static AlbumFragment newInstance(int type) {
         AlbumFragment fragment = new AlbumFragment();
@@ -89,19 +89,17 @@ public class AlbumFragment extends BaseFragment {
         tips = bindId(R.id.tips);
     }
 
-    @SuppressLint("ResourceAsColor")
     @Override
     protected void initData() {
-        adapter = new AlbumAdapter(activity,type);
-        layoutManager = new GridLayoutManager(activity, App.album);
+        adapter = new AlbumAdapter(activity, type, showViewType);
+        layoutManager = new GridLayoutManager(activity, showViewType);
         layoutManager.setOrientation(RecyclerView.VERTICAL);
 
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.defaultRecyclerView();
+//        recyclerView.defaultRecyclerView();
         recyclerView.setAdapter(adapter);
 
-        recyclerView.setBackground(type==SYSTEM_ALBUM?R.color.appColor:R.color.yellow);
-        tips.setBackgroundColor(type==SYSTEM_ALBUM?R.color.appColor:R.color.yellow);
+//        recyclerView.setBackgroundColor(type==SYSTEM_ALBUM? Color.GREEN :Color.BLACK);
 
         setAdapter(null, true, null);
     }
@@ -123,7 +121,7 @@ public class AlbumFragment extends BaseFragment {
      * @param refresh           是否刷新图集
      * @param refreshedListener 完成刷新后的回调
      */
-    public void setAdapter(ImageView refreshIv, boolean refresh, CallBack refreshedListener) {
+    private void setAdapter(ImageView refreshIv, boolean refresh, CallBack refreshedListener) {
         if (refresh || App.isFirst) {
             if (refreshIv != null && refreshIv.getAnimation() == null) {// not null
                 AnimationUtil.with().rotateConstantSpeed(activity, refreshIv);
@@ -155,18 +153,29 @@ public class AlbumFragment extends BaseFragment {
                 }
             });
         } else {
-            layoutManager.setSpanCount(App.album);
-            recyclerView.setAdapter(adapter);
+            refreshView();
         }
     }
 
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
-        if (!hidden) {
-            // sync App.album setting
-            setAdapter(null,false,null);
-        }
+    }
 
+    public int getShowViewType() {
+        return showViewType;
+    }
+
+    public void setShowViewType(int showViewType) {
+        this.showViewType = showViewType;
+        layoutManager.setSpanCount(this.showViewType);
+        refreshView();
+    }
+
+    private void refreshView() {
+        layoutManager.setSpanCount(showViewType);
+        adapter = new AlbumAdapter(activity, type, showViewType);
+        recyclerView.setAdapter(adapter);
+        adapter.updateAll(list);
     }
 }
