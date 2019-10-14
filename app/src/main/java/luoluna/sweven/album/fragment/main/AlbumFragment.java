@@ -43,8 +43,6 @@ public class AlbumFragment extends BaseFragment {
 
     private String label;
 
-    private int showViewType = App.BIG_ALBUM;
-
     public static AlbumFragment newInstance(int type) {
         AlbumFragment fragment = new AlbumFragment();
         Bundle bundle = new Bundle();
@@ -91,8 +89,8 @@ public class AlbumFragment extends BaseFragment {
 
     @Override
     protected void initData() {
-        adapter = new AlbumAdapter(activity, type, showViewType);
-        layoutManager = new GridLayoutManager(activity, showViewType);
+        adapter = new AlbumAdapter(activity, type, App.album);
+        layoutManager = new GridLayoutManager(activity, App.album);
         layoutManager.setOrientation(RecyclerView.VERTICAL);
 
         recyclerView.setLayoutManager(layoutManager);
@@ -121,7 +119,7 @@ public class AlbumFragment extends BaseFragment {
      * @param refresh           是否刷新图集
      * @param refreshedListener 完成刷新后的回调
      */
-    private void setAdapter(ImageView refreshIv, boolean refresh, CallBack refreshedListener) {
+    public void setAdapter(ImageView refreshIv, boolean refresh, CallBack refreshedListener) {
         if (refresh || App.isFirst) {
             if (refreshIv != null && refreshIv.getAnimation() == null) {// not null
                 AnimationUtil.with().rotateConstantSpeed(activity, refreshIv);
@@ -163,19 +161,17 @@ public class AlbumFragment extends BaseFragment {
     }
 
     public int getShowViewType() {
-        return showViewType;
+        return App.album;
     }
 
-    public void setShowViewType(int showViewType) {
-        this.showViewType = showViewType;
-        layoutManager.setSpanCount(this.showViewType);
-        refreshView();
-    }
-
-    private void refreshView() {
-        layoutManager.setSpanCount(showViewType);
-        adapter = new AlbumAdapter(activity, type, showViewType);
-        recyclerView.setAdapter(adapter);
-        adapter.updateAll(list);
+    public void refreshView() {
+        try {
+            adapter = new AlbumAdapter(activity, type, App.album);
+            recyclerView.setAdapter(adapter);
+            adapter.updateAll(list);
+            layoutManager.setSpanCount(App.album);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

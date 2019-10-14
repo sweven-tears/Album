@@ -14,6 +14,7 @@ import com.sweven.util.AnimationUtil;
 
 import luoluna.sweven.album.app.App;
 import luoluna.sweven.album.fragment.main.AlbumFragment;
+import luoluna.sweven.album.manager.Setting;
 
 import static luoluna.sweven.album.fragment.main.AlbumFragment.CUSTOMER_ATLAS;
 import static luoluna.sweven.album.fragment.main.AlbumFragment.SYSTEM_ALBUM;
@@ -59,7 +60,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         // default system album no add
         addIv.setVisibility(View.GONE);
 
-        setFragment(SYSTEM_ALBUM);
+        showFragment(SYSTEM_ALBUM);
 
         refreshShowViewType();
     }
@@ -69,16 +70,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         switch (view.getId()) {
             case R.id.done_image:
                 if (currentFragment.getShowViewType() == App.BIG_ALBUM) {
-                    doneIv.setImageResource(R.drawable.ic_roll_album_list);
-//                    App.album = App.ROLL_ALBUM;
-                    currentFragment.setShowViewType(App.ROLL_ALBUM);
+                    App.album = App.ROLL_ALBUM;
                 } else {
-                    doneIv.setImageResource(R.drawable.ic_big_album_list);
-//                    App.album = App.BIG_ALBUM;
-                    currentFragment.setShowViewType(App.BIG_ALBUM);
+                    App.album = App.BIG_ALBUM;
                 }
-//                Setting.getInstance().save(this);
-//                currentFragment.setAdapter(null, false, null);
+                refreshShowViewType();
+                Setting.getInstance().save(this);
                 break;
             case R.id.add_image:
                 currentFragment.addAlbum();
@@ -86,7 +83,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             case R.id.refresh_image:
                 if (refreshing = !refreshing) {
                     AnimationUtil.with().rotateConstantSpeed(this, refreshIv);
-//                    currentFragment.setAdapter(refreshIv, true, () -> refreshing = false);
+                    currentFragment.setAdapter(refreshIv, true, () -> refreshing = false);
                 }
                 break;
             case R.id.title_panel:
@@ -115,11 +112,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             switch (item.getItemId()) {
                 case R.id.system_album:
                     addIv.setVisibility(View.GONE);
-                    setFragment(SYSTEM_ALBUM);
+                    showFragment(SYSTEM_ALBUM);
                     break;
                 case R.id.customer_atlas:
                     addIv.setVisibility(View.VISIBLE);
-                    setFragment(CUSTOMER_ATLAS);
+                    showFragment(CUSTOMER_ATLAS);
                     break;
             }
             return false;
@@ -131,9 +128,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         popupMenu.show();
     }
 
-    public void setFragment(int index) {
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
+    public void showFragment(int index) {
         AlbumFragment nextFragment = index == SYSTEM_ALBUM ? systemAlbum : customerAtlas;
+        if (nextFragment==currentFragment){
+            return;
+        }
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
         if (!nextFragment.isAdded()) {
             transaction.hide(currentFragment)
                     .add(R.id.main_panel, nextFragment, index + "")
@@ -148,10 +148,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     private void refreshShowViewType() {
-        if (currentFragment.getShowViewType() == App.BIG_ALBUM) {
+        if (App.album == App.BIG_ALBUM) {
             doneIv.setImageResource(R.drawable.ic_big_album_list);
         } else {
             doneIv.setImageResource(R.drawable.ic_roll_album_list);
         }
+        currentFragment.refreshView();
     }
 }
