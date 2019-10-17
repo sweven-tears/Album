@@ -3,7 +3,6 @@ package luoluna.sweven.album.adapter;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -14,10 +13,12 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import com.bumptech.glide.Glide;
 import com.sweven.base.BaseRecyclerAdapter;
 import com.sweven.dialog.FolderChooser;
 import com.sweven.dialog.InputDialog;
 import com.sweven.interf.CallBack;
+import com.sweven.interf.CallbackForParameter;
 import com.sweven.util.ViewUtil;
 
 import java.util.List;
@@ -64,7 +65,10 @@ public class AlbumAtlasAdapter extends BaseRecyclerAdapter<Album> {
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position) {
         AlbumHolder holder = (AlbumHolder) viewHolder;
         Album album = list.get(position);
-        holder.cover.setImageURI(Uri.parse(album.getCover()));
+        // 使用Glide加载避免album.getCover()为空
+        Glide.with(activity)
+                .load(album.getCover())
+                .into(holder.cover);
         holder.name.setText(album.getName());
         holder.count.setText(album.getCount() + "张");
         if (!edit) {
@@ -85,6 +89,11 @@ public class AlbumAtlasAdapter extends BaseRecyclerAdapter<Album> {
         }
     }
 
+    /**
+     * 添加相册
+     *
+     * @param callBack 完成添加步骤的回调
+     */
     public void addAlbum(CallBack callBack) {
         InputDialog dialog = new InputDialog(activity);
         dialog.show();
@@ -112,6 +121,11 @@ public class AlbumAtlasAdapter extends BaseRecyclerAdapter<Album> {
                 });
     }
 
+    /**
+     * 取名后的下一步：选择文件夹
+     *
+     * @param callBack 确定后的回调参数
+     */
     private void nextStep(Album album, CallBack callBack) {
         FolderChooser chooser = new FolderChooser(activity);
         chooser.setOnConfirm(path -> {
@@ -123,12 +137,18 @@ public class AlbumAtlasAdapter extends BaseRecyclerAdapter<Album> {
         chooser.show();
     }
 
+    /**
+     * 更新列表
+     */
     public void updateAll(List<Album> list) {
         this.list = list;
         notifyDataSetChanged();
     }
 
-    private int getSelectedCount() {
+    /**
+     * @return 获取选中数量
+     */
+    public int getSelectedCount() {
         int count = 0;
         for (Album album : list) {
             if (album.isSelected()) {
@@ -138,25 +158,78 @@ public class AlbumAtlasAdapter extends BaseRecyclerAdapter<Album> {
         return count;
     }
 
+    /**
+     * 设置编辑状态，true 为编辑状态
+     *
+     * @param state 编辑状态
+     */
     public void editState(boolean state) {
         this.edit = state;
-        if (!state) {
-            unSelectAll();
+        if (!state) {// 判断对否关闭编辑状态
+            selectAll(false);
+            return;
         }
         notifyDataSetChanged();
     }
 
-    public void selectAll() {
+    /**
+     * true：选择全部 false：全部取消选择
+     *
+     * @param all 是否选择全部
+     */
+    public void selectAll(boolean all) {
         for (int i = 0; i < list.size(); i++) {
-            list.get(i).setSelected(true);
+            list.get(i).setSelected(all);
         }
         notifyDataSetChanged();
     }
 
-    private void unSelectAll() {
-        for (int i = 0; i < list.size(); i++) {
-            list.get(i).setSelected(false);
+    /**
+     * 删除所选
+     */
+    public void delete(CallbackForParameter<Integer> onDeleteListener) {
+        for (int i = list.size() - 1; i >= 0; i--) {
+            if (list.get(i).isSelected()) {
+                if (Helper.with().delAlbum(activity, list.get(i).getId())) {
+                    list.remove(i);
+                } else
+                    toast.showShort("删除失败，请重试！");
+            }
         }
+        notifyDataSetChanged();
+        if (onDeleteListener != null) {
+            onDeleteListener.call(getItemCount());
+        }
+    }
+
+    public boolean rename(String newName) {
+        for (int i = list.size() - 1; i >= 0; i--) {
+            if (list.get(i).isSelected()) {
+                if (list.get(i).getName().equals(newName)) {
+                    toast.showShort("未修改");
+                    return true;
+                }
+                list.get(i).setName(newName);
+                if (Helper.with().updateAlbum(activity, list.get(i)) > 0) {
+                    notifyDataSetChanged();
+                    return true;
+                }
+                break;
+            }
+        }
+        return false;
+    }
+
+    public Album getCurrentSelected() {
+        for (Album album : list) {
+            if (album.isSelected()) {
+                return album;
+            }
+        }
+        return null;
+    }
+
+    public void setOnDeleteListener(CallBack onDeleteListener) {
     }
 
     public void setOnSelectedChangeListener(OnSelectedChangeListener onSelectedChangeListener) {

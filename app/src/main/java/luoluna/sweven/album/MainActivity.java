@@ -1,6 +1,7 @@
 package luoluna.sweven.album;
 
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -13,6 +14,8 @@ import androidx.fragment.app.FragmentTransaction;
 import com.sweven.base.BaseActivity;
 import com.sweven.util.AnimationUtil;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -92,11 +95,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         transaction.commit();
         currentIndex = index;
         currentFragment = fragment;
-
-        // 设置监听器
-        if (currentIndex == CUSTOMER_ATLAS) {
-            ((AlbumAtlasFragment) currentFragment).addListener(this::onSelectedChange);
-        }
     }
 
     @Override
@@ -125,11 +123,25 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 ((AlbumAtlasFragment) currentFragment).closeEdit();
                 break;
             case R.id.select_text:
-                ((AlbumAtlasFragment) currentFragment).selectAll();
+                String label = selectTv.getText().toString();
+                if (label.equals(getString(R.string.select_all))) {
+                    ((AlbumAtlasFragment) currentFragment).selectAll();
+                } else if (label.equals(getString(R.string.select_none))) {
+                    ((AlbumAtlasFragment) currentFragment).selectNone();
+                } else {
+                    // 不存在的字符
+                    toast.showShort("发生异常，请重试");
+                }
                 break;
         }
     }
 
+    /**
+     * 当前列表选中数变化的响应事件
+     *
+     * @param total         当前列表的总数
+     * @param selectedCount 当前列表选中数
+     */
     private void onSelectedChange(int total, int selectedCount) {
         if (selectedCount < total) {
             selectTv.setText(R.string.select_all);
@@ -192,7 +204,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     /**
-     * 唤出菜单
+     * 唤出更多按键的菜单
      *
      * @param view 绑定菜单的组件
      */
@@ -205,45 +217,70 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             popupMenu.getMenu().removeItem(R.id.editor);
         }
 
-        popupMenu.setOnMenuItemClickListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.cut_show_view:
-                    // 切换视图
-                    if (App.album == App.BIG_ALBUM) {
-                        App.album = App.ROLL_ALBUM;
-                    } else {
-                        App.album = App.BIG_ALBUM;
-                    }
-                    // 保存设置
-                    Setting.getInstance().save(this);
-                    ((AlbumAtlasFragment) currentFragment).cutShowView();
-                    AlbumAtlasFragment.showViewChange = true;
-                    break;
-                case R.id.album_settings:
-                    toast.showShort("打开设置");
-                    break;
-                case R.id.editor:
-                    ((AlbumAtlasFragment) currentFragment).edit();
-                    editState(true);
-                    break;
-                //------------编辑状态的菜单----------//
-                case R.id.delete_item:
-                    toast.showShort("delete");
-                    break;
-                case R.id.share_item:
-                    toast.showShort("share");
-                    break;
-                case R.id.rename_item:
-                    toast.showShort("rename");
-                    break;
-            }
-            return false;
-        });
+        popupMenu.setOnMenuItemClickListener(this::moreMenuItemClick);
         popupMenu.show();
     }
 
     /**
-     * 修改编辑状态
+     * 设置更多按键的菜单监听
+     *
+     * @param item 菜单item
+     */
+    private boolean moreMenuItemClick(MenuItem item) {
+        return edit ? editMenuItemClick(item) : mainMenuItemClick(item);
+    }
+
+    /**
+     * 编辑状态的菜单项点击监听
+     */
+    private boolean editMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.delete_item:
+                ((AlbumAtlasFragment) currentFragment).delete();
+                break;
+            case R.id.share_item:
+                ((AlbumAtlasFragment) currentFragment).share();
+                break;
+            case R.id.rename_item:
+                ((AlbumAtlasFragment) currentFragment).rename();
+                break;
+        }
+        return false;
+    }
+
+    /**
+     * 非编辑状态的菜单项点击监听
+     */
+    private boolean mainMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.editor:
+                ((AlbumAtlasFragment) currentFragment).edit();
+                editState(true);
+                // 设置监听器
+                ((AlbumAtlasFragment) currentFragment).addListener(this::onSelectedChange);
+                break;
+            case R.id.cut_show_view:
+                // 切换视图
+                if (App.album == App.BIG_ALBUM) {
+                    App.album = App.ROLL_ALBUM;
+                } else {
+                    App.album = App.BIG_ALBUM;
+                }
+                // 保存设置
+                Setting.getInstance().save(this);
+                ((AlbumAtlasFragment) currentFragment).cutShowView();
+                AlbumAtlasFragment.showViewChange = true;
+                break;
+            case R.id.album_settings:
+                toast.showShort("打开设置");
+                break;
+        }
+        return false;
+    }
+
+    /**
+     * <p>修改编辑状态</p>
+     * true 为编辑状态 false为非编辑状态
      *
      * @param state 编辑状态
      */

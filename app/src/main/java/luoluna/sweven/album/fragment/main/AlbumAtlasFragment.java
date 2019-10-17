@@ -1,5 +1,6 @@
 package luoluna.sweven.album.fragment.main;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,12 +13,18 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.sweven.base.BaseFragment;
+import com.sweven.dialog.InputDialog;
 import com.sweven.dialog.WaitDialog;
 import com.sweven.interf.CallBack;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 import luoluna.sweven.album.R;
 import luoluna.sweven.album.adapter.AlbumAtlasAdapter;
 import luoluna.sweven.album.app.App;
+import luoluna.sweven.album.bean.Album;
 import luoluna.sweven.album.interf.OnSelectedChangeListener;
 import luoluna.sweven.album.util.ScanPhotoAsync;
 
@@ -51,6 +58,7 @@ public class AlbumAtlasFragment extends BaseFragment {
         return fragment;
     }
 
+    @SuppressLint("InflateParams")
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -99,8 +107,8 @@ public class AlbumAtlasFragment extends BaseFragment {
     }
 
     /**
-     * 添加图集
-     * 只有type==CUSTOMER_ATLAS时才能调用，否则无效
+     * <p>添加图集</p>
+     * 只有在 type==CUSTOMER_ATLAS 时才能调用，否则无效
      */
     public void addAtlas() {
         if (type == CUSTOMER_ATLAS) {
@@ -112,7 +120,7 @@ public class AlbumAtlasFragment extends BaseFragment {
      * 添加图集后的回调
      */
     private void toAddPosition() {
-        tipsTv.setVisibility(View.VISIBLE);
+        tipsTv.setVisibility(View.GONE);
         manager.scrollToPositionWithOffset(0, 0);
     }
 
@@ -166,15 +174,118 @@ public class AlbumAtlasFragment extends BaseFragment {
         adapter.editState(true);
     }
 
+    /**
+     * 选中全部
+     */
     public void selectAll() {
-        adapter.selectAll();
+        adapter.selectAll(true);
     }
 
+    /**
+     * 全部取消选中
+     */
+    public void selectNone() {
+        adapter.selectAll(false);
+    }
+
+    /**
+     * @return item选中数量
+     */
+    public int getSelectedCount() {
+        return adapter.getSelectedCount();
+
+    }
+
+    /**
+     * 删除所选item
+     */
+    public void delete() {
+        // 判断是否符合删除的前置条件
+        if (!less()) {
+            return;
+        }
+
+        adapter.delete(count -> {
+            if (count == 0) {
+                tipsTv.setVisibility(View.VISIBLE);
+                tipsTv.setText(tips);
+            }
+        });
+    }
+
+    /**
+     * 分享所选图集中的所有图片
+     */
+    public void share() {
+        // 判断是否符合分享的前置条件
+        if (!less()) {
+            return;
+        }
+
+        List<Album> list = adapter.getList();
+        List<String> share = new ArrayList<>();
+        for (Album album : list) {
+            if (album.isSelected() && album.getDesktops() != null) {
+                share.addAll(album.getDesktops());
+            }
+        }
+        //TODO share to other app
+    }
+
+    public void rename() {
+        // 判断是否符合改名的前置条件
+        if (!less()) {
+            return;
+        }
+        if (adapter.getSelectedCount() > 1) {
+            toast.showShort("只能选择一个");
+            return;
+        }
+
+        InputDialog inputDialog = new InputDialog(context);
+        inputDialog.show();
+        inputDialog.setLabel("重命名");
+        try {
+            inputDialog.setHint(adapter.getCurrentSelected().getName());
+        } catch (Exception e) {
+            e.printStackTrace();
+            inputDialog.setHint("请输入");
+        }
+        inputDialog.setOnConfirmListener(input -> {
+            if (adapter.rename(input)) {
+                inputDialog.cancel();
+            } else {
+                inputDialog.cancel();
+                toast.showShort("修改失败");
+            }
+        });
+    }
+
+    /**
+     * 关闭编辑状态
+     */
     public void closeEdit() {
         adapter.editState(false);
     }
 
+    /**
+     * 至少选中item判断
+     */
+    private boolean less() {
+        int count = adapter.getSelectedCount();
+        if (count < 1) {
+            toast.showShort("至少选择一个");
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 添加 list 的 item 选则/取消选择 的监听
+     *
+     * @param onSelectedChangeListener 选择变化监听
+     */
     public void addListener(OnSelectedChangeListener onSelectedChangeListener) {
-// TODO       adapter.setOnSelectedChangeListener(onSelectedChangeListener);
+        adapter.setOnSelectedChangeListener(onSelectedChangeListener);
     }
 }
