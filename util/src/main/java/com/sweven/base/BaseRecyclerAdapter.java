@@ -37,7 +37,6 @@ public class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<BaseRecyclerAda
 
     public BaseRecyclerAdapter(Activity activity) {
         this.activity = activity;
-        this.list = new ArrayList<>();
         init();
     }
 
@@ -51,6 +50,9 @@ public class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<BaseRecyclerAda
         this.inflater = LayoutInflater.from(activity);
         log = new LogUtil(TAG);
         toast = new ToastUtil(activity);
+        if (this.list==null){
+            this.list=new ArrayList<>();
+        }
     }
 
     @NonNull
