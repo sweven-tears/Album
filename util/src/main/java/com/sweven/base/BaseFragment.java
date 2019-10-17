@@ -85,6 +85,19 @@ public class BaseFragment extends Fragment {
         return activity.findViewById(resId);
     }
 
+    /**
+     * 通过onCreateView()获取的view来绑定组件
+     *
+     * @param view  该fragment的容器view
+     * @param resId 资源id
+     * @param <T>   继承view的泛型
+     * @return 组件
+     */
+    protected <T extends View> T bindId(View view, @IdRes int resId) {
+        return view.findViewById(resId);
+    }
+
+
     @Override
     public void onHiddenChanged(boolean hidden) {
         new LogUtil(TAG).d("Hidden change--" + hidden);
