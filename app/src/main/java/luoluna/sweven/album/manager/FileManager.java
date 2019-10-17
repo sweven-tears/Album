@@ -71,7 +71,6 @@ public class FileManager {
             album.setPath(file.getAbsolutePath());
             album.setCount(desktops.size());
             album.setCover(desktops.get(0));
-            album.setSystem(true);
             albums.add(album);
         }
         return albums;

@@ -134,7 +134,7 @@ public class Helper {
      * @return 图集信息
      */
     public List<Album> getAlbumByCustomer(Context context) {
-        Rows rows = query(context, albumListTableName, "system=?", 0);
+        Rows rows = query(context, albumListTableName);
         List<Album> paths = new ArrayList<>();
         for (int i = 0; i < rows.size(); i++) {
             int aid = rows.getInt(i, "aid");
@@ -161,7 +161,6 @@ public class Helper {
         map.put("cover", album.getCover());
         map.put("path", album.getPath());
         map.put("count", album.getCount());
-        map.put("system", album.isSystem() ? 1 : 0);
 
         if (getAlbumByAid(context, album.getId()) != null) {
             return -1;
@@ -231,14 +230,12 @@ public class Helper {
             String path = rows.getString(i, "path");
             String remark = rows.getString(i, "remark");
             String cover = rows.getString(i, "cover");
-            boolean system = rows.getInt(i, "system") == 1;
 
             Album album = new Album(aid, name);
             album.setCount(count);
             album.setPath(path);
             album.setRemark(remark);
             album.setCover(cover);
-            album.setSystem(system);
 
             list.add(album);
         }

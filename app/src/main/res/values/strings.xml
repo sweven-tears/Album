@@ -8,4 +8,6 @@
     <string name="atlas_string">图集</string>
     <string name="no_atlas_tips">当前还没有图集，\n快来创建吧！</string>
     <string name="no_album_tips">手机中还没有图片呢，\n快去照几张美照吧！</string>
+    <string name="cut_view">切换视图</string>
+    <string name="settings">设置</string>
 </resources>

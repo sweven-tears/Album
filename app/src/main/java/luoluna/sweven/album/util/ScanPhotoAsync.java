@@ -10,7 +10,7 @@ import luoluna.sweven.album.app.Helper;
 import luoluna.sweven.album.bean.Album;
 import luoluna.sweven.album.manager.FileManager;
 
-import static luoluna.sweven.album.fragment.main.AlbumFragment.SYSTEM_ALBUM;
+import static luoluna.sweven.album.MainActivity.SYSTEM_ALBUM;
 
 public class ScanPhotoAsync extends AsyncTask<Integer, String, List<Album>> {
 

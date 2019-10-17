@@ -2,7 +2,6 @@ package luoluna.sweven.album.activity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -16,7 +15,6 @@ import com.sweven.util.Console;
 import com.sweven.util.WindowUtil;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import luoluna.sweven.album.R;
@@ -44,8 +42,8 @@ public class PictureLookActivity extends BaseActivity {
     private void getBundle() {
         Intent intent = getIntent();
         index = intent.getIntExtra("present", 0);
-        String[] images=intent.getStringArrayExtra("images");
-        if (images==null || images.length==0){
+        String[] images = intent.getStringArrayExtra("images");
+        if (images == null || images.length == 0) {
             NoticeDialog dialog = new NoticeDialog(this);
             dialog.setTitle("错误！请退出重试！")
                     .setEnterListener(this::finish)

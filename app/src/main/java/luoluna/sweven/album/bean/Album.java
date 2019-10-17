@@ -5,7 +5,6 @@ import android.content.Context;
 import com.sweven.util.FileUtil;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import luoluna.sweven.album.app.App;
@@ -25,7 +24,6 @@ public class Album {
     private String cover;
     private String remark;
 
-    private boolean system;
     private boolean add;
 
     public Album() {
@@ -139,14 +137,6 @@ public class Album {
         this.remark = remark;
     }
 
-    public boolean isSystem() {
-        return system;
-    }
-
-    public void setSystem(boolean system) {
-        this.system = system;
-    }
-
     @Override
     public String toString() {
         return "Album{" +
@@ -154,7 +144,6 @@ public class Album {
                 ", name='" + name + '\'' +
                 ", path='" + path + '\'' +
                 ", count=" + count +
-                ", system=" + system +
                 ", desktops=" + desktops +
                 ", remark='" + remark + '\'' +
                 ", cover='" + cover + '\'' +

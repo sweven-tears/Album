@@ -33,19 +33,17 @@ import luoluna.sweven.album.util.Verifier;
  */
 public class AlbumAdapter extends BaseRecyclerAdapter<Album> {
     private int type;
-    private int showViewType;
 
-    public AlbumAdapter(Activity activity, int type,int showViewType) {
+    public AlbumAdapter(Activity activity, int type) {
         super(activity);
         this.type = type;
-        this.showViewType=showViewType;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view;
-        if (showViewType == App.BIG_ALBUM) {
+        if (App.album == App.BIG_ALBUM) {
             view = inflater.inflate(R.layout.item_list_album_big, parent, false);
             return new BigAlbumHolder(view);
         } else {
@@ -100,7 +98,6 @@ public class AlbumAdapter extends BaseRecyclerAdapter<Album> {
                             }
                         }
                         Album album = new Album(Helper.with().getNextAlbumId(activity), input);
-                        album.setSystem(false);
                         nextStep(album, callBack);
                         dialog.cancel();
                     }

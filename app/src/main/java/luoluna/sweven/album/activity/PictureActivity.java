@@ -23,8 +23,8 @@ import luoluna.sweven.album.bean.Album;
 import luoluna.sweven.album.bean.Picture;
 import luoluna.sweven.album.widget.RecyclerViewItemDecoration;
 
-import static luoluna.sweven.album.fragment.main.AlbumFragment.CUSTOMER_ATLAS;
-import static luoluna.sweven.album.fragment.main.AlbumFragment.SYSTEM_ALBUM;
+import static luoluna.sweven.album.MainActivity.CUSTOMER_ATLAS;
+import static luoluna.sweven.album.MainActivity.SYSTEM_ALBUM;
 
 public class PictureActivity extends BaseActivity implements View.OnClickListener {
 
