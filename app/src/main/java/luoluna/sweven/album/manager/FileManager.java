@@ -2,7 +2,6 @@ package luoluna.sweven.album.manager;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.net.Uri;
 import android.provider.MediaStore;
 
 import com.sweven.util.FileUtil;
@@ -51,7 +50,7 @@ public class FileManager {
                 null,
                 selection,
                 new String[]{"image/jpeg", "image/png", "image/gif"},
-                "date_modified desc");
+                "date_modified asc");
         Set<String> set = new HashSet<>();
         if (cursor == null) {
             return null;
@@ -66,7 +65,7 @@ public class FileManager {
         for (int i = 0; i < arrays.length; i++) {
             File file = new File(arrays[i]);
             Album album = new Album(i + 1, file.getName());
-            List<String> desktops = FileUtil.getFilesByEndName(file.getPath(), App.supportFormat);
+            List<String> desktops = sort(file);
             album.setDesktops(desktops);
             album.setPath(file.getAbsolutePath());
             album.setCount(desktops.size());
@@ -74,6 +73,17 @@ public class FileManager {
             albums.add(album);
         }
         return albums;
+    }
+
+    /**
+     * 通过dir获取目录下的图片并按时间排序
+     */
+    private List<String> sort(File file) {
+        List<String> desktops = FileUtil.getFilesByEndName(file.getPath(), App.supportFormat);
+        String[] temps = desktops.toArray(new String[0]);
+        Arrays.sort(temps, new FileASCComparator());
+        desktops = Arrays.asList(temps);
+        return desktops;
     }
 
     /**
@@ -85,7 +95,7 @@ public class FileManager {
      */
     public Album getAlbumByFolder(Context context, String folder) {
         Album album = new Album(0, null);
-        List<String> desktops = FileUtil.getFilesByEndName(folder, App.supportFormat);
+        List<String> desktops = sort(new File(folder));
         album.setDesktops(desktops);
         album.setCount(desktops.size());
         album.setPath(folder);
@@ -93,10 +103,12 @@ public class FileManager {
         return album;
     }
 
-    static class FileComparator implements Comparator<File> {
+    static class FileASCComparator implements Comparator<String> {
 
         @Override
-        public int compare(File lhs, File rhs) {
+        public int compare(String a, String b) {
+            File lhs = new File(a);
+            File rhs = new File(b);
             if (lhs.lastModified() < rhs.lastModified()) {
                 return 1;
             } else {

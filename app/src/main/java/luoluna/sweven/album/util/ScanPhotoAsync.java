@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.AsyncTask;
 
+import com.sweven.util.LogUtil;
+
 import java.util.List;
 
 import luoluna.sweven.album.app.Helper;
@@ -32,8 +34,10 @@ public class ScanPhotoAsync extends AsyncTask<Integer, String, List<Album>> {
     protected List<Album> doInBackground(Integer... integers) {
         int type = integers[0];
         if (type == SYSTEM_ALBUM) {
+            new LogUtil(this.getClass().getSimpleName()).i("同步相册");
             return FileManager.getInstance().getSystemAlbums(context);
         } else {
+            new LogUtil(this.getClass().getSimpleName()).i("同步图集");
             return Helper.with().queryByAlbumList(context);
         }
     }

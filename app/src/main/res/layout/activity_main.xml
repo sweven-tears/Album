@@ -50,12 +50,22 @@
             android:paddingStart="@dimen/dp_10"
             android:paddingEnd="@dimen/dp_10">
 
+            <TextView
+                android:id="@+id/select_text"
+                android:text="@string/select_all"
+                android:layout_centerInParent="true"
+                android:textColor="@color/white"
+                android:onClick="onClick"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
             <ImageView
                 android:id="@+id/refresh_image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="onClick"
                 android:src="@drawable/ic_refresh"
+                android:visibility="gone"
                 tools:ignore="ContentDescription" />
 
         </RelativeLayout>
@@ -68,14 +78,30 @@
             android:layout_centerVertical="true"
             tools:ignore="RelativeOverlap">
 
-            <ImageView
-                android:id="@+id/add_image"
+            <RelativeLayout
+                android:id="@+id/done_1"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:onClick="onClick"
-                android:src="@drawable/ic_add_rt"
-                tools:ignore="ContentDescription" />
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/add_image"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onClick"
+                    android:src="@drawable/ic_add_rt"
+                    tools:ignore="ContentDescription" />
+
+                <TextView
+                    android:id="@+id/done_text"
+                    android:text="@string/finish"
+                    android:layout_centerVertical="true"
+                    android:textColor="@color/white"
+                    android:onClick="onClick"
+                    android:visibility="gone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </RelativeLayout>
 
             <ImageView
                 android:id="@+id/done_image"
@@ -83,7 +109,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginStart="@dimen/dp_10"
-                android:layout_toEndOf="@id/add_image"
+                android:layout_toEndOf="@id/done_1"
                 android:layout_marginEnd="@dimen/dp_10"
                 android:onClick="onClick"
                 android:src="@drawable/ic_more_settings"

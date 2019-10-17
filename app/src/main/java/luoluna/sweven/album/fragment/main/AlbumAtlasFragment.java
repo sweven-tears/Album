@@ -16,11 +16,12 @@ import com.sweven.dialog.WaitDialog;
 import com.sweven.interf.CallBack;
 
 import luoluna.sweven.album.R;
-import luoluna.sweven.album.adapter.AlbumAdapter;
+import luoluna.sweven.album.adapter.AlbumAtlasAdapter;
 import luoluna.sweven.album.app.App;
-import luoluna.sweven.album.manager.Setting;
+import luoluna.sweven.album.interf.OnSelectedChangeListener;
 import luoluna.sweven.album.util.ScanPhotoAsync;
 
+import static luoluna.sweven.album.MainActivity.CUSTOMER_ATLAS;
 import static luoluna.sweven.album.MainActivity.SYSTEM_ALBUM;
 
 public class AlbumAtlasFragment extends BaseFragment {
@@ -31,12 +32,17 @@ public class AlbumAtlasFragment extends BaseFragment {
     private int type;
 
     private TextView tipsTv;
-    private RecyclerView recyclerView;
-    private AlbumAdapter adapter;
-
-    private String tips;
     private GridLayoutManager manager;
+    private RecyclerView recyclerView;
+    private AlbumAtlasAdapter adapter;
 
+    public static boolean showViewChange = false;
+    private String tips;
+
+    /**
+     * @param type 显示类型：SYSTEM_ALBUM/CUSTOMER_ATLAS
+     * @return 新的fragment
+     */
     public static AlbumAtlasFragment newInstance(int type) {
         AlbumAtlasFragment fragment = new AlbumAtlasFragment();
         Bundle bundle = new Bundle();
@@ -86,21 +92,35 @@ public class AlbumAtlasFragment extends BaseFragment {
         manager.setOrientation(RecyclerView.VERTICAL);
         recyclerView.setLayoutManager(manager);
 
-        adapter = new AlbumAdapter(activity, type);
+        adapter = new AlbumAtlasAdapter(activity, type);
         recyclerView.setAdapter(adapter);
 
         setAdapter(null);
     }
 
+    /**
+     * 添加图集
+     * 只有type==CUSTOMER_ATLAS时才能调用，否则无效
+     */
     public void addAtlas() {
-        adapter.addAlbum(this::toAddPosition);
+        if (type == CUSTOMER_ATLAS) {
+            adapter.addAlbum(this::toAddPosition);
+        }
     }
 
+    /**
+     * 添加图集后的回调
+     */
     private void toAddPosition() {
         tipsTv.setVisibility(View.VISIBLE);
         manager.scrollToPositionWithOffset(0, 0);
     }
 
+    /**
+     * 加载并设置相册/图集的值
+     *
+     * @param refreshed 刷新后的回调
+     */
     public void setAdapter(CallBack refreshed) {
         WaitDialog dialog = new WaitDialog(activity);
         dialog.show();
@@ -122,6 +142,9 @@ public class AlbumAtlasFragment extends BaseFragment {
         });
     }
 
+    /**
+     * 切换视图
+     */
     public void cutShowView() {
         manager.setSpanCount(App.album);
         recyclerView.setAdapter(adapter);
@@ -130,8 +153,28 @@ public class AlbumAtlasFragment extends BaseFragment {
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
-        if (!hidden) {
+        if (!hidden && showViewChange) {// 刷新视图
             cutShowView();
+            showViewChange = false;
         }
+    }
+
+    /**
+     * 开启编辑模式
+     */
+    public void edit() {
+        adapter.editState(true);
+    }
+
+    public void selectAll() {
+        adapter.selectAll();
+    }
+
+    public void closeEdit() {
+        adapter.editState(false);
+    }
+
+    public void addListener(OnSelectedChangeListener onSelectedChangeListener) {
+// TODO       adapter.setOnSelectedChangeListener(onSelectedChangeListener);
     }
 }

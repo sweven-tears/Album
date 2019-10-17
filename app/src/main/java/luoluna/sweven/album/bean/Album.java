@@ -24,6 +24,8 @@ public class Album {
     private String cover;
     private String remark;
 
+    private boolean selected;
+
     private boolean add;
 
     public Album() {
@@ -68,6 +70,13 @@ public class Album {
         return FileManager.getInstance().getAlbumByFolder(context, uri);
     }
 
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
 
     public String getCover() {
         return cover;
@@ -143,10 +152,12 @@ public class Album {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", path='" + path + '\'' +
-                ", count=" + count +
                 ", desktops=" + desktops +
-                ", remark='" + remark + '\'' +
+                ", count=" + count +
                 ", cover='" + cover + '\'' +
+                ", remark='" + remark + '\'' +
+                ", selected=" + selected +
+                ", add=" + add +
                 '}';
     }
 }

@@ -3,15 +3,17 @@ package luoluna.sweven.album.adapter;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
-import com.bumptech.glide.Glide;
 import com.sweven.base.BaseRecyclerAdapter;
 import com.sweven.dialog.FolderChooser;
 import com.sweven.dialog.InputDialog;
@@ -25,16 +27,21 @@ import luoluna.sweven.album.activity.PictureActivity;
 import luoluna.sweven.album.app.App;
 import luoluna.sweven.album.app.Helper;
 import luoluna.sweven.album.bean.Album;
+import luoluna.sweven.album.interf.OnSelectedChangeListener;
 import luoluna.sweven.album.util.Verifier;
 
 /**
  * Created by Sweven on 2019/9/10--17:01.
  * Email: sweventears@foxmail.com
  */
-public class AlbumAdapter extends BaseRecyclerAdapter<Album> {
+public class AlbumAtlasAdapter extends BaseRecyclerAdapter<Album> {
     private int type;
 
-    public AlbumAdapter(Activity activity, int type) {
+    private boolean edit;
+
+    private OnSelectedChangeListener onSelectedChangeListener;
+
+    public AlbumAtlasAdapter(Activity activity, int type) {
         super(activity);
         this.type = type;
     }
@@ -57,13 +64,14 @@ public class AlbumAdapter extends BaseRecyclerAdapter<Album> {
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position) {
         AlbumHolder holder = (AlbumHolder) viewHolder;
         Album album = list.get(position);
-        if (!album.isAdd()) {
-            Glide.with(activity)
-                    .load(album.getCover())
-                    .error(R.drawable.ic_album_no_cover)
-                    .into(holder.cover);
-            holder.name.setText(album.getName());
-            holder.count.setText(album.getCount() + "张");
+        holder.cover.setImageURI(Uri.parse(album.getCover()));
+        holder.name.setText(album.getName());
+        holder.count.setText(album.getCount() + "张");
+        if (!edit) {
+            holder.editPanel.setVisibility(View.GONE);
+        } else {
+            holder.editPanel.setVisibility(View.VISIBLE);
+            holder.checkBox.setChecked(album.isSelected());
         }
     }
 
@@ -120,11 +128,48 @@ public class AlbumAdapter extends BaseRecyclerAdapter<Album> {
         notifyDataSetChanged();
     }
 
+    private int getSelectedCount() {
+        int count = 0;
+        for (Album album : list) {
+            if (album.isSelected()) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public void editState(boolean state) {
+        this.edit = state;
+        if (!state) {
+            unSelectAll();
+        }
+        notifyDataSetChanged();
+    }
+
+    public void selectAll() {
+        for (int i = 0; i < list.size(); i++) {
+            list.get(i).setSelected(true);
+        }
+        notifyDataSetChanged();
+    }
+
+    private void unSelectAll() {
+        for (int i = 0; i < list.size(); i++) {
+            list.get(i).setSelected(false);
+        }
+    }
+
+    public void setOnSelectedChangeListener(OnSelectedChangeListener onSelectedChangeListener) {
+        this.onSelectedChangeListener = onSelectedChangeListener;
+    }
+
     class AlbumHolder extends ViewHolder {
         RelativeLayout item;
         ImageView cover;
         TextView name;
         TextView count;
+        RelativeLayout editPanel;
+        CheckBox checkBox;
 
         AlbumHolder(@NonNull View view) {
             super(view);
@@ -154,6 +199,17 @@ public class AlbumAdapter extends BaseRecyclerAdapter<Album> {
                 onClickItemListener.onClick(list.get(position));
             }
         }
+
+        void checkedChangeListener(CompoundButton button, boolean b) {
+            list.get(getAdapterPosition()).setSelected(b);
+            if (onSelectedChangeListener != null) {
+                onSelectedChangeListener.onChange(getItemCount(), getSelectedCount());
+            }
+        }
+
+        public void onClickEditPanel(View view) {
+            checkBox.setChecked(!checkBox.isChecked());
+        }
     }
 
 
@@ -165,13 +221,17 @@ public class AlbumAdapter extends BaseRecyclerAdapter<Album> {
             cover = view.findViewById(R.id.cover);
             name = view.findViewById(R.id.name);
             count = view.findViewById(R.id.picture_count);
+            editPanel = view.findViewById(R.id.edit_panel);
+            checkBox = view.findViewById(R.id.check_box);
+
             item.setOnClickListener(v -> openAlbum());
+            editPanel.setOnClickListener(this::onClickEditPanel);
+            checkBox.setOnCheckedChangeListener(this::checkedChangeListener);
         }
 
     }
 
     public class BigAlbumHolder extends AlbumHolder {
-
 
         BigAlbumHolder(@NonNull View view) {
             super(view);
@@ -179,10 +239,14 @@ public class AlbumAdapter extends BaseRecyclerAdapter<Album> {
             cover = view.findViewById(R.id.cover);
             name = view.findViewById(R.id.name);
             count = view.findViewById(R.id.picture_count);
+            editPanel = view.findViewById(R.id.edit_panel);
+            checkBox = view.findViewById(R.id.check_box);
 
             ViewUtil.setWidthHeight(item, 0.5, 0.8);
 
             item.setOnClickListener(v -> openAlbum());
+            editPanel.setOnClickListener(this::onClickEditPanel);
+            checkBox.setOnCheckedChangeListener(this::checkedChangeListener);
         }
 
     }
