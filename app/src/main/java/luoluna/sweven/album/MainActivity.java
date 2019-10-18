@@ -1,7 +1,6 @@
 package luoluna.sweven.album;
 
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -14,14 +13,10 @@ import androidx.fragment.app.FragmentTransaction;
 import com.sweven.base.BaseActivity;
 import com.sweven.util.AnimationUtil;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import luoluna.sweven.album.app.App;
 import luoluna.sweven.album.fragment.main.AlbumAtlasFragment;
-import luoluna.sweven.album.manager.Setting;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener {
     public static int SYSTEM_ALBUM = 0;
@@ -29,9 +24,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     private TextView title;
     private TextView selectTv;
-    private TextView finishTv;
+    private TextView doneTv;
     private ImageView addIv;
-    private ImageView doneIv;
     private ImageView arrow;
     private ImageView refreshIv;
 
@@ -57,9 +51,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     protected void bindView() {
         title = bindId(R.id.title);
         selectTv = bindId(R.id.select_text);
-        finishTv = bindId(R.id.done_text);
+        doneTv = bindId(R.id.done_text);
         refreshIv = bindId(R.id.refresh_image);
-        doneIv = bindId(R.id.done_image);
         addIv = bindId(R.id.add_image);
         arrow = bindId(R.id.pucker_arrow);
     }
@@ -67,9 +60,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @Override
     protected void initData() {
         title.setText(R.string.index_title);
-
-        // default system album no add Iv
-        addIv.setVisibility(View.GONE);
 
         fragments.add(albumFragment);
         fragments.add(atlasFragment);
@@ -100,9 +90,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.done_image:
-                showMoreMenu(doneIv);
-                break;
             case R.id.refresh_image:
                 if (!refreshing) {
                     ((AlbumAtlasFragment) currentFragment).setAdapter(this::finishRefresh);
@@ -119,14 +106,22 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 showChooseMenu(title);
                 break;
             case R.id.done_text:
-                editState(false);
-                ((AlbumAtlasFragment) currentFragment).closeEdit();
+                String done = doneTv.getText().toString();
+                if (done.equals(getString(R.string.finish))) {
+                    editState(false);
+                    ((AlbumAtlasFragment) currentFragment).closeEdit();
+                } else if (done.equals(getString(R.string.edit))) {
+                    editState(true);
+                    ((AlbumAtlasFragment) currentFragment).edit();
+                    // 设置监听器
+                    ((AlbumAtlasFragment) currentFragment).addListener(this::onSelectedChange);
+                }
                 break;
             case R.id.select_text:
-                String label = selectTv.getText().toString();
-                if (label.equals(getString(R.string.select_all))) {
+                String select = selectTv.getText().toString();
+                if (select.equals(getString(R.string.select_all))) {
                     ((AlbumAtlasFragment) currentFragment).selectAll();
-                } else if (label.equals(getString(R.string.select_none))) {
+                } else if (select.equals(getString(R.string.select_none))) {
                     ((AlbumAtlasFragment) currentFragment).selectNone();
                 } else {
                     // 不存在的字符
@@ -182,10 +177,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             switch (item.getItemId()) {
                 case R.id.system_album:
                     addIv.setVisibility(View.GONE);
+                    doneTv.setVisibility(View.GONE);
                     showFragment(SYSTEM_ALBUM);
                     break;
                 case R.id.customer_atlas:
                     addIv.setVisibility(View.VISIBLE);
+                    doneTv.setVisibility(View.VISIBLE);
                     showFragment(CUSTOMER_ATLAS);
                     break;
             }
@@ -204,81 +201,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     /**
-     * 唤出更多按键的菜单
-     *
-     * @param view 绑定菜单的组件
-     */
-    private void showMoreMenu(View view) {
-        PopupMenu popupMenu = new PopupMenu(this, view);
-        popupMenu.getMenuInflater().inflate(!edit ? R.menu.album_more_settings : R.menu.atlas_editor, popupMenu.getMenu());
-
-        // 当前为相册时隐藏编辑按钮
-        if (currentIndex == SYSTEM_ALBUM) {
-            popupMenu.getMenu().removeItem(R.id.editor);
-        }
-
-        popupMenu.setOnMenuItemClickListener(this::moreMenuItemClick);
-        popupMenu.show();
-    }
-
-    /**
-     * 设置更多按键的菜单监听
-     *
-     * @param item 菜单item
-     */
-    private boolean moreMenuItemClick(MenuItem item) {
-        return edit ? editMenuItemClick(item) : mainMenuItemClick(item);
-    }
-
-    /**
-     * 编辑状态的菜单项点击监听
-     */
-    private boolean editMenuItemClick(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.delete_item:
-                ((AlbumAtlasFragment) currentFragment).delete();
-                break;
-            case R.id.share_item:
-                ((AlbumAtlasFragment) currentFragment).share();
-                break;
-            case R.id.rename_item:
-                ((AlbumAtlasFragment) currentFragment).rename();
-                break;
-        }
-        return false;
-    }
-
-    /**
-     * 非编辑状态的菜单项点击监听
-     */
-    private boolean mainMenuItemClick(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.editor:
-                ((AlbumAtlasFragment) currentFragment).edit();
-                editState(true);
-                // 设置监听器
-                ((AlbumAtlasFragment) currentFragment).addListener(this::onSelectedChange);
-                break;
-            case R.id.cut_show_view:
-                // 切换视图
-                if (App.album == App.BIG_ALBUM) {
-                    App.album = App.ROLL_ALBUM;
-                } else {
-                    App.album = App.BIG_ALBUM;
-                }
-                // 保存设置
-                Setting.getInstance().save(this);
-                ((AlbumAtlasFragment) currentFragment).cutShowView();
-                AlbumAtlasFragment.showViewChange = true;
-                break;
-            case R.id.album_settings:
-                toast.showShort("打开设置");
-                break;
-        }
-        return false;
-    }
-
-    /**
      * <p>修改编辑状态</p>
      * true 为编辑状态 false为非编辑状态
      *
@@ -292,7 +214,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                         state ? View.GONE : View.VISIBLE);
 
         selectTv.setVisibility(state ? View.VISIBLE : View.GONE);
-        finishTv.setVisibility(state ? View.VISIBLE : View.GONE);
+
+        doneTv.setText(state ? R.string.finish : R.string.edit);
 
         edit = state;
     }

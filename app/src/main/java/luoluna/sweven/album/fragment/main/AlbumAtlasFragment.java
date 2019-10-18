@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,7 +18,6 @@ import com.sweven.dialog.InputDialog;
 import com.sweven.dialog.WaitDialog;
 import com.sweven.interf.CallBack;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +42,9 @@ public class AlbumAtlasFragment extends BaseFragment {
     private GridLayoutManager manager;
     private RecyclerView recyclerView;
     private AlbumAtlasAdapter adapter;
+
+    private TextView[] editors = new TextView[4];
+    private static final int SHARE = 0, MERGE = 1, DELETE = 2, RENAME = 3;
 
     public static boolean showViewChange = false;
     private String tips;
@@ -88,6 +91,10 @@ public class AlbumAtlasFragment extends BaseFragment {
     protected void bindView() {
         recyclerView = bindId(view, R.id.album_list);
         tipsTv = bindId(view, R.id.tips);
+        editors[SHARE] = bindId(view, R.id.share_item);
+        editors[MERGE] = bindId(view, R.id.merge_item);
+        editors[DELETE] = bindId(view, R.id.delete_item);
+        editors[RENAME] = bindId(view, R.id.rename_item);
     }
 
     @Override
@@ -103,7 +110,35 @@ public class AlbumAtlasFragment extends BaseFragment {
         adapter = new AlbumAtlasAdapter(activity, type);
         recyclerView.setAdapter(adapter);
 
+        editors[SHARE].setOnClickListener(this::share);
+        editors[MERGE].setOnClickListener(this::merge);
+        editors[DELETE].setOnClickListener(this::delete);
+        editors[RENAME].setOnClickListener(this::rename);
+
+        addListener(this::selectedChange);
+
         setAdapter(null);
+    }
+
+    private void selectedChange(int total, int count) {
+        if (count == 0) {
+            for (TextView editor : editors) {
+                editor.setTextColor(ContextCompat.getColor(context, R.color.gray_cc));
+            }
+        } else if (count > 0) {
+            for (TextView editor : editors) {
+                editor.setTextColor(ContextCompat.getColor(context, R.color.black));
+            }
+            if (count == 1) {
+                editors[MERGE].setTextColor(ContextCompat.getColor(context, R.color.gray_cc));
+            } else {
+                editors[DELETE].setTextColor(ContextCompat.getColor(context, R.color.gray_cc));
+            }
+        }
+    }
+
+    private void merge(View view) {
+
     }
 
     /**
@@ -172,6 +207,8 @@ public class AlbumAtlasFragment extends BaseFragment {
      */
     public void edit() {
         adapter.editState(true);
+        bindId(view, R.id.line).setVisibility(View.VISIBLE);
+        bindId(view, R.id.panel_2).setVisibility(View.VISIBLE);
     }
 
     /**
@@ -199,9 +236,9 @@ public class AlbumAtlasFragment extends BaseFragment {
     /**
      * 删除所选item
      */
-    public void delete() {
+    private void delete(View view) {
         // 判断是否符合删除的前置条件
-        if (!less()) {
+        if (less()) {
             return;
         }
 
@@ -216,9 +253,9 @@ public class AlbumAtlasFragment extends BaseFragment {
     /**
      * 分享所选图集中的所有图片
      */
-    public void share() {
+    private void share(View view) {
         // 判断是否符合分享的前置条件
-        if (!less()) {
+        if (less()) {
             return;
         }
 
@@ -232,9 +269,12 @@ public class AlbumAtlasFragment extends BaseFragment {
         //TODO share to other app
     }
 
-    public void rename() {
+    /**
+     * 修改图集名
+     */
+    private void rename(View view) {
         // 判断是否符合改名的前置条件
-        if (!less()) {
+        if (less()) {
             return;
         }
         if (adapter.getSelectedCount() > 1) {
@@ -266,6 +306,8 @@ public class AlbumAtlasFragment extends BaseFragment {
      */
     public void closeEdit() {
         adapter.editState(false);
+        bindId(view, R.id.line).setVisibility(View.GONE);
+        bindId(view, R.id.panel_2).setVisibility(View.GONE);
     }
 
     /**
@@ -275,9 +317,9 @@ public class AlbumAtlasFragment extends BaseFragment {
         int count = adapter.getSelectedCount();
         if (count < 1) {
             toast.showShort("至少选择一个");
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
 
     /**
@@ -286,6 +328,6 @@ public class AlbumAtlasFragment extends BaseFragment {
      * @param onSelectedChangeListener 选择变化监听
      */
     public void addListener(OnSelectedChangeListener onSelectedChangeListener) {
-        adapter.setOnSelectedChangeListener(onSelectedChangeListener);
+        adapter.setOnSelectedChangeListener(this::selectedChange);
     }
 }
