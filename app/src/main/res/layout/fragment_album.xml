@@ -51,7 +51,7 @@
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
             android:text="@string/share"
-            android:textColor="@color/black" />
+            android:textColor="@color/gray_cc" />
 
         <TextView
             android:id="@+id/merge_item"
@@ -63,7 +63,7 @@
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
             android:text="@string/merge"
-            android:textColor="@color/black" />
+            android:textColor="@color/gray_cc" />
 
         <TextView
             android:id="@+id/delete_item"
@@ -75,7 +75,7 @@
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
             android:text="@string/delete"
-            android:textColor="@color/black" />
+            android:textColor="@color/gray_cc" />
 
         <TextView
             android:id="@+id/rename_item"
@@ -87,6 +87,6 @@
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
             android:text="@string/rename"
-            android:textColor="@color/black" />
+            android:textColor="@color/gray_cc" />
     </LinearLayout>
 </RelativeLayout>

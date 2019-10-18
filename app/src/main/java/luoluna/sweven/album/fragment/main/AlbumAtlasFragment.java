@@ -1,6 +1,7 @@
 package luoluna.sweven.album.fragment.main;
 
 import android.annotation.SuppressLint;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,7 +47,7 @@ public class AlbumAtlasFragment extends BaseFragment {
     private TextView[] editors = new TextView[4];
     private static final int SHARE = 0, MERGE = 1, DELETE = 2, RENAME = 3;
 
-    public static boolean showViewChange = false;
+    private static boolean showViewChange = false;
     private String tips;
 
     /**
@@ -115,26 +116,39 @@ public class AlbumAtlasFragment extends BaseFragment {
         editors[DELETE].setOnClickListener(this::delete);
         editors[RENAME].setOnClickListener(this::rename);
 
-        addListener(this::selectedChange);
-
         setAdapter(null);
     }
 
+    /**
+     * 选中/取消选中的监听变化
+     */
     private void selectedChange(int total, int count) {
         if (count == 0) {
             for (TextView editor : editors) {
-                editor.setTextColor(ContextCompat.getColor(context, R.color.gray_cc));
+                setTextColor(editor, R.color.gray_cc);
             }
         } else if (count > 0) {
             for (TextView editor : editors) {
-                editor.setTextColor(ContextCompat.getColor(context, R.color.black));
+                setTextColor(editor, R.color.black);
             }
             if (count == 1) {
-                editors[MERGE].setTextColor(ContextCompat.getColor(context, R.color.gray_cc));
+                setTextColor(editors[MERGE], R.color.gray_cc);
             } else {
-                editors[DELETE].setTextColor(ContextCompat.getColor(context, R.color.gray_cc));
+                setTextColor(editors[RENAME], R.color.gray_cc);
             }
         }
+    }
+
+    /**
+     * 给TextView的字体以及图标设置颜色
+     *
+     * @param textView 需要设置的textView
+     * @param color    资源文件的 颜色
+     */
+    private void setTextColor(TextView textView, int color) {
+        textView.setTextColor(ContextCompat.getColor(context, color));
+        Drawable drawable = textView.getCompoundDrawables()[1];
+        drawable.setTint(ContextCompat.getColor(context, color));
     }
 
     private void merge(View view) {
@@ -188,7 +202,7 @@ public class AlbumAtlasFragment extends BaseFragment {
     /**
      * 切换视图
      */
-    public void cutShowView() {
+    private void cutShowView() {
         manager.setSpanCount(App.album);
         recyclerView.setAdapter(adapter);
     }
@@ -278,7 +292,6 @@ public class AlbumAtlasFragment extends BaseFragment {
             return;
         }
         if (adapter.getSelectedCount() > 1) {
-            toast.showShort("只能选择一个");
             return;
         }
 
@@ -315,11 +328,7 @@ public class AlbumAtlasFragment extends BaseFragment {
      */
     private boolean less() {
         int count = adapter.getSelectedCount();
-        if (count < 1) {
-            toast.showShort("至少选择一个");
-            return true;
-        }
-        return false;
+        return count < 1;
     }
 
     /**
@@ -328,6 +337,9 @@ public class AlbumAtlasFragment extends BaseFragment {
      * @param onSelectedChangeListener 选择变化监听
      */
     public void addListener(OnSelectedChangeListener onSelectedChangeListener) {
-        adapter.setOnSelectedChangeListener(this::selectedChange);
+        adapter.setOnSelectedChangeListener((i, i1) -> {
+            selectedChange(i, i1);
+            onSelectedChangeListener.onChange(i, i1);
+        });
     }
 }
