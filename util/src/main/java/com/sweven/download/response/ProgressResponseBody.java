@@ -2,6 +2,7 @@ package com.sweven.download.response;
 
 import android.annotation.SuppressLint;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 
 import com.sweven.download.ProgressModel;
@@ -40,7 +41,7 @@ public class ProgressResponseBody extends ResponseBody {
     class MyHandler extends Handler {
 
         MyHandler() {
-            super();
+            super(Looper.getMainLooper());
         }
 
         @Override

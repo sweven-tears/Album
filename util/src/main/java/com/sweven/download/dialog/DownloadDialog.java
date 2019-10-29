@@ -1,6 +1,5 @@
 package com.sweven.download.dialog;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
@@ -10,20 +9,10 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
-import com.sweven.download.Init;
 import com.sweven.download.interf.DownloadListener;
-import com.sweven.download.interf.OKHttpResourceListener;
 import com.sweven.util.R;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
-import okhttp3.Call;
-import okhttp3.Response;
-
-public class DownloadDialog extends Dialog {
+public class DownloadDialog extends BaseDialog {
 
     private LinearLayout tipsView, downloadView;
 
@@ -39,11 +28,6 @@ public class DownloadDialog extends Dialog {
     private String path;
     private String url;
     private boolean onlyConfirm;
-
-    public DownloadDialog(@NonNull Context context, String downloadUrl) {
-        super(context);
-        this.url = downloadUrl;
-    }
 
     public DownloadDialog(@NonNull Context context) {
         super(context);
@@ -113,11 +97,11 @@ public class DownloadDialog extends Dialog {
     /**
      * 点击确认后的下一步
      */
-    private void nextStep() {
+    protected void nextStep() {
         downloadView.setVisibility(View.VISIBLE);
         tipsView.setVisibility(View.GONE);
 
-        download();
+        download(url, path, name, downloadBar, downloadListener);
     }
 
     public TextView getLabel() {
@@ -162,43 +146,5 @@ public class DownloadDialog extends Dialog {
 
     public void setDownloadListener(DownloadListener downloadListener) {
         this.downloadListener = downloadListener;
-    }
-
-    /**
-     * 开始下载
-     */
-    private void download() {
-        Init.downloadFile(url, new OKHttpResourceListener() {
-            @Override
-            public void onProgress(long currentBytes, long contentLength, boolean done) {
-                float progress = currentBytes * 10000 / 146259;
-                downloadBar.setProgress((int) progress);
-                downloadListener.onProgress(currentBytes, contentLength);
-            }
-
-            @Override
-            public void onFailure(Call call, IOException e) {
-                downloadListener.onFails(e);
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (response != null) {
-                    File dest = new File(path, name);
-
-                    InputStream is = response.body().byteStream();
-                    FileOutputStream fos = new FileOutputStream(dest);
-                    int len = 0;
-                    byte[] buffer = new byte[2048];
-                    while (-1 != (len = is.read(buffer))) {
-                        fos.write(buffer, 0, len);
-                    }
-                    fos.flush();
-                    fos.close();
-                    is.close();
-                }
-                downloadListener.onSuccess(path, name);
-            }
-        });
     }
 }
