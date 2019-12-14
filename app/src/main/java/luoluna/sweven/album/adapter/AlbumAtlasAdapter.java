@@ -95,7 +95,7 @@ public class AlbumAtlasAdapter extends BaseRecyclerAdapter<Album> {
      * @param callBack 完成添加步骤的回调
      */
     public void addAlbum(CallBack callBack) {
-        InputDialog dialog = new InputDialog(activity);
+        InputDialog dialog = new InputDialog(activity,com.sweven.util.R.style.NormalDialogStyle);
         dialog.show();
         dialog.setLabel("图集名")
                 .setHint("请输入")
