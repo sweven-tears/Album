@@ -1,16 +1,18 @@
-package com.sweven.util;
+package com.sweven.console;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.widget.Toast;
 
-import static com.sweven.util.ToastUtil.Gravity.BOTTOM;
-import static com.sweven.util.ToastUtil.Gravity.CENTER;
-import static com.sweven.util.ToastUtil.Gravity.DEFAULT;
-import static com.sweven.util.ToastUtil.Gravity.TOP;
-import static com.sweven.util.ToastUtil.Gravity.getBottom;
-import static com.sweven.util.ToastUtil.Gravity.getTop;
+import com.sweven.util.WindowUtil;
+
+import static com.sweven.console.ToastUtil.Gravity.BOTTOM;
+import static com.sweven.console.ToastUtil.Gravity.CENTER;
+import static com.sweven.console.ToastUtil.Gravity.DEFAULT;
+import static com.sweven.console.ToastUtil.Gravity.TOP;
+import static com.sweven.console.ToastUtil.Gravity.getBottom;
+import static com.sweven.console.ToastUtil.Gravity.getTop;
 
 /**
  * Created by Sweven on 2018/9/15.
@@ -63,6 +65,24 @@ public class ToastUtil {
     }
 
     /**
+     * 显示一个较短时间的提示
+     * 适用于所有类
+     *
+     * @param context 上下文
+     * @param msg     显示的文字
+     */
+    @SuppressLint("ShowToast")
+    public static void showShort(Context context, Object msg) {
+        if (toast == null) {
+            toast = Toast.makeText(context, msg.toString(), Toast.LENGTH_SHORT);
+        } else {
+            toast.setText(msg.toString());
+        }
+        setGravity(context);
+        toast.show();
+    }
+
+    /**
      * 显示一个较长时间的提示
      * 适用于所有类
      *
@@ -81,36 +101,18 @@ public class ToastUtil {
     }
 
     /**
-     * 显示一个较短时间的提示
-     * 适用于所有类
-     *
-     * @param context 上下文
-     * @param resId   显示的文字
-     */
-    @SuppressLint("ShowToast")
-    public static void showShort(Context context, int resId) {
-        if (toast == null) {
-            toast = Toast.makeText(context, resId, Toast.LENGTH_SHORT);
-        } else {
-            toast.setText(resId);
-        }
-        setGravity(context);
-        toast.show();
-    }
-
-    /**
      * 显示一个较长时间的提示
      * 适用于所有类
      *
      * @param context 上下文
-     * @param resId   显示的文字
+     * @param msg     显示的文字
      */
     @SuppressLint("ShowToast")
-    public static void showLong(Context context, int resId) {
+    public static void showLong(Context context, Object msg) {
         if (toast == null) {
-            toast = Toast.makeText(context, resId, Toast.LENGTH_LONG);
+            toast = Toast.makeText(context, msg.toString(), Toast.LENGTH_LONG);
         } else {
-            toast.setText(resId);
+            toast.setText(msg.toString());
         }
         setGravity(context);
         toast.show();
@@ -143,6 +145,23 @@ public class ToastUtil {
     }
 
     /**
+     * 显示一个较短时间的提示
+     * 适用于activity类
+     *
+     * @param msg 显示的文字
+     */
+    @SuppressLint("ShowToast")
+    public void showShort(Object msg) {
+        if (toast == null) {
+            toast = Toast.makeText(context, msg.toString(), Toast.LENGTH_SHORT);
+        } else {
+            toast.setText(msg.toString());
+        }
+        setGravity(context);
+        toast.show();
+    }
+
+    /**
      * 显示一个较长时间的提示
      * 适用于activity类
      *
@@ -160,34 +179,17 @@ public class ToastUtil {
     }
 
     /**
-     * 显示一个较短时间的提示
-     * 适用于activity类
-     *
-     * @param resId 显示的文字
-     */
-    @SuppressLint("ShowToast")
-    public void showShort(int resId) {
-        if (toast == null) {
-            toast = Toast.makeText(context, resId, Toast.LENGTH_SHORT);
-        } else {
-            toast.setText(resId);
-        }
-        setGravity(context);
-        toast.show();
-    }
-
-    /**
      * 显示一个较长时间的提示
      * 适用于activity类
      *
-     * @param resId 显示的文字
+     * @param msg 显示的文字
      */
     @SuppressLint("ShowToast")
-    public void showLong(int resId) {
+    public void showLong(Object msg) {
         if (toast == null) {
-            toast = Toast.makeText(context, resId, Toast.LENGTH_LONG);
+            toast = Toast.makeText(context, msg.toString(), Toast.LENGTH_LONG);
         } else {
-            toast.setText(resId);
+            toast.setText(msg.toString());
         }
         setGravity(context);
         toast.show();

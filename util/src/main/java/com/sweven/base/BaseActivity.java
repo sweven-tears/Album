@@ -9,8 +9,8 @@ import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.sweven.util.LogUtil;
-import com.sweven.util.ToastUtil;
+import com.sweven.console.LogUtil;
+import com.sweven.console.ToastUtil;
 
 /**
  * Created by Sweven on 2019/9/10--15:54.

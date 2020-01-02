@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
 
+import com.sweven.console.LogUtil;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;

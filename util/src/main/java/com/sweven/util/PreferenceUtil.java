@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 
+import com.sweven.console.LogUtil;
+
 import java.util.Map;
 import java.util.Set;
 

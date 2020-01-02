@@ -12,8 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.sweven.util.LogUtil;
-import com.sweven.util.ToastUtil;
+import com.sweven.console.LogUtil;
+import com.sweven.console.ToastUtil;
 
 /**
  * Created by Sweven on 2019/7/2.

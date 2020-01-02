@@ -9,8 +9,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.sweven.interf.OnClickItemListener;
-import com.sweven.util.LogUtil;
-import com.sweven.util.ToastUtil;
+import com.sweven.console.LogUtil;
+import com.sweven.console.ToastUtil;
 
 import java.util.ArrayList;
 import java.util.List;

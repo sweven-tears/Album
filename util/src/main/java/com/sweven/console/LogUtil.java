@@ -1,4 +1,4 @@
-package com.sweven.util;
+package com.sweven.console;
 
 import android.util.Log;
 
@@ -29,6 +29,19 @@ public class LogUtil {
     }
 
     /**
+     * 打印意义最小的日志信息
+     *
+     * @param msg 需要记录的信息
+     */
+    public void v(Object msg) {
+        if (isShow()) {
+            Log.v(TAG + "-------->>", msg.toString());
+        } else {
+            Log.v(TAG + "-------->>", "Log记录已关闭");
+        }
+    }
+
+    /**
      * 打印调试信息
      *
      * @param msg 需要记录的信息
@@ -36,6 +49,19 @@ public class LogUtil {
     public void d(String msg) {
         if (isShow()) {
             Log.d(TAG + "-------->>", msg);
+        } else {
+            Log.v(TAG + "-------->>", "Log记录已关闭");
+        }
+    }
+
+    /**
+     * 打印调试信息
+     *
+     * @param msg 需要记录的信息
+     */
+    public void d(Object msg) {
+        if (isShow()) {
+            Log.d(TAG + "-------->>", msg.toString());
         } else {
             Log.v(TAG + "-------->>", "Log记录已关闭");
         }
@@ -55,6 +81,19 @@ public class LogUtil {
     }
 
     /**
+     * 打印重要数据
+     *
+     * @param msg 需要记录的信息
+     */
+    public void i(Object msg) {
+        if (isShow()) {
+            Log.i(TAG + "-------->>", msg.toString());
+        } else {
+            Log.v(TAG + "-------->>", "Log记录已关闭");
+        }
+    }
+
+    /**
      * 打印警告信息，程序可能存在潜在风险
      *
      * @param msg 需要记录的信息
@@ -62,6 +101,19 @@ public class LogUtil {
     public void w(String msg) {
         if (isShow()) {
             Log.w(TAG + "-------->>", msg);
+        } else {
+            Log.v(TAG + "-------->>", "Log记录已关闭");
+        }
+    }
+
+    /**
+     * 打印警告信息，程序可能存在潜在风险
+     *
+     * @param msg 需要记录的信息
+     */
+    public void w(Object msg) {
+        if (isShow()) {
+            Log.w(TAG + "-------->>", msg.toString());
         } else {
             Log.v(TAG + "-------->>", "Log记录已关闭");
         }
@@ -81,6 +133,19 @@ public class LogUtil {
     }
 
     /**
+     * 打印错误信息
+     *
+     * @param msg 需要记录的信息
+     */
+    public void e(Object msg) {
+        if (show) {
+            Log.e(TAG + "-------->>", msg.toString());
+        } else {
+            Log.v(TAG + "-------->>", "Log记录已关闭");
+        }
+    }
+
+    /**
      * 打印最严重的信息
      *
      * @param msg 需要记录的信息
@@ -92,6 +157,20 @@ public class LogUtil {
             Log.v(TAG + "-------->>", "Log记录已关闭");
         }
     }
+
+    /**
+     * 打印最严重的信息
+     *
+     * @param msg 需要记录的信息
+     */
+    public void a(Object msg) {
+        if (show) {
+            Log.wtf(TAG + "-------->>", msg.toString());
+        } else {
+            Log.v(TAG + "-------->>", "Log记录已关闭");
+        }
+    }
+
 
     public boolean isShow() {
         return show;

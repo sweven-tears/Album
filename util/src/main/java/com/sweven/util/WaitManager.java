@@ -32,10 +32,9 @@ public class WaitManager {
     public WaitManager(Context context, CallBack callBack, Long delay) {
         this.context = context;
         this.callBack = callBack;
-        if (delay == null) {
-            delay = 2000L;
+        if (delay != null) {
+            this.delay = delay;
         }
-        this.delay = delay;
     }
 
     public void pause() {

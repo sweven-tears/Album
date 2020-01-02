@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 import com.sweven.download.Init;
 import com.sweven.download.interf.DownloadListener;
 import com.sweven.download.interf.OKHttpResourceListener;
-import com.sweven.util.LogUtil;
+import com.sweven.console.LogUtil;
 
 import java.io.File;
 import java.io.FileOutputStream;

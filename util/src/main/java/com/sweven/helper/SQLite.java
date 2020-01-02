@@ -5,7 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.sweven.util.LogUtil;
+import com.sweven.console.LogUtil;
 
 import java.util.Map;
 
