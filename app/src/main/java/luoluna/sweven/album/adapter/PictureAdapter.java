@@ -12,11 +12,10 @@ import androidx.annotation.NonNull;
 import com.sweven.base.BaseRecyclerAdapter;
 import com.sweven.util.ViewUtil;
 
-import java.util.Arrays;
 import java.util.List;
 
 import luoluna.sweven.album.R;
-import luoluna.sweven.album.activity.PictureLookActivity;
+import luoluna.sweven.album.page.PictureLookActivity;
 import luoluna.sweven.album.bean.Picture;
 
 /**

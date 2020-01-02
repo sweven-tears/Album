@@ -1,4 +1,4 @@
-package luoluna.sweven.album.activity;
+package luoluna.sweven.album.page;
 
 import android.content.Intent;
 import android.os.Bundle;

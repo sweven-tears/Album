@@ -19,12 +19,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".activity.PictureLookActivity"></activity>
+        <activity android:name=".page.PictureLookActivity"></activity>
         <activity
-            android:name=".activity.CreateAlbumActivity"
+            android:name=".page.CreateAlbumActivity"
             android:launchMode="singleTop" />
         <activity
-            android:name=".activity.LaunchActivity"
+            android:name=".page.LaunchActivity"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -36,10 +36,10 @@
             android:name=".MainActivity"
             android:launchMode="singleTop" />
         <activity
-            android:name=".activity.AlbumSettingActivity"
+            android:name=".page.AlbumSettingActivity"
             android:launchMode="singleTop" />
         <activity
-            android:name=".activity.PictureActivity"
+            android:name=".page.PictureActivity"
             android:launchMode="singleTop" />
     </application>
 

@@ -4,7 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.AsyncTask;
 
-import com.sweven.util.LogUtil;
+import com.sweven.console.LogUtil;
 
 import java.util.List;
 

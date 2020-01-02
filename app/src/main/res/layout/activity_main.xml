@@ -1,120 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_drawer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    android:orientation="vertical"
-    tools:context=".MainActivity">
+    android:fitsSystemWindows="true"
+    tools:context=".MainActivity"
+    tools:openDrawer="start">
 
-    <RelativeLayout
-        android:id="@+id/bar"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/topbar_height"
-        android:background="@color/appColorDark"
-        tools:ignore="UselessParent">
+    <include layout="@layout/main_content" />
 
-        <LinearLayout
-            android:id="@+id/title_panel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:onClick="onClick"
-            tools:ignore="RelativeOverlap,UseCompoundDrawables">
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/main_nav"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:fitsSystemWindows="true"
+        app:headerLayout="@layout/nav_header_main"
+        app:menu="@menu/activity_main_drawer" />
 
-            <TextView
-                android:id="@+id/title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:singleLine="true"
-                android:text="@string/app_name"
-                android:textColor="@color/title_color"
-                android:textSize="@dimen/title_size" />
-
-            <ImageView
-                android:id="@+id/pucker_arrow"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_pucker_to_bottom"
-                tools:ignore="ContentDescription" />
-        </LinearLayout>
-
-        <RelativeLayout
-            android:id="@+id/refresh"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:gravity="center"
-            android:paddingStart="@dimen/dp_10"
-            android:paddingEnd="@dimen/dp_10">
-
-            <TextView
-                android:id="@+id/select_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:onClick="onClick"
-                android:text="@string/select_all"
-                android:textColor="@color/white"
-                android:visibility="gone" />
-
-            <ImageView
-                android:id="@+id/refresh_image"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="onClick"
-                android:src="@drawable/ic_refresh"
-                tools:ignore="ContentDescription" />
-
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/done"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            tools:ignore="RelativeOverlap">
-
-            <TextView
-                android:id="@+id/done_text"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_centerVertical="true"
-                android:gravity="center"
-                android:onClick="onClick"
-                android:paddingStart="@dimen/dp_10"
-                android:paddingEnd="@dimen/dp_10"
-                android:text="@string/edit"
-                android:textColor="@color/white"
-                android:visibility="gone" />
-
-            <ImageView
-                android:id="@+id/add_image"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_centerInParent="true"
-                android:layout_toEndOf="@id/done_text"
-                android:onClick="onClick"
-                android:paddingStart="@dimen/dp_10"
-                android:paddingEnd="@dimen/dp_10"
-                android:src="@drawable/ic_add_rt"
-                android:visibility="gone"
-                tools:ignore="ContentDescription" />
-        </RelativeLayout>
-    </RelativeLayout>
-
-    <View
-        android:id="@+id/bar_line"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/light_gray" />
-
-    <FrameLayout
-        android:id="@+id/main_panel"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-</LinearLayout>
+</androidx.drawerlayout.widget.DrawerLayout>

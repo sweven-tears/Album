@@ -49,4 +49,5 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
     implementation 'com.github.bumptech.glide:glide:4.9.0'
     implementation 'com.yanzhenjie:permission:2.0.0-rc12'
+    implementation 'com.google.android.material:material:1.0.0'
 }

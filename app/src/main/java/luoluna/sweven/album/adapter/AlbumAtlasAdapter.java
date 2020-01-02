@@ -24,7 +24,7 @@ import com.sweven.util.ViewUtil;
 import java.util.List;
 
 import luoluna.sweven.album.R;
-import luoluna.sweven.album.activity.PictureActivity;
+import luoluna.sweven.album.page.PictureActivity;
 import luoluna.sweven.album.app.App;
 import luoluna.sweven.album.app.Helper;
 import luoluna.sweven.album.bean.Album;

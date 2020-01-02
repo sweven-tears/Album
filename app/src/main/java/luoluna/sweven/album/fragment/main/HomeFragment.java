@@ -26,13 +26,14 @@ import luoluna.sweven.album.R;
 import luoluna.sweven.album.adapter.AlbumAtlasAdapter;
 import luoluna.sweven.album.app.App;
 import luoluna.sweven.album.bean.Album;
+import luoluna.sweven.album.interf.AtlasOperate;
 import luoluna.sweven.album.interf.OnSelectedChangeListener;
 import luoluna.sweven.album.util.ScanPhotoAsync;
 
 import static luoluna.sweven.album.MainActivity.CUSTOMER_ATLAS;
 import static luoluna.sweven.album.MainActivity.SYSTEM_ALBUM;
 
-public class AlbumAtlasFragment extends BaseFragment {
+public class HomeFragment extends BaseFragment implements AtlasOperate {
 
     private View view;
 
@@ -54,8 +55,8 @@ public class AlbumAtlasFragment extends BaseFragment {
      * @param type 显示类型：SYSTEM_ALBUM/CUSTOMER_ATLAS
      * @return 新的fragment
      */
-    public static AlbumAtlasFragment newInstance(int type) {
-        AlbumAtlasFragment fragment = new AlbumAtlasFragment();
+    public static HomeFragment newInstance(int type) {
+        HomeFragment fragment = new HomeFragment();
         Bundle bundle = new Bundle();
         bundle.putInt(KEY, type);
         fragment.setArguments(bundle);
@@ -151,28 +152,6 @@ public class AlbumAtlasFragment extends BaseFragment {
         drawable.setTint(ContextCompat.getColor(context, color));
     }
 
-    private void merge(View view) {
-
-    }
-
-    /**
-     * <p>添加图集</p>
-     * 只有在 type==CUSTOMER_ATLAS 时才能调用，否则无效
-     */
-    public void addAtlas() {
-        if (type == CUSTOMER_ATLAS) {
-            adapter.addAlbum(this::toAddPosition);
-        }
-    }
-
-    /**
-     * 添加图集后的回调
-     */
-    private void toAddPosition() {
-        tipsTv.setVisibility(View.GONE);
-        manager.scrollToPositionWithOffset(0, 0);
-    }
-
     /**
      * 加载并设置相册/图集的值
      *
@@ -226,36 +205,54 @@ public class AlbumAtlasFragment extends BaseFragment {
     }
 
     /**
-     * 选中全部
+     * 添加图集
      */
+    @Override
+    public void addAtlas() {
+        if (type == CUSTOMER_ATLAS) {
+            adapter.addAlbum(this::toAddPosition);
+        }
+    }
+
+    /**
+     * 添加图集后的回调
+     */
+    private void toAddPosition() {
+        tipsTv.setVisibility(View.GONE);
+        manager.scrollToPositionWithOffset(0, 0);
+    }
+
+    /**
+     * 选中所有
+     */
+    @Override
     public void selectAll() {
         adapter.selectAll(true);
     }
 
     /**
-     * 全部取消选中
+     * 全部不选
      */
+    @Override
     public void selectNone() {
         adapter.selectAll(false);
     }
 
     /**
-     * @return item选中数量
+     * @return 获取选中数量
      */
+    @Override
     public int getSelectedCount() {
         return adapter.getSelectedCount();
-
     }
 
     /**
-     * 删除所选item
+     * 删除
+     *
+     * @param view
      */
-    private void delete(View view) {
-        // 判断是否符合删除的前置条件
-        if (less()) {
-            return;
-        }
-
+    @Override
+    public void delete(View view) {
         adapter.delete(count -> {
             if (count == 0) {
                 tipsTv.setVisibility(View.VISIBLE);
@@ -265,14 +262,12 @@ public class AlbumAtlasFragment extends BaseFragment {
     }
 
     /**
-     * 分享所选图集中的所有图片
+     * 分享
+     *
+     * @param view
      */
-    private void share(View view) {
-        // 判断是否符合分享的前置条件
-        if (less()) {
-            return;
-        }
-
+    @Override
+    public void share(View view) {
         List<Album> list = adapter.getList();
         List<String> share = new ArrayList<>();
         for (Album album : list) {
@@ -284,17 +279,14 @@ public class AlbumAtlasFragment extends BaseFragment {
     }
 
     /**
-     * 修改图集名
+     * 修改相册名
+     *
+     * @param view
      */
-    private void rename(View view) {
-        // 判断是否符合改名的前置条件
-        if (less()) {
-            return;
-        }
-        if (adapter.getSelectedCount() > 1) {
-            return;
-        }
-
+    @Override
+    public void rename(View view) {
+        // 有且只有一个选中才能修改名称
+        if (getSelectedCount() != 1) return;
         InputDialog inputDialog = new InputDialog(context);
         inputDialog.show();
         inputDialog.setLabel("重命名");
@@ -315,8 +307,9 @@ public class AlbumAtlasFragment extends BaseFragment {
     }
 
     /**
-     * 关闭编辑状态
+     * 退出编辑状态
      */
+    @Override
     public void closeEdit() {
         adapter.editState(false);
         bindId(view, R.id.line).setVisibility(View.GONE);
@@ -324,11 +317,22 @@ public class AlbumAtlasFragment extends BaseFragment {
     }
 
     /**
-     * 至少选中item判断
+     * 至少选择判断
      */
-    private boolean less() {
+    @Override
+    public boolean less() {
         int count = adapter.getSelectedCount();
         return count < 1;
+    }
+
+    /**
+     * 图集合并
+     *
+     * @param view
+     */
+    @Override
+    public void merge(View view) {
+
     }
 
     /**

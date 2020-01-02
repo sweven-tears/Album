@@ -1,4 +1,4 @@
-package luoluna.sweven.album.activity;
+package luoluna.sweven.album.page;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;

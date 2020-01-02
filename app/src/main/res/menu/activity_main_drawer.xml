@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="@layout/nav_header_main">
+
+    <item android:title="功能">
+        <menu>
+            <item
+                android:id="@+id/album_type"
+                android:icon="@drawable/ic_roll_album_list"
+                android:title="列表展示" />
+
+
+            <item
+                android:id="@+id/main_nav_setting"
+                android:icon="@drawable/ic_settings"
+                android:title="设置" />
+        </menu>
+    </item>
+
+    <item android:title="推广">
+        <menu>
+            <item
+                android:id="@+id/main_nav_share"
+                android:icon="@drawable/ic_share"
+                android:title="分享" />
+            <item
+                android:id="@+id/main_nav_send"
+                android:icon="@drawable/ic_send"
+                android:title="发送" />
+        </menu>
+    </item>
+
+    <group android:enabled="false">
+        <item android:title="如果您喜欢这个应用，欢迎关注：" />
+        <item android:title="博客地址：luoluna.cn" />
+    </group>
+</menu>

@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black"
-    tools:context=".activity.PictureLookActivity">
+    tools:context=".page.PictureLookActivity">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/picture_look_list"
