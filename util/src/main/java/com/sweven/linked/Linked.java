@@ -1,9 +1,10 @@
 package com.sweven.linked;
 
-public class Linked {
-    Linked previous;
-    Linked next;
+public class Linked implements LinkedCallBack {
+    int index;
     String value;
+    Linked next;
+
 
     public Linked() {
     }
@@ -12,9 +13,10 @@ public class Linked {
         this.value = value;
     }
 
-    public void call(Linked next) {
+    @Override
+    public void execute() {
         if (next != null) {
-            next.call(next.next);
+            next.execute();
         }
     }
 }

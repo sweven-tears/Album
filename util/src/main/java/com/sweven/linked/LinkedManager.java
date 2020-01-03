@@ -4,24 +4,29 @@ import android.util.Log;
 
 import java.util.List;
 
-public class LinkManager {
+public class LinkedManager {
 
-    private Linked linked;
-    private Linked head;
+    protected Linked linked;
+    protected Linked head;
 
-    public LinkManager(Linked head) {
+    public LinkedManager() {
+        this.linked = new Linked();
+        this.head = this.linked;
+    }
+
+    public LinkedManager(Linked head) {
         this.linked = head;
         this.head = linked;
     }
 
 
-    public LinkManager append(Linked linked) {
+    public LinkedManager append(Linked linked) {
         this.linked.next = linked;
         this.linked = this.linked.next;
         return this;
     }
 
-    public LinkManager appendArray(List<Linked> list) {
+    public LinkedManager appendArray(List<Linked> list) {
         for (Linked linked : list) {
             this.linked.next = linked;
             this.linked = this.linked.next;
@@ -31,9 +36,9 @@ public class LinkManager {
 
     public void call() {
         if (head == null) {
-            Log.e("LinkManager.class", "链表为空");
+            Log.e("LinkedManager.class", "链表为空");
             return;
         }
-        head.call(head.next);
+        head.execute();
     }
 }
