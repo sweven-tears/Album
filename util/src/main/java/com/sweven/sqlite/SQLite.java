@@ -6,7 +6,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.sweven.helper.DatabaseHelper;
 import com.sweven.sqlite.execute.Read;
 import com.sweven.sqlite.execute.Write;
 
@@ -40,10 +39,10 @@ public class SQLite {
             synchronized (SQLite.class) {
                 if (sqLite == null) {
                     sqLite = new SQLite();
-                    sqLite.context = context;
                 }
             }
         }
+        sqLite.context = context;
         return sqLite;
     }
 
@@ -78,21 +77,6 @@ public class SQLite {
         database_helper = new DatabaseHelper(context, databaseName);
         db = database_helper.getWritableDatabase();
     }
-
-//    /**
-//     * @param columns       需要查询出的列，为null则为全部
-//     * @param selection     条件
-//     * @param selectionArgs 条件对应的值
-//     * @param groupBy       分组
-//     * @param having        having
-//     * @param orderBy       排序
-//     * @param limit         列数限制
-//     * @return cursor
-//     */
-//    public Cursor query(String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy, String limit) {
-//        Cursor cursor = db.query(tableName, columns, selection, selectionArgs, groupBy, having, orderBy, limit);
-//        return cursor;
-//    }
 
     /**
      * @param columns       需要查询出的列，为null则为全部

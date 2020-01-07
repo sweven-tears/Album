@@ -1,54 +1,55 @@
 package com.sweven.socket;
 
+import com.sweven.console.Console;
+
 import java.io.IOException;
 import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
-
-import static com.sweven.socket.App.clients;
 
 public class SocketService {
 
     private boolean started = false;
     private ServerSocket serverSocket;
 
-    public void start() {
+    /**
+     * 默认启动80端口
+     */
+    public void start() throws IOException {
+        start(80);
+    }
+
+    /**
+     * 自定义启动端口
+     *
+     * @param port 端口
+     */
+    public void start(int port) throws IOException {
         try {
-            serverSocket = new ServerSocket(5209);
-            System.out.println("service launching...");
+            serverSocket = new ServerSocket(port);
             started = true;
         } catch (BindException e) {
-            System.err.println("端口被占用中...");
-            System.err.println("请关闭相关程序或者切换端口");
+            Console.err("端口被占用中...");
+            Console.err("请关闭相关程序或者切换端口");
             System.exit(0);
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
         connectClient();
     }
 
-    private void connectClient() {
+    private void connectClient() throws IOException {
         try {
             while (started) {
                 Socket socket = serverSocket.accept();
-                Client client = new Client(socket);
-                System.out.println("a client " + socket.getPort() + " is connected!");
-                new Thread(client).start();
-                clients.add(client);
-                new Thread(new Send(clients.get(0))).start();
+                ClientHelper clientHelper = new ClientHelper(socket);
+                new Thread(clientHelper).start();
             }
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                if (serverSocket != null) {
-                    serverSocket.close();
-                }
-                started = false;
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (serverSocket != null) {
+                serverSocket.close();
             }
+            started = false;
         }
     }
 }

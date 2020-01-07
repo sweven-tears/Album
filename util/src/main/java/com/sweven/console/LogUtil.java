@@ -7,188 +7,139 @@ import android.util.Log;
  * Email:sweventears@Foxmail.com
  */
 public class LogUtil {
-    private String TAG;
+    private static LogUtil instance;
 
-    private boolean show = true;
-
-    public LogUtil(String TAG) {
-        this.TAG = TAG;
+    /**
+     * 可配置一键式开关Log
+     *
+     * @return 获取全局log打印
+     */
+    public static LogUtil with() {
+        if (instance == null) {
+            synchronized (Log.class) {
+                if (instance == null) {
+                    instance = new LogUtil();
+                }
+            }
+        }
+        instance.tag = "";
+        return instance;
     }
 
     /**
-     * 打印意义最小的日志信息
+     * 可配置一键式开关Log
      *
-     * @param msg 需要记录的信息
+     * @param TAG tag
+     * @return 获取全局log打印
      */
-    public void v(String msg) {
-        if (isShow()) {
-            Log.v(TAG + "-------->>", msg);
-        } else {
-            Log.v(TAG + "-------->>", "Log记录已关闭");
+    public static LogUtil with(String TAG) {
+        if (instance == null) {
+            synchronized (Log.class) {
+                if (instance == null) {
+                    instance = new LogUtil();
+                }
+            }
         }
+        instance.tag = TAG;
+        return instance;
     }
 
     /**
-     * 打印意义最小的日志信息
-     *
-     * @param msg 需要记录的信息
+     * 未配置tag的构造函数
      */
-    public void v(Object msg) {
-        if (isShow()) {
-            Log.v(TAG + "-------->>", msg.toString());
-        } else {
-            Log.v(TAG + "-------->>", "Log记录已关闭");
-        }
+    public LogUtil() {
+        this.tag = "";
     }
 
     /**
-     * 打印调试信息
+     * 配置了tag的Log
      *
-     * @param msg 需要记录的信息
+     * @param tag tag
      */
-    public void d(String msg) {
-        if (isShow()) {
-            Log.d(TAG + "-------->>", msg);
-        } else {
-            Log.v(TAG + "-------->>", "Log记录已关闭");
-        }
+    public LogUtil(String tag) {
+        this.tag = tag + "=====>";
     }
+
+    private boolean debug = true;
+    private String tag;
 
     /**
-     * 打印调试信息
+     * 配置log输出状态
      *
-     * @param msg 需要记录的信息
+     * @param debug 是否输出log
      */
-    public void d(Object msg) {
-        if (isShow()) {
-            Log.d(TAG + "-------->>", msg.toString());
-        } else {
-            Log.v(TAG + "-------->>", "Log记录已关闭");
+    public void debug(boolean debug) {
+        this.debug = debug;
+    }
+
+    public boolean isDebug() {
+        return debug;
+    }
+
+    public void v(Object... msg) {
+        if (msg == null || !debug) {
+            return;
         }
-    }
-
-    /**
-     * 打印重要数据
-     *
-     * @param msg 需要记录的信息
-     */
-    public void i(String msg) {
-        if (isShow()) {
-            Log.i(TAG + "-------->>", msg);
-        } else {
-            Log.v(TAG + "-------->>", "Log记录已关闭");
+        StringBuilder buffer = new StringBuilder();
+        for (Object object : msg) {
+            buffer.append(object.toString()).append("\t");
         }
+        android.util.Log.v(tag, buffer.toString());
     }
 
-    /**
-     * 打印重要数据
-     *
-     * @param msg 需要记录的信息
-     */
-    public void i(Object msg) {
-        if (isShow()) {
-            Log.i(TAG + "-------->>", msg.toString());
-        } else {
-            Log.v(TAG + "-------->>", "Log记录已关闭");
+    public void d(Object... msg) {
+        if (msg == null || !debug) {
+            return;
         }
-    }
-
-    /**
-     * 打印警告信息，程序可能存在潜在风险
-     *
-     * @param msg 需要记录的信息
-     */
-    public void w(String msg) {
-        if (isShow()) {
-            Log.w(TAG + "-------->>", msg);
-        } else {
-            Log.v(TAG + "-------->>", "Log记录已关闭");
+        StringBuilder buffer = new StringBuilder();
+        for (Object object : msg) {
+            buffer.append(object.toString()).append("\t");
         }
+        android.util.Log.d(tag, buffer.toString());
     }
 
-    /**
-     * 打印警告信息，程序可能存在潜在风险
-     *
-     * @param msg 需要记录的信息
-     */
-    public void w(Object msg) {
-        if (isShow()) {
-            Log.w(TAG + "-------->>", msg.toString());
-        } else {
-            Log.v(TAG + "-------->>", "Log记录已关闭");
+
+    public void i(Object... msg) {
+        if (msg == null || !debug) {
+            return;
         }
-    }
-
-    /**
-     * 打印错误信息
-     *
-     * @param msg 需要记录的信息
-     */
-    public void e(String msg) {
-        if (show) {
-            Log.e(TAG + "-------->>", msg);
-        } else {
-            Log.v(TAG + "-------->>", "Log记录已关闭");
+        StringBuilder buffer = new StringBuilder();
+        for (Object object : msg) {
+            buffer.append(object.toString()).append("\t");
         }
+        android.util.Log.i(tag, buffer.toString());
     }
 
-    /**
-     * 打印错误信息
-     *
-     * @param msg 需要记录的信息
-     */
-    public void e(Object msg) {
-        if (show) {
-            Log.e(TAG + "-------->>", msg.toString());
-        } else {
-            Log.v(TAG + "-------->>", "Log记录已关闭");
+    public void w(Object... msg) {
+        if (msg == null || !debug) {
+            return;
         }
-    }
-
-    /**
-     * 打印最严重的信息
-     *
-     * @param msg 需要记录的信息
-     */
-    public void a(String msg) {
-        if (show) {
-            Log.wtf(TAG + "-------->>", msg);
-        } else {
-            Log.v(TAG + "-------->>", "Log记录已关闭");
+        StringBuilder buffer = new StringBuilder();
+        for (Object object : msg) {
+            buffer.append(object.toString()).append("\t");
         }
+        android.util.Log.w(tag, buffer.toString());
     }
 
-    /**
-     * 打印最严重的信息
-     *
-     * @param msg 需要记录的信息
-     */
-    public void a(Object msg) {
-        if (show) {
-            Log.wtf(TAG + "-------->>", msg.toString());
-        } else {
-            Log.v(TAG + "-------->>", "Log记录已关闭");
+    public void e(Object... msg) {
+        if (msg == null || !debug) {
+            return;
         }
-    }
-
-
-    public boolean isShow() {
-        return show;
-    }
-
-    public void setShow(boolean show) {
-        this.show = show;
-    }
-
-    public void show() {
-        if (!isShow()) {
-            setShow(true);
+        StringBuilder buffer = new StringBuilder();
+        for (Object object : msg) {
+            buffer.append(object.toString()).append("\t");
         }
+        android.util.Log.e(tag, buffer.toString());
     }
 
-    public void hidden() {
-        if (isShow()) {
-            setShow(false);
+    public void wft(Object... msg) {
+        if (msg == null || !debug) {
+            return;
         }
+        StringBuilder buffer = new StringBuilder();
+        for (Object object : msg) {
+            buffer.append(object.toString()).append("\t");
+        }
+        android.util.Log.wtf(tag, buffer.toString());
     }
 }

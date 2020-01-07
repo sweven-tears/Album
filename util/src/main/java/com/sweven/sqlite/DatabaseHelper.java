@@ -1,14 +1,8 @@
 package com.sweven.sqlite;
 
 import android.content.Context;
-import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.os.Build;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 
 import java.util.Set;
 
@@ -18,19 +12,15 @@ import java.util.Set;
  */
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    private Set<String> sqlSet;
+    private static final int VERSION = 1;
+    public static Set<String> sqlSet;
 
-    public DatabaseHelper(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {
-        super(context, name, factory, version);
+    public DatabaseHelper(Context context, String name, int version) {
+        super(context, name, null, version);
     }
 
-    public DatabaseHelper(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version, @Nullable DatabaseErrorHandler errorHandler) {
-        super(context, name, factory, version, errorHandler);
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.P)
-    public DatabaseHelper(@Nullable Context context, @Nullable String name, int version, @NonNull SQLiteDatabase.OpenParams openParams) {
-        super(context, name, version, openParams);
+    public DatabaseHelper(Context context, String name) {
+        this(context, name, VERSION);
     }
 
     @Override
