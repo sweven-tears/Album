@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.sweven.base.BaseActivity;
 import com.sweven.dialog.NoticeDialog;
-import com.sweven.util.Console;
+import com.sweven.console.Console;
 import com.sweven.util.WindowUtil;
 
 import java.util.ArrayList;
