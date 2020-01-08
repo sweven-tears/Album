@@ -1,8 +1,5 @@
 package com.sweven.socket;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -66,20 +63,9 @@ public class ClientHelper implements Runnable {
         }
     }
 
-    public String read(String msg) {
-        if (msg.startsWith("@config/")) {
-            try {
-                String config = msg.substring("@config/".length());
-                JSONObject object = new JSONObject(config);
-                this.client.setSign(object.optString("account"));
 
-            } catch (NumberFormatException e) {
-                System.err.println("id isn't number.");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        } else if (msg.startsWith("@msg/")) {
-        }
+
+    public String read(String msg) {
         return msg;
     }
 
@@ -87,11 +73,23 @@ public class ClientHelper implements Runnable {
 
     }
 
-    @Override
-    public String toString() {
-        return "ClientHelper{" +
-                "client=" + client +
-                ", connected=" + connected +
-                '}';
+    public Client getClient(){
+        return client;
+    }
+
+    public int getId(){
+        return client.getId();
+    }
+
+    public String getSign(){
+        return client.getSign();
+    }
+
+    public Socket getSocket(){
+        return client.getSocket();
+    }
+
+    public int getPort(){
+        return getSocket().getPort();
     }
 }

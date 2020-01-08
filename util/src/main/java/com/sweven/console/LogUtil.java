@@ -22,7 +22,7 @@ public class LogUtil {
                 }
             }
         }
-        instance.tag = "";
+        instance.tag = instance.defaultTAG;
         return instance;
     }
 
@@ -48,7 +48,7 @@ public class LogUtil {
      * 未配置tag的构造函数
      */
     public LogUtil() {
-        this.tag = "";
+        this.tag = defaultTAG;
     }
 
     /**
@@ -60,7 +60,14 @@ public class LogUtil {
         this.tag = tag + "=====>";
     }
 
+    /**
+     * 日志打印开关配置
+     */
     private boolean debug = true;
+    /**
+     * 全局TAG配置
+     */
+    private String defaultTAG = "";
     private String tag;
 
     /**
