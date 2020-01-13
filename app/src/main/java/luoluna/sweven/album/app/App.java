@@ -2,6 +2,7 @@ package luoluna.sweven.album.app;
 
 import android.app.Application;
 
+import com.sweven.page.Page;
 import com.sweven.sqlite.DatabaseHelper;
 
 import java.util.HashSet;
@@ -21,6 +22,7 @@ public class App extends Application {
     public static final String albumListTableName = "ouralbum";
     public static final String albumChildListTableName = "ourimage";
     public static final Set<String> databaseSql;
+
     static {
         databaseSql = new HashSet<>();
         databaseSql.add("create table " + albumChildListTableName + " (" +
@@ -55,8 +57,15 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         Setting.getInstance(this);
-        DatabaseHelper.sqlSet = databaseSql;
-        new DatabaseHelper(this, database);
+        new DatabaseHelper(this, database, databaseSql);
         AppManager.getInstance().setAppStatus(AppStatus._LAUNCH);
+        new Page(this)
+                .setPackage("luoluna.sweven.album")
+                .addPage("main", "MainActivity")
+                .addPage("launch", "page.LaunchActivity")
+                .addPage("setting", "page.AlbumSettingActivity")
+                .addPage("picture", "page.PictureActivity")
+                .addPage("launch", "page.LaunchActivity")
+                .addPage("look", "page.PictureLookActivity");
     }
 }

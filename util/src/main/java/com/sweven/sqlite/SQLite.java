@@ -25,7 +25,10 @@ public class SQLite {
     private SQLiteDatabase db;
     private Context context;
     private DatabaseHelper database_helper;
-    private String databaseName;
+    /**
+     * 默认为最后一次构建数据库时的数据库名
+     */
+    private String databaseName = DatabaseHelper.database;
     private String tableName;
 
     /**
@@ -43,6 +46,7 @@ public class SQLite {
             }
         }
         sqLite.context = context;
+        sqLite.databaseName = DatabaseHelper.database;
         return sqLite;
     }
 
@@ -60,11 +64,26 @@ public class SQLite {
         return new Write(this);
     }
 
+    public Read readTable(String tableName) {
+        this.tableName = tableName;
+        readDataBase();
+        return new Read(this);
+    }
+
+    public Write writeTable(String tableName) {
+        this.tableName = tableName;
+        writeDataBase();
+        return new Write(this);
+    }
+
 
     /**
      * 创建数据库
      */
     private void readDataBase() {
+        if (databaseName == null || databaseName.trim().equals("")) {
+            throw new RuntimeException("database name not null.");
+        }
         database_helper = new DatabaseHelper(context, databaseName);
         db = database_helper.getReadableDatabase();
     }
@@ -74,6 +93,9 @@ public class SQLite {
      * 更新数据库
      */
     private void writeDataBase() {
+        if (databaseName == null || databaseName.trim().equals("")) {
+            throw new RuntimeException("database name not null.");
+        }
         database_helper = new DatabaseHelper(context, databaseName);
         db = database_helper.getWritableDatabase();
     }
@@ -88,9 +110,9 @@ public class SQLite {
      * @param limit         列数限制
      * @return cursor
      */
-    public List<Map<String, String>> query(String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy, String limit) {
+    public List<Map<String, Object>> query(String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy, String limit) {
         Cursor cursor = db.query(tableName, columns, selection, selectionArgs, groupBy, having, orderBy, limit);
-        List<Map<String, String>> maps = Helper.toMap(cursor, columns);
+        List<Map<String, Object>> maps = Helper.toMap(cursor, columns);
         close();
         return maps;
     }
@@ -147,7 +169,7 @@ public class SQLite {
      * 内部辅助类
      */
     private static class Helper {
-        private static List<Map<String, String>> toMap(Cursor cursor, String[] columns) {
+        private static List<Map<String, Object>> toMap(Cursor cursor, String[] columns) {
             return list(cursor, columns == null ? cursor.getColumnNames() : columns);
         }
 
@@ -156,10 +178,10 @@ public class SQLite {
          * @param columns columns
          * @return 由cursor遍历出来的数据的集合
          */
-        private static List<Map<String, String>> list(Cursor cursor, String[] columns) {
-            List<Map<String, String>> list = new ArrayList<>();
+        private static List<Map<String, Object>> list(Cursor cursor, String[] columns) {
+            List<Map<String, Object>> list = new ArrayList<>();
             while (cursor.moveToNext()) {
-                Map<String, String> map = new HashMap<>();
+                Map<String, Object> map = new HashMap<>();
                 for (String column : columns) {
                     map.put(column, cursor.getString(cursor.getColumnIndex(column)));
                 }

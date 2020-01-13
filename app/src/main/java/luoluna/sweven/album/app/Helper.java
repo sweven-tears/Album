@@ -54,7 +54,7 @@ public class Helper {
         int nextAlbumId = 0;
 
         Rows column = SQLite.with(context)
-                .readTable(database, albumListTableName)
+                .readTable(albumListTableName)
                 .orderBy("aid desc")
                 .query();
         if (column.size() > 0) {
@@ -72,7 +72,7 @@ public class Helper {
      */
     public Rows query(Context context, String table) {
         return SQLite.with(context)
-                .readTable(database, table)
+                .readTable(table)
                 .query();
     }
 
@@ -85,7 +85,7 @@ public class Helper {
      */
     public Rows query(Context context, String table, String where, Object... whereArgs) {
         return SQLite.with(context)
-                .readTable(database, table)
+                .readTable(table)
                 .where(where)
                 .selectionArgs(whereArgs)
                 .query();

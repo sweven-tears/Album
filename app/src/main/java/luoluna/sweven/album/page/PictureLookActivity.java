@@ -10,8 +10,8 @@ import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.sweven.base.BaseActivity;
+import com.sweven.console.LogUtil;
 import com.sweven.dialog.NoticeDialog;
-import com.sweven.console.Console;
 import com.sweven.util.WindowUtil;
 
 import java.util.ArrayList;
@@ -79,7 +79,7 @@ public class PictureLookActivity extends BaseActivity {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                Console.log(newState);
+                LogUtil.with().i(newState);
             }
 
             @Override

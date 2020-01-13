@@ -13,13 +13,20 @@ import java.util.Set;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final int VERSION = 1;
-    public static Set<String> sqlSet;
+    static String database;
+    static Set<String> sqlSet;
 
     public DatabaseHelper(Context context, String name, int version) {
         super(context, name, null, version);
+        database = name;
     }
 
-    public DatabaseHelper(Context context, String name) {
+    public DatabaseHelper(Context context, String name, Set<String> sql) {
+        this(context, name, VERSION);
+        sqlSet = sql;
+    }
+
+    DatabaseHelper(Context context, String name) {
         this(context, name, VERSION);
     }
 
