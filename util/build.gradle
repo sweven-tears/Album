@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 28
@@ -42,4 +43,9 @@ dependencies {
     implementation 'com.lcodecorex:tkrefreshlayout:1.0.7'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'com.squareup.okhttp3:okhttp-ws:3.4.2'
+    implementation "androidx.core:core-ktx:+"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+}
+repositories {
+    mavenCentral()
 }
