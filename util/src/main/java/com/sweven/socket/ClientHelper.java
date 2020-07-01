@@ -12,7 +12,10 @@ public class ClientHelper implements Runnable {
     private DataOutputStream dos = null;
     private boolean connected = false;
 
-    public ClientHelper(Socket socket) {
+    private IRead iRead;
+
+    public ClientHelper(long id, Socket socket) {
+        this.client.setId(id);
         this.client.setSocket(socket);
         try {
             dis = new DataInputStream(socket.getInputStream());
@@ -38,7 +41,7 @@ public class ClientHelper implements Runnable {
         try {
             while (connected) {
                 String msg = dis.readUTF();
-                read(msg);
+                _read(msg);
             }
         } catch (SocketException ignore) {
             App.log.e("this client " + client.getId() + "'s exit. ");
@@ -64,32 +67,44 @@ public class ClientHelper implements Runnable {
     }
 
 
+    private void _read(String msg) {
+        iRead.read(getId(), msg);
+    }
 
-    public String read(String msg) {
-        return msg;
+    public void setIRead(IRead iRead) {
+        this.iRead = iRead;
     }
 
     private void remove() {
 
     }
 
-    public Client getClient(){
+    public Client getClient() {
         return client;
     }
 
-    public int getId(){
+    public long getId() {
         return client.getId();
     }
 
-    public String getSign(){
+    public String getSign() {
         return client.getSign();
     }
 
-    public Socket getSocket(){
+    public void setSign(String sign) {
+        client.setSign(sign);
+    }
+
+    public Socket getSocket() {
         return client.getSocket();
     }
 
-    public int getPort(){
+    public int getPort() {
         return getSocket().getPort();
+    }
+
+
+    interface IRead {
+        void read(long id, String msg);
     }
 }

@@ -30,17 +30,29 @@ public class App {
     }
 
     private static void launch() {
-        new Thread(() -> {
-        }).start();
+        service.addReceiverListener((id, msg) -> {
+            if (msg.startsWith("user@")) {
+                //配置用户标识
+                for (int i = 0; i < service.getClients().size(); i++) {
+                    ClientHelper client = service.getClients().get(i);
+                    if (client.getId() == id) {
+                        service.getClients().get(i).setSign(msg.substring(msg.indexOf("user@")));
+                        Console.log(service.getClients().get(i).getSign() + " online.");
+                        break;
+                    }
+
+                }
+            } else if (msg.startsWith("sys/")) {
+                //给系统发消息
+                Console.log(id + " send sys:" + msg.substring(msg.indexOf("sys/")));
+            }
+        });
         Scanner scanner = new Scanner(System.in);
         String msg = scanner.nextLine();
         while (!msg.equals("exit")) {
             if (msg.startsWith("/list")) {
                 showList();
-            } else if (msg.startsWith("123:")) {
-                send2Service(msg.substring("123:".length()));
             } else if (msg.startsWith("service:@all/")) {
-
                 send2Clients(msg.substring("service:@all/".length()));
             } else if (msg.startsWith("service:")) {
                 send2Client(msg.substring("service:".length()));

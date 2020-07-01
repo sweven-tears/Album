@@ -7,7 +7,7 @@ import java.net.Socket;
  * Email: sweventears@foxmail.com
  */
 public class Client {
-    private int id; // 序列
+    private long id; // 序列
     private String sign;// 客户端标记
     private transient Socket socket;
 
@@ -15,11 +15,11 @@ public class Client {
 
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

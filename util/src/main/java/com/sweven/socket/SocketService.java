@@ -19,6 +19,7 @@ public class SocketService {
     private List<ClientHelper> clients = new ArrayList<>();
 
     private ServiceLaunchListener listener;
+    private ClientHelper.IRead iRead;
 
     /**
      * 这是一个同步的连接，需要通过回调执行其他的操作
@@ -94,7 +95,9 @@ public class SocketService {
         try {
             while (started) {
                 Socket socket = serverSocket.accept();
-                ClientHelper clientHelper = new ClientHelper(socket);
+                long id = clients.size() == 0 ? 0 : clients.get(clients.size() - 1).getId();
+                ClientHelper clientHelper = new ClientHelper(id, socket);
+                clientHelper.setIRead(iRead);
                 clients.add(clientHelper);
                 new Thread(clientHelper).start();
             }
@@ -113,9 +116,9 @@ public class SocketService {
         }
     }
 
-    public boolean send(String sign, String msg) {
+    public boolean send(long id, String msg) {
         for (ClientHelper helper : clients) {
-            if (helper.getSign().equals(sign)) {
+            if (helper.getId() == id) {
                 helper.send(msg);
                 return true;
             }
@@ -131,6 +134,14 @@ public class SocketService {
         for (ClientHelper client : clients) {
             Console.log(client.getPort(), client.getId(), client.getSign());
         }
+    }
+
+    public List<ClientHelper> getClients() {
+        return clients;
+    }
+
+    public void addReceiverListener(ClientHelper.IRead iRead) {
+        this.iRead = iRead;
     }
 
     public static abstract class ServiceLaunchAdapter implements ServiceLaunchListener {

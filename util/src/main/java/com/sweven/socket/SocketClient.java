@@ -21,17 +21,38 @@ public class SocketClient {
 
     private Thread thread = new Thread(new ReceiveMsg());
 
+    private ConnectListener listener;
+
     public void connect(String host, int port) {
         try {
             socket = new Socket(host, port);
             dis = new DataInputStream(socket.getInputStream());
             dos = new DataOutputStream(socket.getOutputStream());
-            Console.log("client:","connected success!");
+            Console.log("client:", "connected success!");
             connected = true;
             thread.start();
         } catch (ConnectException e) {
             Console.err("service wasn't launched");
             reconnect();
+        } catch (UnknownHostException e) {
+            Console.err("host is null");
+            System.exit(0);
+        } catch (IOException ignore) {
+        }
+    }
+
+    public void connect(String host, int port, ConnectListener listener) {
+        try {
+            socket = new Socket(host, port);
+            dis = new DataInputStream(socket.getInputStream());
+            dos = new DataOutputStream(socket.getOutputStream());
+            Console.log("client:", "connected success!");
+            connected = true;
+            listener.success();
+            thread.start();
+        } catch (ConnectException e) {
+            Console.err("service wasn't launched");
+            reconnect(listener);
         } catch (UnknownHostException e) {
             Console.err("host is null");
             System.exit(0);
@@ -62,6 +83,23 @@ public class SocketClient {
         }
     }
 
+    private void reconnect(ConnectListener listener) {
+        System.out.println("reconnecting...");
+        connected = false;
+        listener.fail();
+        if (dos != null) {
+            try {
+                dos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public boolean isConnected() {
+        return connected;
+    }
+
     private class ReceiveMsg implements Runnable {
 
         @Override
@@ -87,4 +125,9 @@ public class SocketClient {
         return msg;
     }
 
+    interface ConnectListener {
+        void success();
+
+        void fail();
+    }
 }
