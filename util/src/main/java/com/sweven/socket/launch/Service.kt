@@ -5,67 +5,31 @@ import com.sweven.socket.service.SocketService
 import java.util.*
 import kotlin.collections.ArrayList
 
-object Service {
-    private var service = SocketService()
+object Service : IService {
+    private var service = SocketService("192.168.2.13", 8080)
     private val persons: MutableList<Person> = ArrayList()
 
     @JvmStatic
     fun main(args: Array<String>) {
-        service.addServiceListener(object : IService {
-            override fun readUTF(no: Int, msg: String) {
-                onReceiveDeal(no, msg)
-            }
-
-            override fun onAccept(no: Int) {
-                println("client $no online.")
-                service.specifySend(no, "rename@")
-                persons.add(Person(no, if (no < 10) "00$no" else if (no < 100) "0$no" else "$no"))
-            }
-
-            override fun onStart() {
-
-            }
-
-            override fun onDrops(no: Int) {
-                for (i in persons.size - 1 downTo 0) {
-                    if (persons[i].id == no) {
-                        persons.removeAt(i)
-                        break
-                    }
-                }
-            }
-        })
+        service.addServiceListener(this)
         service.start()
-        println("service launching......")
         val scanner = Scanner(System.`in`)
         var msg = scanner.nextLine()
         while (msg != "exit") {
-            deal(msg)
+            if (msg=="/restart"){
+                service.close()
+                service.start()
+            }else {
+                deal(msg)
+            }
             msg = scanner.nextLine()
         }
+        service.close()
+        scanner.close()
     }
 
     private fun onReceiveDeal(no: Int, msg: String) {
-        println("client $no push message：$msg")
-        if (msg.startsWith("rename@")) { //改名指令
-            val name = msg.substring("rename@".length)
-            val person = Person(no, name)
-            fixName(person)
-            service.specifySend(no, "rename^fix name:$name success!")
-        } else if (msg.startsWith("nearby@")) { // 查找其他用户指令
-            var nearby = ""
-            persons.forEach {
-                nearby += "${it.name}  "
-            }
-            service.specifySend(no, "nearby^${nearby.trim()}")
-        } else if (msg.startsWith("forward@")) { // 给其他人发消息指令
-            val temp = msg.substring("forward@".length)
-            val index = temp.indexOf("@")
-            val toName = temp.substring(0, index)
-            val toNo = findNoByName(toName)
-            val message = temp.substring(index + 1)
-            service.specifySend(toNo, "forward^${if (getName(no) == null) "" else getName(no)}^$message")
-        }
+
     }
 
     private fun findNoByName(name: String): Int {
@@ -123,6 +87,48 @@ object Service {
             }
         }
         return null
+    }
+
+    override fun readUTF(port: Int, msg: String) {
+        println("client $port push message：$msg")
+        if (msg.startsWith("rename@")) { //改名指令
+            val name = msg.substring("rename@".length)
+            val person = Person(port, name)
+            fixName(person)
+            service.specifySend(port, "rename^fix name:$name success!")
+        } else if (msg.startsWith("nearby@")) { // 查找其他用户指令
+            var nearby = ""
+            persons.forEach {
+                nearby += "${it.name}  "
+            }
+            service.specifySend(port, "nearby^${nearby.trim()}")
+        } else if (msg.startsWith("forward@")) { // 给其他人发消息指令
+            val temp = msg.substring("forward@".length)
+            val index = temp.indexOf("@")
+            val toName = temp.substring(0, index)
+            val toNo = findNoByName(toName)
+            val message = temp.substring(index + 1)
+            service.specifySend(toNo, "forward^${if (getName(port) == null) "" else getName(port)}^$message")
+        }
+    }
+
+    override fun onConnected() {
+        println("service launching......")
+    }
+
+    override fun onAccept(port: Int) {
+        println("client $port online.")
+        persons.add(Person(port, "$port"))
+    }
+
+    override fun onDrops(port: Int) {
+        for (i in persons.size - 1 downTo 0) {
+            if (persons[i].id == port) {
+                println("client ${persons[i].name} offline.")
+                persons.removeAt(i)
+                break
+            }
+        }
     }
 
     class Person(var id: Int, var name: String)

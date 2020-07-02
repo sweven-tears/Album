@@ -1,11 +1,28 @@
 package com.sweven.socket.service;
 
-import com.sweven.socket.common.IReceive;
+public interface IService {
+    /**
+     * connected success.
+     */
+    void onConnected();
 
-public interface IService extends IReceive {
+    /**
+     * get client send msg and then deal this.
+     *
+     * @param port socket port
+     * @param msg  msg
+     */
     void readUTF(int port, String msg);
 
+    /**
+     * @param port client socket's port.
+     */
     void onAccept(int port);
 
-    void onDrops(int no);// 掉线 即socket connection rest
+    /**
+     * this socket connection reset.
+     *
+     * @param port socket port
+     */
+    void onDrops(int port);
 }

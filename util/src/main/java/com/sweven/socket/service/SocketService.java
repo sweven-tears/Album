@@ -30,22 +30,16 @@ public class SocketService {
 
     private IService iService;
 
-    private SocketService(String hostname, int port, int backlog, IService iService) {
-        address = new InetSocketAddress(hostname, port);
-        this.backlog = backlog;
-        this.iService = iService;
-    }
-
     public SocketService() {
         this(80);
     }
 
-    public SocketService(int port) {
-        this("127.0.0.1", port);
-    }
-
     public SocketService(String hostname) {
         this(hostname, 80);
+    }
+
+    public SocketService(int port) {
+        this("127.0.0.1", port);
     }
 
     public SocketService(String hostname, int port) {
@@ -60,19 +54,16 @@ public class SocketService {
         this.iService = iService;
     }
 
+    private SocketService(String hostname, int port, int backlog, IService iService) {
+        address = new InetSocketAddress(hostname, port);
+        this.backlog = backlog;
+        this.iService = iService;
+    }
+
     //----------------------------------------------------------//
 
     public void start() {
         _start();
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if (!isAlive()) {
-                    clientMap.clear();
-                    _start();
-                }
-            }
-        }, 1000 * 5, 1000 * 5);
     }
 
     private void _start() {
@@ -81,6 +72,7 @@ public class SocketService {
             service.bind(address, backlog);
             alive = true;
             new Thread(this::accept).start();
+            iService.onConnected();
         } catch (IOException e) {
             e.printStackTrace();
             if (service != null) {
@@ -107,12 +99,11 @@ public class SocketService {
                     break;
                 }
                 Socket socket = service.accept();
-                IODeal io = new IODeal(socket);
                 // open thread to deal socket's read and write
-                new Thread(io).start();
+                new Thread(new IODeal(socket)).start();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());
         }
     }
 
@@ -135,20 +126,21 @@ public class SocketService {
     }
 
     /**
-     * @param order socket序列号 {@link IODeal}中的 port=socket.getPort()
-     * @param msg   msg
+     * @param port socket序列号 {@link IODeal}中的 port=socket.getPort()
+     * @param msg  msg
      * @return status code [<p>0:socket is null,<p>1:success,<p>-1:socket connection rest,<p>-2:other IOException]
      */
-    public int specifySend(int order, String msg) {
-        if (clientMap.get(order) == null) return 0;
+    public int specifySend(int port, String msg) {
+        if (clientMap.get(port) == null) return 0;
         try {
-            Objects.requireNonNull(clientMap.get(order)).write(msg);
+            Objects.requireNonNull(clientMap.get(port)).write(msg);
         } catch (SocketException e) {
             System.err.println("client was offline then remove.");
-            remove(order);
+            remove(port);
+            return -1;
+        } catch (NullPointerException e) {
             return -1;
         } catch (IOException e) {
-            e.printStackTrace();
             return -2;
         }
         return 1;
@@ -179,6 +171,7 @@ public class SocketService {
     /**
      * auto clear client socket when socket wasn't alive.
      */
+    @Deprecated
     private void clearNotAlive() {
         new Timer().schedule(new TimerTask() {
             @Override
@@ -193,8 +186,30 @@ public class SocketService {
         }, 1000 * 60, 100 * 60);
     }
 
+    /**
+     * Is service launching?
+     *
+     * @return alive
+     */
     public boolean isAlive() {
         return alive;
+    }
+
+    /**
+     * stop this service.
+     */
+    public void close() {
+        try {
+            alive = false;
+            for (Map.Entry<Integer, IODeal> entry : clientMap.entrySet()) {
+                entry.getValue().close();
+            }
+            if (service != null) {
+                service.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -213,16 +228,16 @@ public class SocketService {
             try {
                 dos = new DataOutputStream(socket.getOutputStream());
                 dis = new DataInputStream(socket.getInputStream());
-                onRead();
+                add2Map();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
 
         /**
-         * create read
+         * create read msg and add listener:onAccept(),readUTF()
          */
-        private void onRead() {
+        private void add2Map() {
             clientMap.put(port, this);
             iService.onAccept(port);
             new Timer().schedule(new TimerTask() {
@@ -248,13 +263,19 @@ public class SocketService {
                     }
                 }
             } catch (SocketException e) {
-                System.err.println("client No." + port + " offline");
                 remove(port);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
 
+        /**
+         * write msg to client.
+         *
+         * @param msg msg
+         * @throws SocketException e
+         * @throws IOException     e
+         */
         public void write(String msg) throws SocketException, IOException {
             if (dos != null) {
                 dos.writeUTF(msg);
@@ -280,8 +301,14 @@ public class SocketService {
         /**
          * close client socket
          */
-        public void close() {
+        private void close() {
             try {
+                if (dis != null) {
+                    dis.close();
+                }
+                if (dos != null) {
+                    dos.close();
+                }
                 if (socket != null) {
                     socket.close();
                     socket = null;
@@ -297,48 +324,5 @@ public class SocketService {
         public boolean alive() {
             return socket != null && !socket.isClosed();
         }
-    }
-
-    public static class Builder {
-        private String hostname;
-        private int port;
-        private int backlog = 50;// 最大挂起连接数
-        private IService listener;
-
-        public Builder address() {
-            return address("localhost", 80);
-        }
-
-        public Builder address(String hostname) {
-            return address(hostname, 80);
-        }
-
-        public Builder address(int port) {
-            return address("localhost", port);
-        }
-
-
-        public Builder address(String hostname, int port) {
-            this.hostname = hostname;
-            this.port = port;
-            return this;
-        }
-
-        public Builder maxConnected(int backlog) {
-            this.backlog = backlog;
-            return this;
-        }
-
-        public Builder addServiceListener(IService iService) {
-            this.listener = iService;
-            return this;
-        }
-
-        public SocketService build() {
-            SocketService socketService = new SocketService(hostname, port, backlog, listener);
-            socketService.clearNotAlive();
-            return socketService;
-        }
-
     }
 }
