@@ -26,10 +26,10 @@ public interface IClient {
      * <p>when number <= 0 mean to don't reconnect
      *
      * @param e .
-     * @return default 1<p>Number of reconnection after connection failure
+     * @return default 2<p>Number of reconnection after connection failure
      */
     default int reconnectByConnect(ConnectException e) {
-        return 1;
+        return 2;
     }
 
     /**

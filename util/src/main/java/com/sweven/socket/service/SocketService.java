@@ -15,6 +15,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.LinkedBlockingDeque;
 
 import static java.util.Objects.requireNonNull;
 
@@ -219,7 +221,7 @@ public class SocketService {
         private Socket socket;
         private DataOutputStream dos;
         private DataInputStream dis;
-        private List<String> msgList = new ArrayList<>();
+        private BlockingDeque<String> msgList = new LinkedBlockingDeque<>();
         private int port;
 
         private IODeal(Socket socket) {
@@ -240,18 +242,30 @@ public class SocketService {
         private void add2Map() {
             clientMap.put(port, this);
             iService.onAccept(port);
-            new Timer().schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    if (alive()) {
-                        if (next()) {
-                            iService.readUTF(port, read());
-                        }
-                    } else {
-                        cancel();
+//            new Timer().schedule(new TimerTask() {
+//                @Override
+//                public void run() {
+//                    if (alive()) {
+//                        if (next()) {
+//                            iService.readUTF(port, read());
+//                        }
+//                    } else {
+//                        cancel();
+//                    }
+//                }
+//            }, 0, 500);
+            new Thread(()->{
+                while (alive()) {
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    if (next()) {
+                        iService.readUTF(port, read());
                     }
                 }
-            }, 0, 500);
+            }).start();
         }
 
         @Override
@@ -286,8 +300,12 @@ public class SocketService {
          * @return read {@link #dis}.readUTF()
          */
         private String read() {
-            String msg = msgList.get(0);
-            msgList.remove(0);
+            String msg = null;
+            try {
+                msg = msgList.take();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             return msg;
         }
 
