@@ -12,14 +12,24 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static java.util.Objects.requireNonNull;
+
 /**
- * Created by Sweven on 2020/6/30--10:20.
+ * {@link #SocketService(String, int)} 通过此构造方法确定 host 和 port <p>
+ * {@link #start()} 启动service<p>
+ * {@link #writeUTF(String msg)} 向所有已连接上的 socket 发送消息<p>
+ * {@link #writeUTF(String msg, int port)} 向指定 socket 发送消息<p>
+ * {@link #getAllClient()} 获取当前连接 service 的所有 socket<p>
+ * {@link #isAlive()} 获取 service 是否 alive<p>
+ * {@link #close()} 关闭 service
+ * <p>Created by Sweven on 2020/6/30--10:20.</p>
  * Email: sweventears@foxmail.com
+ *
+ * @version 1.0
  */
 public class SocketService {
     private ServerSocket service;
@@ -29,18 +39,6 @@ public class SocketService {
     private Map<Integer, IODeal> clientMap = new HashMap<>();
 
     private IService iService;
-
-    public SocketService() {
-        this(80);
-    }
-
-    public SocketService(String hostname) {
-        this(hostname, 80);
-    }
-
-    public SocketService(int port) {
-        this("127.0.0.1", port);
-    }
 
     public SocketService(String hostname, int port) {
         this(hostname, port, 50, null);
@@ -60,7 +58,7 @@ public class SocketService {
         this.iService = iService;
     }
 
-    //----------------------------------------------------------//
+    //---------------------------up code is configure.-------------------------------//
 
     public void start() {
         _start();
@@ -74,7 +72,7 @@ public class SocketService {
             new Thread(this::accept).start();
             iService.onConnected();
         } catch (IOException e) {
-            e.printStackTrace();
+            iService.throwIOException(e);
             if (service != null) {
                 try {
                     service.close();
@@ -103,62 +101,51 @@ public class SocketService {
                 new Thread(new IODeal(socket)).start();
             }
         } catch (IOException e) {
-            System.err.println(e.getMessage());
+            iService.throwIOException(e);
         }
     }
 
     /**
-     * send msg to all client socket by service
+     * 把消息发给所有 socket
      *
-     * @param msg msg
+     * @param msg 消息
+     * @return 发送成功数量
      */
-    public void send(String msg) {
+    public int writeUTF(String msg) {
+        int count = 0;
         for (Map.Entry<Integer, IODeal> entry : clientMap.entrySet()) {
             try {
                 entry.getValue().write(msg);
+                count++;
             } catch (SocketException e) {
-                System.err.println(entry.getKey() + " was offline then remove.");
-                remove(entry.getKey());
-            } catch (Exception e) {
-                e.printStackTrace();
+                _remove(entry.getKey(), e);
+            } catch (IOException e) {
+                iService.throwIOException(e);
             }
         }
+        return count;
     }
 
     /**
-     * @param port socket序列号 {@link IODeal}中的 port=socket.getPort()
-     * @param msg  msg
-     * @return status code [<p>0:socket is null,<p>1:success,<p>-1:socket connection rest,<p>-2:other IOException]
+     * @param msg  消息
+     * @param port socket.getPort()
+     * @return 0 失败 1 成功 -1 connect rest -2 IOException。
      */
-    public int specifySend(int port, String msg) {
-        if (clientMap.get(port) == null) return 0;
+    public int writeUTF(String msg, int port) {
+        IODeal deal = clientMap.get(port);
+        if (deal == null) return 0;
         try {
-            Objects.requireNonNull(clientMap.get(port)).write(msg);
+            deal.write(msg);
         } catch (SocketException e) {
-            System.err.println("client was offline then remove.");
-            remove(port);
+            _remove(port, e);
             return -1;
         } catch (NullPointerException e) {
             return -1;
         } catch (IOException e) {
+            iService.throwIOException(e);
             return -2;
         }
         return 1;
-    }
-
-    /**
-     * remove it when socket is unconnected by port
-     *
-     * @param port socket.getPort()
-     */
-    private void remove(int port) {
-        try {
-            Objects.requireNonNull(clientMap.get(port)).close();
-            clientMap.remove(port);
-            iService.onDrops(port);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -169,27 +156,9 @@ public class SocketService {
     }
 
     /**
-     * auto clear client socket when socket wasn't alive.
-     */
-    @Deprecated
-    private void clearNotAlive() {
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                Set<Map.Entry<Integer, IODeal>> sets = clientMap.entrySet();
-                for (Map.Entry<Integer, IODeal> entry : sets) {
-                    if (!entry.getValue().alive()) {
-                        remove(entry.getKey());
-                    }
-                }
-            }
-        }, 1000 * 60, 100 * 60);
-    }
-
-    /**
      * Is service launching?
      *
-     * @return alive
+     * @return alive status
      */
     public boolean isAlive() {
         return alive;
@@ -204,12 +173,43 @@ public class SocketService {
             for (Map.Entry<Integer, IODeal> entry : clientMap.entrySet()) {
                 entry.getValue().close();
             }
+            clientMap.clear();
             if (service != null) {
                 service.close();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            iService.throwIOException(e);
         }
+    }
+
+    /**
+     * remove it when socket is unconnected by port
+     *
+     * @param port socket.getPort()
+     * @param e    socket 断连抛出的异常
+     */
+    private void _remove(int port, SocketException e) {
+        requireNonNull(clientMap.get(port)).close();
+        clientMap.remove(port);
+        iService.onDrops(port, e);
+    }
+
+    /**
+     * auto clear client socket when socket wasn't alive.
+     */
+    @Deprecated
+    private void clearNotAlive() {
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Set<Map.Entry<Integer, IODeal>> sets = clientMap.entrySet();
+                for (Map.Entry<Integer, IODeal> entry : sets) {
+                    if (!entry.getValue().alive()) {
+                        _remove(entry.getKey(), new SocketException("socket is not alive."));
+                    }
+                }
+            }
+        }, 1000 * 60, 100 * 60);
     }
 
     /**
@@ -222,7 +222,7 @@ public class SocketService {
         private List<String> msgList = new ArrayList<>();
         private int port;
 
-        public IODeal(Socket socket) {
+        private IODeal(Socket socket) {
             this.socket = socket;
             this.port = socket.getPort();
             try {
@@ -230,7 +230,7 @@ public class SocketService {
                 dis = new DataInputStream(socket.getInputStream());
                 add2Map();
             } catch (IOException e) {
-                e.printStackTrace();
+                iService.throwIOException(e);
             }
         }
 
@@ -263,9 +263,9 @@ public class SocketService {
                     }
                 }
             } catch (SocketException e) {
-                remove(port);
+                _remove(port, e);
             } catch (IOException e) {
-                e.printStackTrace();
+                iService.throwIOException(e);
             }
         }
 
@@ -276,7 +276,7 @@ public class SocketService {
          * @throws SocketException e
          * @throws IOException     e
          */
-        public void write(String msg) throws SocketException, IOException {
+        private void write(String msg) throws SocketException, IOException {
             if (dos != null) {
                 dos.writeUTF(msg);
             }
@@ -285,7 +285,7 @@ public class SocketService {
         /**
          * @return read {@link #dis}.readUTF()
          */
-        public String read() {
+        private String read() {
             String msg = msgList.get(0);
             msgList.remove(0);
             return msg;
@@ -294,7 +294,7 @@ public class SocketService {
         /**
          * @return Is there a message queue
          */
-        public boolean next() {
+        private boolean next() {
             return msgList.size() > 0;
         }
 
@@ -314,14 +314,14 @@ public class SocketService {
                     socket = null;
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                iService.throwIOException(e);
             }
         }
 
         /**
          * @return Is socket alive
          */
-        public boolean alive() {
+        private boolean alive() {
             return socket != null && !socket.isClosed();
         }
     }

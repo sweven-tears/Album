@@ -13,19 +13,12 @@ public interface IClient {
     }
 
     /**
-     * Mark the socket
-     *
-     * @return sign
-     */
-    String onSign();
-
-    /**
      * read msg from service
      *
      * @param msg msg
      */
     default void readUTF(String msg) {
-        System.out.println("get-msg:" + msg);
+        System.out.println("readUTF:" + msg);
     }
 
     /**

@@ -13,6 +13,19 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * {@link #connect(String, int)}创建连接<p>
+ * {@link #writeUTF(String msg)}向service发送消息<p>
+ * {@link #close()} 关闭 socket 连接<p>
+ * {@link #isAlive()} 获取 socket 是否 alive<p>
+ * {@link IClient#onConnected()}连接成功后，可在此给 service 打上标记<p>
+ * {@link IClient#readUTF(String msg)}读取从 service 发送过来的消息<p>
+ * 在接口{@link #iClient}中还有异常抛出，可以自定义处理
+ * <p>Created by Sweven on 2020/6/30--10:20.</p>
+ * Email: sweventears@foxmail.com
+ *
+ * @version 1.0
+ */
 public class SocketClient {
     private Socket socket;
     private InetSocketAddress address;
@@ -121,17 +134,6 @@ public class SocketClient {
     }
 
     /**
-     * 突然断连，不确定当前是否还有未发消息，
-     * <p>重连后优先发送标识Sign
-     *
-     * @param msg msg text or json
-     */
-    private void writeUTFInsert(String msg) {
-        msgList.add(0, msg);
-        _write();
-    }
-
-    /**
      * 按消息队列来，将所有消息全部发送
      */
     private void _write() {
@@ -193,7 +195,6 @@ public class SocketClient {
                 dos = new DataOutputStream(socket.getOutputStream());
                 run = true;
                 iClient.onConnected();
-                writeUTFInsert(iClient.onSign());
                 time = 0;
             } catch (IOException e) {
                 throwException(e);
