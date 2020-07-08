@@ -1,10 +1,10 @@
 package com.sweven.socket;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 import com.sweven.socket.service.IService;
 import com.sweven.socket.service.SocketService;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.net.SocketException;
 import java.util.ArrayList;
@@ -40,26 +40,26 @@ public class ServiceManager implements IService {
     public void readUTF(int port, String msg) {
         IService.super.readUTF(port, msg);
         //{url:"",data:{}}
-            try {
-                JSONObject object = new JSONObject("\"data\""+msg);
-                String url = object.optString("url");
-                JSONObject data = object.optJSONObject("data");
-                read(url, data, port);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+        try {
+            JSONObject object = JSON.parseObject(msg);
+            String url = object.getString("url");
+            JSONObject data = object.getJSONObject("data");
+            read(url, data, port);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
     }
 
     private void read(String url, JSONObject data, int port) {
         switch (url) {
             case "/user/rename":
-                String rename = data.optString("rename");
+                String rename = data.getString("rename");
                 rename(port, rename);
                 break;
             case "/user/chat":
-                String other = data.optString("chatWith");
-                String msg = data.optString("msg");
+                String other = data.getString("chatWith");
+                String msg = data.getString("msg");
                 chat(port, msg, other);
                 break;
         }
@@ -109,10 +109,10 @@ public class ServiceManager implements IService {
 
     public void send(String json) {
         try {//{from="",msg="",directive=false,to=""}
-            JSONObject object = new JSONObject(json);
-            String name = object.optString("to");
+            JSONObject object = JSON.parseObject(json);
+            String name = object.getString("to");
             int port = getPortByName(name);
-            String msg = object.optString("msg");
+            String msg = object.getString("msg");
             if (port == -1) service.writeUTF(msg);
             service.writeUTF(msg, port);
         } catch (JSONException e) {

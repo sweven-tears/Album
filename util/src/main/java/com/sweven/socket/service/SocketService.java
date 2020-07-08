@@ -8,9 +8,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
@@ -254,7 +252,7 @@ public class SocketService {
 //                    }
 //                }
 //            }, 0, 500);
-            new Thread(()->{
+            new Thread(() -> {
                 while (alive()) {
                     try {
                         Thread.sleep(500);
