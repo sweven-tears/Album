@@ -64,8 +64,9 @@ public class FileManager {
         String[] arrays = set.toArray(new String[0]);
         for (int i = 0; i < arrays.length; i++) {
             File file = new File(arrays[i]);
-            Album album = new Album(i + 1, file.getName());
             List<String> desktops = sort(file);
+            if (desktops.size() == 0) continue;
+            Album album = new Album(i + 1, file.getName());
             album.setDesktops(desktops);
             album.setPath(file.getAbsolutePath());
             album.setCount(desktops.size());
