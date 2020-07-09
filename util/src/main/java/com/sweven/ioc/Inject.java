@@ -43,7 +43,6 @@ public class Inject {
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 }
-                return;
             }
         }
     }
