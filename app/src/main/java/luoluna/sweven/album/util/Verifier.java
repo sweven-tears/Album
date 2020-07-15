@@ -1,5 +1,6 @@
 package luoluna.sweven.album.util;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -12,26 +13,21 @@ public class Verifier {
      *
      * @param list       集合
      * @param o          查询的数据
-     * @param methodName 对象中的get方法名
+     * @param paramsName 参数名
      * @param <E>        泛型对象
      * @return 是否存在
      */
-    public static <E> boolean contains(List<E> list, Object o, String methodName) {
+    public static <E> boolean contains(List<E> list, Object o, String paramsName) {
         for (E e : list) {
             try {
-                Class cls = e.getClass();
-                Method[] methods = cls.getDeclaredMethods();
-                for (Method method : methods) {
-                    if (method.getName().equals(methodName)) {
-                        Object value = method.invoke(e);
-                        if (Objects.equals(value, o)) {
-                            return true;
-                        }
+                Class<?> cls = e.getClass();
+                for (Field declaredField : cls.getDeclaredFields()) {
+                    if (declaredField.getName().equals(paramsName) &&
+                            Objects.equals(declaredField.get(e), o)) {
+                        return true;
                     }
                 }
             } catch (IllegalAccessException ex) {
-                ex.printStackTrace();
-            } catch (InvocationTargetException ex) {
                 ex.printStackTrace();
             }
         }
@@ -46,7 +42,7 @@ public class Verifier {
         for (R i : list) {
             try {
                 Class cls = r.getClass();
-                Class cls2=i.getClass();
+                Class cls2 = i.getClass();
                 Method[] methods = cls.getDeclaredMethods();
                 Method[] methods2 = cls2.getDeclaredMethods();
                 int result = 0;
@@ -70,7 +66,7 @@ public class Verifier {
         return false;
     }
 
-    public void delAlbum(){
+    public void delAlbum() {
 
     }
 

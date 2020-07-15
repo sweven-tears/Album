@@ -16,7 +16,8 @@ import java.util.Objects;
 import java.util.Set;
 
 import luoluna.sweven.album.app.App;
-import luoluna.sweven.album.bean.Album;
+import luoluna.sweven.album.entity.local.Album;
+import luoluna.sweven.album.entity.local.Image;
 
 /**
  * Created by Sweven on 2019/9/17.
@@ -64,13 +65,13 @@ public class FileManager {
         String[] arrays = set.toArray(new String[0]);
         for (int i = 0; i < arrays.length; i++) {
             File file = new File(arrays[i]);
-            List<String> desktops = sort(file);
+            List<Image> desktops = sort(file);
             if (desktops.size() == 0) continue;
             Album album = new Album(i + 1, file.getName());
             album.setDesktops(desktops);
             album.setPath(file.getAbsolutePath());
             album.setCount(desktops.size());
-            album.setCover(desktops.get(0));
+            album.setCover(desktops.get(0).getUri());
             albums.add(album);
         }
         return albums;
@@ -79,12 +80,19 @@ public class FileManager {
     /**
      * 通过dir获取目录下的图片并按时间排序
      */
-    private List<String> sort(File file) {
-        List<String> desktops = FileUtil.getFilesByEndName(file.getPath(), App.supportFormat);
-        String[] temps = desktops.toArray(new String[0]);
+    public static List<Image> sort(File file) {
+        List<String> array = FileUtil.getFilesByEndName(file.getPath(), App.supportFormat);
+        String[] temps = array.toArray(new String[0]);
         Arrays.sort(temps, new FileASCComparator());
-        desktops = Arrays.asList(temps);
-        return desktops;
+        array = Arrays.asList(temps);
+        List<Image> images = new ArrayList<>();
+        for (String s : array) {
+            Image image = new Image();
+            image.setAid(0);
+            image.setUri(s);
+            images.add(image);
+        }
+        return images;
     }
 
     /**
@@ -96,11 +104,11 @@ public class FileManager {
      */
     public Album getAlbumByFolder(Context context, String folder) {
         Album album = new Album(0, null);
-        List<String> desktops = sort(new File(folder));
+        List<Image> desktops = sort(new File(folder));
         album.setDesktops(desktops);
         album.setCount(desktops.size());
         album.setPath(folder);
-        album.setCover(desktops.get(0));
+        album.setCover(desktops.get(0).getUri());
         return album;
     }
 

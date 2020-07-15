@@ -21,7 +21,7 @@ public class Setting {
     public static Setting getInstance() {
         if (instance == null) {
             synchronized (Setting.class) {
-                if (instance==null) {
+                if (instance == null) {
                     instance = new Setting();
                 }
             }
@@ -32,7 +32,7 @@ public class Setting {
     public static Setting getInstance(Context context) {
         if (instance == null) {
             synchronized (Setting.class) {
-                if (instance==null) {
+                if (instance == null) {
                     instance = new Setting();
                 }
             }
@@ -53,8 +53,8 @@ public class Setting {
         return set;
     }
 
-    public void nonFirst(Context context){
-        App.isFirst=false;
+    public void nonFirst(Context context) {
+        App.isFirst = false;
         save(context);
     }
 

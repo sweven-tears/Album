@@ -9,7 +9,7 @@ import com.sweven.console.LogUtil;
 import java.util.List;
 
 import luoluna.sweven.album.app.Helper;
-import luoluna.sweven.album.bean.Album;
+import luoluna.sweven.album.entity.local.Album;
 import luoluna.sweven.album.manager.FileManager;
 
 import static luoluna.sweven.album.MainActivity.SYSTEM_ALBUM;
@@ -38,7 +38,7 @@ public class ScanPhotoAsync extends AsyncTask<Integer, String, List<Album>> {
             return FileManager.getInstance().getSystemAlbums(context);
         } else {
             new LogUtil(this.getClass().getSimpleName()).i("同步图集");
-            return Helper.with().queryByAlbumList(context);
+            return Helper.with().queryAlbums();
         }
     }
 

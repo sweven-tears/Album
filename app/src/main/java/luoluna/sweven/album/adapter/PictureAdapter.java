@@ -1,34 +1,34 @@
 package luoluna.sweven.album.adapter;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import androidx.annotation.NonNull;
-
 import com.sweven.base.BaseRecyclerAdapter;
 import com.sweven.util.ViewUtil;
 
-import java.util.List;
+import java.io.Serializable;
 
+import androidx.annotation.NonNull;
 import luoluna.sweven.album.R;
+import luoluna.sweven.album.entity.local.Album;
+import luoluna.sweven.album.entity.local.Image;
+import luoluna.sweven.album.page.PictureActivity;
 import luoluna.sweven.album.page.PictureLookActivity;
-import luoluna.sweven.album.bean.Picture;
 
 /**
  * Created by Sweven on 2019/9/17--13:58.
  * Email: sweventears@foxmail.com
  */
-public class PictureAdapter extends BaseRecyclerAdapter<Picture> {
+public class PictureAdapter extends BaseRecyclerAdapter<Image> {
 
-    private List<String> desktops;
+    private Album album;
 
-    public PictureAdapter(Activity activity, List<Picture> list, List<String> desktops) {
-        super(activity, list);
-        this.desktops = desktops;
+    public PictureAdapter(PictureActivity activity, Album album) {
+        super(activity, album.getDesktops());
+        this.album = album;
     }
 
     @NonNull
@@ -41,9 +41,9 @@ public class PictureAdapter extends BaseRecyclerAdapter<Picture> {
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position) {
         PictureViewHolder holder = (PictureViewHolder) viewHolder;
-        Picture picture = list.get(position);
+        Image image = list.get(position);
 
-        holder.image.setImageURI(Uri.parse(picture.getUri()));
+        holder.image.setImageURI(Uri.parse(image.getUri()));
 
         ViewUtil.notifyMeasure(holder.image);
     }
@@ -59,7 +59,7 @@ public class PictureAdapter extends BaseRecyclerAdapter<Picture> {
             image.setOnClickListener(v -> {
                 Intent intent = new Intent(activity, PictureLookActivity.class);
                 intent.putExtra("present", getAdapterPosition());
-                intent.putExtra("images", desktops.toArray(new String[0]));
+                intent.putExtra("aid", album.getId());
                 activity.startActivity(intent);
             });
         }

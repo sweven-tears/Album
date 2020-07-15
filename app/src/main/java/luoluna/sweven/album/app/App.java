@@ -16,6 +16,8 @@ import luoluna.sweven.album.manager.Setting;
  */
 public class App extends Application {
 
+    public static App application;
+
     public static final String appName = "Album";
     public static final String preference = "album";
     public static final String database = "album";
@@ -56,6 +58,7 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        application = this;
         Setting.getInstance(this);
         new DatabaseHelper(this, database, databaseSql);
         AppManager.getInstance().setAppStatus(AppStatus._LAUNCH);

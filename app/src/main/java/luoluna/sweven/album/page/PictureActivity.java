@@ -7,24 +7,17 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.StaggeredGridLayoutManager;
-
 import com.sweven.base.BaseActivity;
 import com.sweven.dialog.NoticeDialog;
 import com.sweven.interf.CallBack;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import luoluna.sweven.album.R;
 import luoluna.sweven.album.adapter.PictureAdapter;
-import luoluna.sweven.album.bean.Album;
-import luoluna.sweven.album.bean.Picture;
+import luoluna.sweven.album.app.Helper;
+import luoluna.sweven.album.entity.local.Album;
 import luoluna.sweven.album.widget.RecyclerViewItemDecoration;
-
-import static luoluna.sweven.album.MainActivity.CUSTOMER_ATLAS;
-import static luoluna.sweven.album.MainActivity.SYSTEM_ALBUM;
 
 public class PictureActivity extends BaseActivity implements View.OnClickListener {
 
@@ -35,7 +28,6 @@ public class PictureActivity extends BaseActivity implements View.OnClickListene
     private RecyclerView recyclerView;
 
     private Album album;
-    private List<Picture> list = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,37 +44,12 @@ public class PictureActivity extends BaseActivity implements View.OnClickListene
      */
     private void getBundle(CallBack callBack) {
         Intent intent = getIntent();
-        int type = intent.getIntExtra("type", -1);
-        String name = intent.getStringExtra("name");
-
-        // 判断类型
-        if (type == SYSTEM_ALBUM) {//album
-            String uri = intent.getStringExtra("uri");
-            album = Album.find(this, uri);
-        } else if (type == CUSTOMER_ATLAS) {//atlas
-            int aid = intent.getIntExtra("aid", 0);
-            album = Album.find(this, aid);
-        } else {
-            error();
-            return;
-        }
-
+        long aid = intent.getLongExtra("aid", 0);
+        album = Helper.with().getAlbumByAid(aid);
         if (album == null) {
             error();
-        } else {
-            album.setName(name);
-            List<String> desktops = album.getDesktops();
-            if (desktops != null && desktops.size() > 0) {
-                for (String image : desktops) {
-                    list.add(new Picture(image));
-                }
-            }
-            // getBundle后的操作
-            if (callBack != null) {
-                callBack.call();
-            }
         }
-
+        callBack.call();
     }
 
     @Override
@@ -104,7 +71,7 @@ public class PictureActivity extends BaseActivity implements View.OnClickListene
         doneIv.setVisibility(View.VISIBLE);
         doneIv.setImageResource(R.drawable.ic_album_info);
 
-        PictureAdapter adapter = new PictureAdapter(this, list,album.getDesktops());
+        PictureAdapter adapter = new PictureAdapter(this, album);
         StaggeredGridLayoutManager manager =
                 new StaggeredGridLayoutManager(2, RecyclerView.VERTICAL);
         recyclerView.setLayoutManager(manager);

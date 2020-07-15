@@ -4,11 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.PagerSnapHelper;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.sweven.base.BaseActivity;
 import com.sweven.console.LogUtil;
 import com.sweven.dialog.NoticeDialog;
@@ -17,16 +12,22 @@ import com.sweven.util.WindowUtil;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.PagerSnapHelper;
+import androidx.recyclerview.widget.RecyclerView;
 import luoluna.sweven.album.R;
 import luoluna.sweven.album.adapter.PictureLookAdapter;
-import luoluna.sweven.album.bean.Picture;
+import luoluna.sweven.album.app.Helper;
+import luoluna.sweven.album.entity.local.Album;
+import luoluna.sweven.album.entity.local.Image;
 
 public class PictureLookActivity extends BaseActivity {
 
     private RecyclerView recyclerView;
 
     private int index;
-    private List<Picture> list = new ArrayList<>();
+    private List<Image> list = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,16 +43,21 @@ public class PictureLookActivity extends BaseActivity {
     private void getBundle() {
         Intent intent = getIntent();
         index = intent.getIntExtra("present", 0);
-        String[] images = intent.getStringArrayExtra("images");
-        if (images == null || images.length == 0) {
+        long aid = intent.getLongExtra("aid", 0);
+        Album album = Helper.with().getAlbumByAid(aid);
+        if (album == null) {
             NoticeDialog dialog = new NoticeDialog(this);
             dialog.setTitle("错误！请退出重试！")
                     .setEnterListener(this::finish)
                     .show();
             return;
         }
-        for (String image : images) {
-            list.add(new Picture(image));
+        list = album.getDesktops();
+        if (list == null || list.size() == 0) {
+            NoticeDialog dialog = new NoticeDialog(this);
+            dialog.setTitle("错误！请退出重试！")
+                    .setEnterListener(this::finish)
+                    .show();
         }
     }
 

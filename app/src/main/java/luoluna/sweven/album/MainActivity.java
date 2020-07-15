@@ -5,17 +5,16 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.appcompat.widget.PopupMenu;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-
 import com.sweven.base.BaseActivity;
 import com.sweven.util.AnimationUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.appcompat.widget.PopupMenu;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import luoluna.sweven.album.adapter.MainDrawerAdapter;
 import luoluna.sweven.album.adapter.MainNavAdapter;
 import luoluna.sweven.album.fragment.main.HomeFragment;

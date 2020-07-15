@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'org.greenrobot.greendao'
 
 android {
     compileSdkVersion 29
@@ -38,6 +39,13 @@ android {
 //    }
 }
 
+greendao {
+    schemaVersion 1//指定数据库schema版本号，迁移等操作会用到
+//    targetGenDir 'src/main/java' //生成数据库文件的目录,DaoSession，DaoMaster 生成到的目录
+//    daoPackage 'luoluna.sweven.album.repository.local'//dao的包名，包名默认是entity所在的包
+    generateTests false
+}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.1.0'
@@ -50,4 +58,7 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.9.0'
     implementation 'com.yanzhenjie:permission:2.0.0-rc12'
     implementation 'com.google.android.material:material:1.0.0'
+    implementation 'org.greenrobot:greendao:3.2.2'
+    implementation 'org.projectlombok:lombok:1.16.10'
+    annotationProcessor 'org.projectlombok:lombok:1.16.10'
 }

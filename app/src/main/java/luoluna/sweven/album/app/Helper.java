@@ -5,15 +5,21 @@ import android.content.SharedPreferences;
 
 import com.sweven.sqlite.SQLite;
 import com.sweven.sqlite.bean.Rows;
-import com.sweven.util.FileUtil;
 import com.sweven.util.PreferenceUtil;
 
+import org.greenrobot.greendao.query.WhereCondition;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import luoluna.sweven.album.bean.Album;
+import luoluna.sweven.album.entity.local.Album;
+import luoluna.sweven.album.entity.local.AlbumDao;
+import luoluna.sweven.album.entity.local.Image;
+import luoluna.sweven.album.manager.FileManager;
+import luoluna.sweven.album.repository.local.DaoManager;
 
 import static luoluna.sweven.album.app.App.albumChildListTableName;
 import static luoluna.sweven.album.app.App.albumListTableName;
@@ -50,6 +56,7 @@ public class Helper {
      * @param context 上下文
      * @return 下一次创建album的id
      */
+    @Deprecated
     public int getNextAlbumId(Context context) {
         int nextAlbumId = 0;
 
@@ -61,6 +68,16 @@ public class Helper {
             nextAlbumId = column.getInt(0, "aid");
         }
         return nextAlbumId + 1;
+    }
+
+    public long getNextAlbumId() {
+        List<Album> albums = DaoManager
+                .getSession()
+                .getAlbumDao()
+                .queryBuilder()
+                .orderAsc(AlbumDao.Properties.Id)
+                .list();
+        return albums.size() > 0 ? albums.get(albums.size() - 1).getId() : 1;
     }
 
     /**
@@ -98,7 +115,8 @@ public class Helper {
      * @param aid     图集id
      * @return 图集信息
      */
-    public Album getAlbumByAid(Context context, int aid) {
+    @Deprecated
+    public Album getAlbumByAid(Context context, long aid) {
         Rows rows = query(context, albumListTableName, "aid=?", aid);
         if (rows.size() > 0) {
             String name = rows.getString(0, "name");
@@ -111,14 +129,17 @@ public class Helper {
             album.setCover(cover);
 
             Rows rows1 = query(context, albumChildListTableName, "aid=?", aid);
-            List<String> images = new ArrayList<>();
+            List<Image> images = new ArrayList<>();
             for (int i = 0; i < rows1.size(); i++) {
-                String uri = rows.getString(i, "uri");
-                images.add(uri);
+                Image desktop = new Image();
+                desktop.setId(rows1.getLong(i, "id"));
+                desktop.setAid(rows1.getLong(i, "aid"));
+                desktop.setUri(rows1.getString(i, "uri"));
+                images.add(desktop);
 
             }
             if (path != null && !path.isEmpty()) {
-                images.addAll(FileUtil.getFilesByEndName(path, App.supportFormat));
+                images.addAll(FileManager.sort(new File(path)));
             }
             album.setDesktops(images);
             album.setCount(images.size());
@@ -127,24 +148,15 @@ public class Helper {
         return null;
     }
 
-    /**
-     * 查询用户自定义图集地址集合
-     *
-     * @param context 上下文
-     * @return 图集信息
-     */
-    public List<Album> getAlbumByCustomer(Context context) {
-        Rows rows = query(context, albumListTableName);
-        List<Album> paths = new ArrayList<>();
-        for (int i = 0; i < rows.size(); i++) {
-            int aid = rows.getInt(i, "aid");
-            String name = rows.getString(i, "name");
-            String path = rows.getString(i, "path");
-            Album album = new Album(aid, name);
-            album.setPath(path);
-            paths.add(album);
-        }
-        return paths;
+    public Album getAlbumByAid(long id) {
+        List<Album> albums = DaoManager
+                .getSession()
+                .getAlbumDao()
+                .queryBuilder()
+                .where(new WhereCondition.PropertyCondition(AlbumDao.Properties.Id, "=" + id))
+                .list();
+        if (albums.size() == 0) return null;
+        return albums.get(0);
     }
 
     /**
@@ -154,21 +166,37 @@ public class Helper {
      * @param album   新建album信息
      * @return 是否创建成功
      */
+    @Deprecated
     public long addAlbum(Context context, Album album) {
+        if (Helper.hasAlbum(album)) {
+            return -1;
+        }
+
         Map<String, Object> map = new HashMap<>();
         map.put("aid", album.getId());
         map.put("name", album.getName());
         map.put("cover", album.getCover());
         map.put("path", album.getPath());
         map.put("count", album.getCount());
-
-        if (getAlbumByAid(context, album.getId()) != null) {
-            return -1;
-        }
-
         return SQLite.with(context)
                 .writeTable(database, albumListTableName)
                 .insert(map);
+    }
+
+    public long addAlbum(Album album) {
+        if (hasAlbum(album)) return -1;
+        DaoManager.getSession().getAlbumDao().insert(album);
+        return hasAlbum(album) ? 1 : 0;
+    }
+
+    public static boolean hasAlbum(Album album) {
+        List<Album> albums = DaoManager
+                .getSession()
+                .getAlbumDao()
+                .queryBuilder()
+                .where(new WhereCondition.PropertyCondition(AlbumDao.Properties.Id, "=" + album.getId()))
+                .list();
+        return albums.size() > 0;
     }
 
     /**
@@ -177,6 +205,7 @@ public class Helper {
      * @param context 上下文
      * @param album   album
      */
+    @Deprecated
     public long updateAlbum(Context context, Album album) {
         Map<String, Object> map = new HashMap<>();
         if (album.getName() != null) {
@@ -198,6 +227,11 @@ public class Helper {
                 .update(map);
     }
 
+    public long updateAlbum(Album album) {
+        DaoManager.getSession().getAlbumDao().update(album);
+        return 1;
+    }
+
     /**
      * 删除图集
      *
@@ -205,7 +239,8 @@ public class Helper {
      * @param aid     相册id
      * @return 是否删除成功
      */
-    public boolean delAlbum(Context context, int aid) {
+    @Deprecated
+    public boolean delAlbum(Context context, long aid) {
         return SQLite.with(context)
                 .writeTable(database, albumListTableName)
                 .where("aid=?")
@@ -213,11 +248,19 @@ public class Helper {
                 .del() > 0;
     }
 
+
+    public boolean delAlbum(Album album) {
+        DaoManager.getSession().getAlbumDao().deleteByKey(album.getId());
+        return !hasAlbum(album);
+    }
+
+
     /**
      * @param context 上下文
      * @return 获取相册列表
      */
-    public List<Album> queryByAlbumList(Context context) {
+    @Deprecated
+    public List<Album> queryAlbums(Context context) {
         List<Album> list = new ArrayList<>();
         Rows rows = SQLite.with(context)
                 .readTable(database, albumListTableName)
@@ -240,5 +283,9 @@ public class Helper {
             list.add(album);
         }
         return list;
+    }
+
+    public List<Album> queryAlbums() {
+        return DaoManager.getSession().getAlbumDao().queryBuilder().list();
     }
 }

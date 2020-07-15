@@ -3,12 +3,11 @@ package luoluna.sweven.album.adapter;
 import android.app.Activity;
 import android.view.View;
 
+import com.sweven.console.LogUtil;
+
 import androidx.annotation.NonNull;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-
-import com.sweven.console.LogUtil;
-
 import luoluna.sweven.album.R;
 
 public class MainDrawerAdapter implements DrawerLayout.DrawerListener {

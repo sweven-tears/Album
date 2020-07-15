@@ -32,7 +32,7 @@ public interface AtlasOperate {
     /**
      * 修改相册名
      */
-    void  rename(View view);
+    void rename(View view);
 
     /**
      * 退出编辑状态

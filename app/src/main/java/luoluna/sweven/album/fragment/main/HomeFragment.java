@@ -8,12 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.sweven.base.BaseFragment;
 import com.sweven.dialog.InputDialog;
 import com.sweven.dialog.WaitDialog;
@@ -22,10 +16,16 @@ import com.sweven.interf.CallBack;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import luoluna.sweven.album.R;
 import luoluna.sweven.album.adapter.AlbumAtlasAdapter;
 import luoluna.sweven.album.app.App;
-import luoluna.sweven.album.bean.Album;
+import luoluna.sweven.album.entity.local.Album;
+import luoluna.sweven.album.entity.local.Image;
 import luoluna.sweven.album.interf.AtlasOperate;
 import luoluna.sweven.album.interf.OnSelectedChangeListener;
 import luoluna.sweven.album.util.ScanPhotoAsync;
@@ -269,7 +269,7 @@ public class HomeFragment extends BaseFragment implements AtlasOperate {
     @Override
     public void share(View view) {
         List<Album> list = adapter.getList();
-        List<String> share = new ArrayList<>();
+        List<Image> share = new ArrayList<>();
         for (Album album : list) {
             if (album.isSelected() && album.getDesktops() != null) {
                 share.addAll(album.getDesktops());

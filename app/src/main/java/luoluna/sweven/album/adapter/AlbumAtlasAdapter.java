@@ -11,8 +11,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-
 import com.bumptech.glide.Glide;
 import com.sweven.base.BaseRecyclerAdapter;
 import com.sweven.dialog.FolderChooser;
@@ -23,12 +21,13 @@ import com.sweven.util.ViewUtil;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import luoluna.sweven.album.R;
-import luoluna.sweven.album.page.PictureActivity;
 import luoluna.sweven.album.app.App;
 import luoluna.sweven.album.app.Helper;
-import luoluna.sweven.album.bean.Album;
+import luoluna.sweven.album.entity.local.Album;
 import luoluna.sweven.album.interf.OnSelectedChangeListener;
+import luoluna.sweven.album.page.PictureActivity;
 import luoluna.sweven.album.util.Verifier;
 
 /**
@@ -81,7 +80,7 @@ public class AlbumAtlasAdapter extends BaseRecyclerAdapter<Album> {
 
     @Override
     public void insert(Album album) {
-        long result = Helper.with().addAlbum(activity, album);
+        long result = Helper.with().addAlbum(album);
         if (result > 0) {
             super.insert(0, album);
         } else {
@@ -95,7 +94,7 @@ public class AlbumAtlasAdapter extends BaseRecyclerAdapter<Album> {
      * @param callBack 完成添加步骤的回调
      */
     public void addAlbum(CallBack callBack) {
-        InputDialog dialog = new InputDialog(activity,com.sweven.util.R.style.NormalDialogStyle);
+        InputDialog dialog = new InputDialog(activity, com.sweven.util.R.style.NormalDialogStyle);
         dialog.show();
         dialog.setLabel("图集名")
                 .setHint("请输入")
@@ -109,12 +108,12 @@ public class AlbumAtlasAdapter extends BaseRecyclerAdapter<Album> {
                             return;
                         } else {
                             String name = input.trim();
-                            if (Verifier.contains(list, name, "getName")) {
+                            if (Verifier.contains(list, name, "name")) {
                                 toast.showShort("图集名已被占用");
                                 return;
                             }
                         }
-                        Album album = new Album(Helper.with().getNextAlbumId(activity), input);
+                        Album album = new Album(Helper.with().getNextAlbumId(), input);
                         nextStep(album, callBack);
                         dialog.cancel();
                     }
@@ -190,7 +189,7 @@ public class AlbumAtlasAdapter extends BaseRecyclerAdapter<Album> {
     public void delete(CallbackForParameter<Integer> onDeleteListener) {
         for (int i = list.size() - 1; i >= 0; i--) {
             if (list.get(i).isSelected()) {
-                if (Helper.with().delAlbum(activity, list.get(i).getId())) {
+                if (Helper.with().delAlbum(list.get(i))) {
                     list.remove(i);
                 } else
                     toast.showShort("删除失败，请重试！");
@@ -210,7 +209,7 @@ public class AlbumAtlasAdapter extends BaseRecyclerAdapter<Album> {
                     return true;
                 }
                 list.get(i).setName(newName);
-                if (Helper.with().updateAlbum(activity, list.get(i)) > 0) {
+                if (Helper.with().updateAlbum(list.get(i)) > 0) {
                     notifyDataSetChanged();
                     return true;
                 }
@@ -252,18 +251,7 @@ public class AlbumAtlasAdapter extends BaseRecyclerAdapter<Album> {
         void openAlbum() {
             Album album = list.get(getAdapterPosition());
             Intent intent = new Intent(activity, PictureActivity.class);
-            intent.putExtra("type", type);
-            intent.putExtra("name", album.getName());
             intent.putExtra("aid", album.getId());
-            intent.putExtra("uri", album.getPath());
-            List<String> desktops = album.getDesktops();
-            String[] images = new String[desktops == null ? 0 : desktops.size()];
-            if (images.length > 0) {
-                for (int i = desktops.size() - 1; i >= 0; i--) {
-                    images[i] = desktops.get(i);
-                }
-            }
-            intent.putExtra("images", images);
             activity.startActivity(intent);
         }
 

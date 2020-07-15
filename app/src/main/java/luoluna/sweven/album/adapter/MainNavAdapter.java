@@ -3,10 +3,9 @@ package luoluna.sweven.album.adapter;
 import android.app.Activity;
 import android.view.MenuItem;
 
-import androidx.annotation.NonNull;
-
 import com.google.android.material.navigation.NavigationView;
 
+import androidx.annotation.NonNull;
 import luoluna.sweven.album.R;
 
 public class MainNavAdapter implements NavigationView.OnNavigationItemSelectedListener {

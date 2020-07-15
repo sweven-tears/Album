@@ -6,18 +6,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import androidx.annotation.NonNull;
-
 import com.sweven.base.BaseRecyclerAdapter;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import luoluna.sweven.album.R;
-import luoluna.sweven.album.bean.Picture;
+import luoluna.sweven.album.entity.local.Image;
 
-public class PictureLookAdapter extends BaseRecyclerAdapter<Picture> {
+public class PictureLookAdapter extends BaseRecyclerAdapter<Image> {
 
-    public PictureLookAdapter(Activity activity, List<Picture> list) {
+    public PictureLookAdapter(Activity activity, List<Image> list) {
         super(activity, list);
     }
 
@@ -31,9 +30,9 @@ public class PictureLookAdapter extends BaseRecyclerAdapter<Picture> {
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position) {
         PictureLookViewHolder holder = (PictureLookViewHolder) viewHolder;
-        Picture picture = list.get(position);
+        Image image = list.get(position);
 
-        holder.picture.setImageURI(Uri.parse(picture.getUri()));
+        holder.picture.setImageURI(Uri.parse(image.getUri()));
     }
 
     public class PictureLookViewHolder extends ViewHolder {

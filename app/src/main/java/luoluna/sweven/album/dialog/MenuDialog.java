@@ -6,11 +6,11 @@ import android.os.Bundle;
 
 import java.util.List;
 
-import luoluna.sweven.album.bean.Menu;
+import luoluna.sweven.album.entity.BaseMenu;
 
 public class MenuDialog extends Dialog {
 
-    private List<Menu> list;
+    private List<BaseMenu<?>> list;
 
     public MenuDialog(Context context) {
         super(context);
@@ -19,6 +19,5 @@ public class MenuDialog extends Dialog {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 }
