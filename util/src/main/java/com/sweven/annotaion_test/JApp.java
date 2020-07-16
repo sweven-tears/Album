@@ -4,7 +4,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 
 /**
  * <p>Create by Sweven on 2020/7/10 -- 15:01</p>
@@ -12,10 +14,89 @@ import java.lang.reflect.Method;
  */
 public class JApp {
     public static void main(String[] args) {
-        Test test = new Test();
-        System.err.println(test.getStudent().name);
+//        Test test = new Test();
+//        System.err.println(test.getStudent().name);
+        IMenu appMenu = new Menu<JApp>("测试", "a") {
+        };
+        System.out.println("execute:" + appMenu.getName());
+        appMenu.execute(true, 0, "1");
     }
 
+    public static void a(int a, String s) {
+        System.out.println("a1!!!!" + s);
+    }
+
+    public static void a(Integer a, String s) {
+        System.out.println("a!!!!" + s);
+    }
+
+}
+
+
+class Menu<T> implements IMenu {
+
+    private String menuName;
+    private String method;
+    private T t;
+
+    public Menu(String name, String method) {
+        this.menuName = name;
+        this.method = method;
+        init();
+    }
+
+    private void init() {
+        try {
+            ParameterizedType superclass = (ParameterizedType) getClass().getGenericSuperclass();
+            if (superclass.getActualTypeArguments().length < 1) return;
+            t = ((Class<T>) superclass.getActualTypeArguments()[0]).newInstance();
+        } catch (IllegalAccessException | InstantiationException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public Object execute(boolean pkgType, Object... obj) {
+        Class<?> clz = t.getClass();
+        try {
+            Class<?>[] parameterTypes = new Class[obj.length];
+            for (int i = 0; i < obj.length; i++) {
+                Class<?> aClass = obj[i].getClass();
+                parameterTypes[i] = pkgType(pkgType, aClass);
+            }
+            Method method = clz.getDeclaredMethod(this.method, parameterTypes);
+            return method.invoke(t, obj);
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e1) {
+            e1.printStackTrace();
+        }
+        return null;
+    }
+
+    private Class<?> pkgType(boolean pkgType, Class<?> aClass) {
+        if (!pkgType) return aClass;
+        if (aClass == Integer.class) {
+            return Integer.TYPE;
+        } else return aClass;
+    }
+
+    @Override
+    public String getName() {
+        return menuName;
+    }
+
+    @Override
+    public String getMethod() {
+        return method;
+    }
+
+}
+
+interface IMenu {
+    Object execute(boolean pkgType, Object... obj);
+
+    String getName();
+
+    String getMethod();
 }
 
 @Ask("开始测试")

@@ -163,7 +163,7 @@ public class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<BaseRecyclerAda
         }
     }
 
-    public void setOnClickItemListener(OnClickItemListener onClickItemListener) {
+    public void setOnClickItemListener(OnClickItemListener<T> onClickItemListener) {
         this.onClickItemListener = onClickItemListener;
     }
 
