@@ -12,7 +12,7 @@ public class Rows {
     }
 
     public int size() {
-        return maps.size();
+        return maps == null ? 0 : maps.size();
     }
 
     public Map<String, Object> get(int position) {
@@ -27,12 +27,12 @@ public class Rows {
 
 
     private Map<String, Object> currentRow;
-    private int currentIndex = 0;
+    private int currentIndex = -1;
 
     //------------------------map while遍历方式----------------------//
 
     public boolean next() {
-        if (size() - currentIndex > 0) {
+        if (size() - currentIndex > 1) {
             currentRow = get(currentIndex);
             currentIndex++;
             return true;
