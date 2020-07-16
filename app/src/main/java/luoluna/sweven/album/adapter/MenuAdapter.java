@@ -11,10 +11,10 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import luoluna.sweven.album.R;
-import luoluna.sweven.album.entity.BaseMenu;
+import luoluna.sweven.album.entity.Menu;
 
-public class MenuAdapter extends BaseRecyclerAdapter<BaseMenu> {
-    public MenuAdapter(Activity activity, List<BaseMenu> list) {
+public class MenuAdapter extends BaseRecyclerAdapter<Menu<?>> {
+    public MenuAdapter(Activity activity, List<Menu<?>> list) {
         super(activity, list);
     }
 
@@ -28,8 +28,8 @@ public class MenuAdapter extends BaseRecyclerAdapter<BaseMenu> {
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position) {
         MenuHolder holder = (MenuHolder) viewHolder;
-        BaseMenu<?> menu = list.get(position);
-        holder.name.setText(menu.getName());
+        Menu<?> menu = list.get(position);
+        holder.name.setText(menu.getMenuName());
     }
 
     class MenuHolder extends ViewHolder {

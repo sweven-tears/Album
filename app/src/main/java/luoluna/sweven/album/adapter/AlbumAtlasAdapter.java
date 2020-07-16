@@ -26,6 +26,7 @@ import luoluna.sweven.album.R;
 import luoluna.sweven.album.app.App;
 import luoluna.sweven.album.app.Helper;
 import luoluna.sweven.album.entity.local.Album;
+import luoluna.sweven.album.fragment.main.HomeFragment;
 import luoluna.sweven.album.interf.OnSelectedChangeListener;
 import luoluna.sweven.album.page.PictureActivity;
 import luoluna.sweven.album.util.Verifier;
@@ -80,8 +81,9 @@ public class AlbumAtlasAdapter extends BaseRecyclerAdapter<Album> {
 
     @Override
     public void insert(Album album) {
-        long result = Helper.with().addAlbum(album);
+        long result = Helper.addAlbum(album);
         if (result > 0) {
+            HomeFragment.albums.add(0, album);
             super.insert(0, album);
         } else {
             toast.showShort("创建失败");
@@ -113,7 +115,7 @@ public class AlbumAtlasAdapter extends BaseRecyclerAdapter<Album> {
                                 return;
                             }
                         }
-                        Album album = new Album(Helper.with().getNextAlbumId(), input);
+                        Album album = new Album(0, input);
                         nextStep(album, callBack);
                         dialog.cancel();
                     }
@@ -189,7 +191,7 @@ public class AlbumAtlasAdapter extends BaseRecyclerAdapter<Album> {
     public void delete(CallbackForParameter<Integer> onDeleteListener) {
         for (int i = list.size() - 1; i >= 0; i--) {
             if (list.get(i).isSelected()) {
-                if (Helper.with().delAlbum(list.get(i))) {
+                if (Helper.delAlbum(list.get(i))) {
                     list.remove(i);
                 } else
                     toast.showShort("删除失败，请重试！");
@@ -209,7 +211,7 @@ public class AlbumAtlasAdapter extends BaseRecyclerAdapter<Album> {
                     return true;
                 }
                 list.get(i).setName(newName);
-                if (Helper.with().updateAlbum(list.get(i)) > 0) {
+                if (Helper.updateAlbum(list.get(i)) > 0) {
                     notifyDataSetChanged();
                     return true;
                 }
@@ -252,6 +254,12 @@ public class AlbumAtlasAdapter extends BaseRecyclerAdapter<Album> {
             Album album = list.get(getAdapterPosition());
             Intent intent = new Intent(activity, PictureActivity.class);
             intent.putExtra("aid", album.getId());
+            intent.putExtra("name", album.getName());
+            intent.putExtra("account", album.getCount());
+            intent.putExtra("path", album.getPath());
+            intent.putExtra("remark", album.getRemark());
+            intent.putExtra("cover", album.getCover());
+            intent.putExtra("desktops", album.getDesktopArray());
             activity.startActivity(intent);
         }
 

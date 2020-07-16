@@ -38,7 +38,7 @@ public class ScanPhotoAsync extends AsyncTask<Integer, String, List<Album>> {
             return FileManager.getInstance().getSystemAlbums(context);
         } else {
             new LogUtil(this.getClass().getSimpleName()).i("同步图集");
-            return Helper.with().queryAlbums();
+            return Helper.queryAlbums();
         }
     }
 

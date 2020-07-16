@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.sweven.base.BaseRecyclerAdapter;
 import com.sweven.util.ViewUtil;
 
@@ -43,8 +44,9 @@ public class PictureAdapter extends BaseRecyclerAdapter<Image> {
         PictureViewHolder holder = (PictureViewHolder) viewHolder;
         Image image = list.get(position);
 
-        holder.image.setImageURI(Uri.parse(image.getUri()));
-
+        Glide.with(activity)
+                .load(image.getUri())
+                .into(holder.image);
         ViewUtil.notifyMeasure(holder.image);
     }
 

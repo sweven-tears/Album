@@ -43,7 +43,27 @@ public class PictureLookAdapter extends BaseRecyclerAdapter<Image> {
             super(view);
             picture = view.findViewById(R.id.picture);
 
-            picture.setOnClickListener(v -> activity.finish());
+            picture.setOnClickListener(v -> {
+                if (onClickItemListener != null) {
+                    onClickItemListener.onClick(list.get(getAdapterPosition()));
+                }
+            });
+            picture.setOnLongClickListener(v -> {
+                if (menuListener != null) {
+                    menuListener.onMenu(v, list.get(getAdapterPosition()));
+                }
+                return true;
+            });
         }
+    }
+
+    private onMenuListener menuListener;
+
+    public void setOnMenuListener(onMenuListener menuListener) {
+        this.menuListener = menuListener;
+    }
+
+    public interface onMenuListener {
+        void onMenu(View view, Image image);
     }
 }

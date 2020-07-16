@@ -2,6 +2,8 @@ package luoluna.sweven.album.repository.local;
 
 import android.database.sqlite.SQLiteDatabase;
 
+import org.greenrobot.greendao.database.Database;
+
 import luoluna.sweven.album.entity.local.DaoMaster;
 import luoluna.sweven.album.entity.local.DaoSession;
 
@@ -27,7 +29,7 @@ public class DaoManager {
     public static DaoSession getSession() {
         if (session == null) {
             synchronized (DaoMaster.class) {
-                SQLiteDatabase database = new AlbumHelper().getWritableDatabase();
+                Database database = new AlbumHelper().getWritableDb();
                 DaoMaster daoMaster = new DaoMaster(database);
                 session = daoMaster.newSession();
             }

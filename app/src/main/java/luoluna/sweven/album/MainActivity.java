@@ -2,6 +2,7 @@ package luoluna.sweven.album;
 
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -49,6 +50,22 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         setContentView(R.layout.activity_main);
         bindView();
         initData();
+    }
+
+    private void hiddenBar(ViewGroup parent) {
+        if (parent == null) return;
+        try {
+            System.out.println("parent.getChild()=" + parent.getChildAt(0));
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println(parent.getClass().getName());
+        }
+        View view = parent.findViewById(android.R.id.statusBarBackground);
+        if (view == null) {
+            hiddenBar((ViewGroup) parent.getParent());
+        } else {
+            view.setVisibility(View.GONE);
+        }
     }
 
     @Override

@@ -9,14 +9,13 @@ import android.widget.TextView;
 
 import com.sweven.base.BaseActivity;
 import com.sweven.dialog.NoticeDialog;
-import com.sweven.interf.CallBack;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import luoluna.sweven.album.R;
 import luoluna.sweven.album.adapter.PictureAdapter;
-import luoluna.sweven.album.app.Helper;
 import luoluna.sweven.album.entity.local.Album;
+import luoluna.sweven.album.fragment.main.HomeFragment;
 import luoluna.sweven.album.widget.RecyclerViewItemDecoration;
 
 public class PictureActivity extends BaseActivity implements View.OnClickListener {
@@ -34,22 +33,26 @@ public class PictureActivity extends BaseActivity implements View.OnClickListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_picture);
         bindView();
-        getBundle(this::initData);
+        getBundle();
+        initData();
     }
 
     /**
      * 获取intent传递的参数
      *
-     * @param callBack 完成bundle读取后的回调
      */
-    private void getBundle(CallBack callBack) {
+    private void getBundle() {
         Intent intent = getIntent();
         long aid = intent.getLongExtra("aid", 0);
-        album = Helper.with().getAlbumByAid(aid);
+        for (Album a : HomeFragment.albums) {
+            if (a.getId() == aid) {
+                album = a;
+                break;
+            }
+        }
         if (album == null) {
             error();
         }
-        callBack.call();
     }
 
     @Override

@@ -21,28 +21,6 @@ public class App extends Application {
     public static final String appName = "Album";
     public static final String preference = "album";
     public static final String database = "album";
-    public static final String albumListTableName = "ouralbum";
-    public static final String albumChildListTableName = "ourimage";
-    public static final Set<String> databaseSql;
-
-    static {
-        databaseSql = new HashSet<>();
-        databaseSql.add("create table " + albumChildListTableName + " (" +
-                "id int not null ," +
-                "aid int not null," +
-                "uri varchar(80) not null," +
-                "primary key (id)" +
-                ")");
-        databaseSql.add("create table " + albumListTableName + "(" +
-                "aid int not null ," +
-                "name varchar not null," +
-                "path varchar(80) default null," +
-                "remark varchar default ''," +
-                "count int default 0," +
-                "cover varchar default ''," +
-                "primary key (aid)" +
-                ")");
-    }
 
     public static final int BIG_ALBUM = 2;
     public static final int ROLL_ALBUM = 1;
@@ -60,7 +38,6 @@ public class App extends Application {
         super.onCreate();
         application = this;
         Setting.getInstance(this);
-        new DatabaseHelper(this, database, databaseSql);
         AppManager.getInstance().setAppStatus(AppStatus._LAUNCH);
         new Page(this)
                 .setPackage("luoluna.sweven.album")

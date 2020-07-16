@@ -19,7 +19,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".page.PictureLookActivity"></activity>
+        <activity android:name=".page.PictureLookActivity" />
         <activity
             android:name=".page.CreateAlbumActivity"
             android:launchMode="singleTop" />

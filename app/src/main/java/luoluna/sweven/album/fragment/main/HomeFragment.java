@@ -51,6 +51,8 @@ public class HomeFragment extends BaseFragment implements AtlasOperate {
     private static boolean showViewChange = false;
     private String tips;
 
+    public static List<Album> albums;
+
     /**
      * @param type 显示类型：SYSTEM_ALBUM/CUSTOMER_ATLAS
      * @return 新的fragment
@@ -164,6 +166,7 @@ public class HomeFragment extends BaseFragment implements AtlasOperate {
         scanPhotoAsync.execute(type);
         scanPhotoAsync.setCallBack(list -> {
             if (list.size() > 0) {
+                HomeFragment.albums = list;
                 tipsTv.setVisibility(View.GONE);
                 adapter.updateAll(list);
             } else {

@@ -21,13 +21,11 @@ public class Verifier {
         for (E e : list) {
             try {
                 Class<?> cls = e.getClass();
-                for (Field declaredField : cls.getDeclaredFields()) {
-                    if (declaredField.getName().equals(paramsName) &&
-                            Objects.equals(declaredField.get(e), o)) {
-                        return true;
-                    }
-                }
-            } catch (IllegalAccessException ex) {
+                Field field = cls.getDeclaredField(paramsName);
+                field.setAccessible(true);
+                if (field.get(e) != o) continue;
+                return true;
+            } catch (IllegalAccessException | NoSuchFieldException ex) {
                 ex.printStackTrace();
             }
         }

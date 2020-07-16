@@ -88,6 +88,15 @@ public class Album {
         return album;
     }
 
+    public String[] getDesktopArray() {
+        if (getDesktops() == null || getDesktops().size() == 0) return new String[0];
+        String[] array = new String[getDesktops().size()];
+        for (int i = 0; i < getDesktops().size(); i++) {
+            array[i] = getDesktops().get(i).getUri();
+        }
+        return array;
+    }
+
     public boolean isSelected() {
         return selected;
     }
