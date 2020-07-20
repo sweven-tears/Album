@@ -7,6 +7,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.sweven.annotaion_test.Param.classBy;
 
 /**
  * <p>Create by Sweven on 2020/7/10 -- 15:01</p>
@@ -14,30 +18,37 @@ import java.lang.reflect.ParameterizedType;
  */
 public class JApp {
     public static void main(String[] args) {
-//        Test test = new Test();
-//        System.err.println(test.getStudent().name);
-        IMenu appMenu = new Menu<JApp>("测试", "a") {
+        Menu<JApp> jAppMenu = new Menu<JApp>("test method", "app") {
         };
-        System.out.println("execute:" + appMenu.getName());
-        appMenu.execute(true, 0, "1");
+        Object execute = jAppMenu.
+                execute(
+                        Param.build(3L, false),
+                        Param.build(3.5f, true));
+        System.out.println(execute);
+        jAppMenu = new Menu<JApp>("test2", "count") {
+        };
+        jAppMenu.addParam(34, "int")
+                .addParam(6.0d, "double")
+                .execute();
+        System.out.println(JApp.class.getName());
+
     }
 
-    public static void a(int a, String s) {
-        System.out.println("a1!!!!" + s);
+    public String app(long c, Float d) {
+        return d + "app:" + c;
     }
 
-    public static void a(Integer a, String s) {
-        System.out.println("a!!!!" + s);
+    public void count(int a, double c) {
+        System.out.println(a + c);
     }
 
 }
 
-
-class Menu<T> implements IMenu {
-
+abstract class Menu<T> {
     private String menuName;
     private String method;
     private T t;
+    private List<Param> params = new ArrayList<>();
 
     public Menu(String name, String method) {
         this.menuName = name;
@@ -55,16 +66,64 @@ class Menu<T> implements IMenu {
         }
     }
 
-    @Override
-    public Object execute(boolean pkgType, Object... obj) {
-        Class<?> clz = t.getClass();
+    public Menu<T> addParam(Object object, boolean pkgType) {
+        params.add(Param.build(object, pkgType));
+        return this;
+    }
+
+    public Menu<T> addParam(Object object, String className) {
+        params.add(Param.build(object, className));
+        return this;
+    }
+
+    public Menu<T> addParam(Object object, Class<?> classType) {
+        params.add(Param.build(object, classType));
+        return this;
+    }
+
+    public Object execute() {
         try {
-            Class<?>[] parameterTypes = new Class[obj.length];
-            for (int i = 0; i < obj.length; i++) {
-                Class<?> aClass = obj[i].getClass();
-                parameterTypes[i] = pkgType(pkgType, aClass);
+            Class<?> clz = t.getClass();
+            Class<?>[] parameterTypes = new Class[params.size()];
+            Object[] objects = new Object[params.size()];
+            for (int i = 0; i < params.size(); i++) {
+                parameterTypes[i] = params.get(i).getType();
+                objects[i] = params.get(i).getObject();
             }
             Method method = clz.getDeclaredMethod(this.method, parameterTypes);
+            return method.invoke(t, objects);
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e1) {
+            e1.printStackTrace();
+        }
+        return null;
+    }
+
+    public Object execute(Param... params) {
+        try {
+            Class<?> clz = t.getClass();
+            Class<?>[] parameterTypes = new Class[params.length];
+            Object[] objects = new Object[params.length];
+            for (int i = 0; i < params.length; i++) {
+                parameterTypes[i] = params[i].getType();
+                objects[i] = params[i].getObject();
+            }
+            Method method = clz.getDeclaredMethod(this.method, parameterTypes);
+            return method.invoke(t, objects);
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e1) {
+            e1.printStackTrace();
+        }
+        return null;
+    }
+
+    public Object execute(Object... obj) {
+        try {
+            Class<?> clz = t.getClass();
+            Class<?>[] parameterTypes = new Class[obj.length];
+            for (int i = 0; i < obj.length; i++) {
+                parameterTypes[i] = obj[i].getClass();
+            }
+            Method method = clz.getDeclaredMethod(this.method, parameterTypes);
+            method.setAccessible(true);
             return method.invoke(t, obj);
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e1) {
             e1.printStackTrace();
@@ -72,31 +131,129 @@ class Menu<T> implements IMenu {
         return null;
     }
 
-    private Class<?> pkgType(boolean pkgType, Class<?> aClass) {
-        if (!pkgType) return aClass;
-        if (aClass == Integer.class) {
-            return Integer.TYPE;
-        } else return aClass;
+    public Object execute(boolean pkgType, Object... obj) {
+        try {
+            Class<?> clz = t.getClass();
+            Class<?>[] parameterTypes = new Class[obj.length];
+            for (int i = 0; i < obj.length; i++) {
+                parameterTypes[i] = classBy(obj[i].getClass(), pkgType);
+            }
+            Method method = clz.getDeclaredMethod(this.method, parameterTypes);
+            method.setAccessible(true);
+            return method.invoke(t, obj);
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e1) {
+            e1.printStackTrace();
+        }
+        return null;
     }
 
-    @Override
-    public String getName() {
+    public String getMenuName() {
         return menuName;
     }
 
-    @Override
+    public void setMenuName(String menuName) {
+        this.menuName = menuName;
+    }
+
     public String getMethod() {
         return method;
     }
 
+    public void setMethod(String method) {
+        this.method = method;
+    }
+
 }
 
-interface IMenu {
-    Object execute(boolean pkgType, Object... obj);
+class Param {
+    private Object object;
+    private Class<?> type;
 
-    String getName();
+    private Param(Object object, Class<?> type) {
+        this.object = object;
+        this.type = type;
+    }
 
-    String getMethod();
+    public static Param build(Object object, Class<?> type) {
+        return new Param(object, type);
+    }
+
+    /**
+     * @param object  参数
+     * @param pkgType 基本类型是否为包装类
+     * @return
+     */
+    public static Param build(Object object, boolean pkgType) {
+        Class<?> aClass = object.getClass();//boolean、byte、short、int、long、char、float、double
+        return new Param(object, classBy(aClass, pkgType));
+    }
+
+    public static Class<?> classBy(Class<?> aClass, boolean pkgType) {
+        if (pkgType) return aClass;
+        if (aClass == Integer.class) aClass = int.class;
+        else if (aClass == Boolean.class) aClass = boolean.class;
+        else if (aClass == Byte.class) aClass = byte.class;
+        else if (aClass == Short.class) aClass = short.class;
+        else if (aClass == Long.class) aClass = long.class;
+        else if (aClass == Character.class) aClass = char.class;
+        else if (aClass == Float.class) aClass = float.class;
+        else if (aClass == Double.class) aClass = double.class;
+        return aClass;
+    }
+
+    public static Param build(Object object, String basicDataTypeName) {
+        Class<?> aClass = null;
+        switch (basicDataTypeName) {
+            case "int":
+                aClass = int.class;
+                break;
+            case "boolean":
+                aClass = boolean.class;
+                break;
+            case "byte":
+                aClass = byte.class;
+                break;
+            case "sort":
+                aClass = short.class;
+                break;
+            case "long":
+                aClass = long.class;
+                break;
+            case "char":
+                aClass = char.class;
+                break;
+            case "float":
+                aClass = float.class;
+                break;
+            case "double":
+                aClass = double.class;
+                break;
+            default:
+                try {
+                    aClass = Class.forName(basicDataTypeName);
+                } catch (ClassNotFoundException ignored) {
+                }
+        }
+        return new Param(object, aClass);
+    }
+
+    public Param setObject(Object object) {
+        this.object = object;
+        return this;
+    }
+
+    public Param setType(Class<?> type) {
+        this.type = type;
+        return this;
+    }
+
+    public Object getObject() {
+        return object;
+    }
+
+    public Class<?> getType() {
+        return type;
+    }
 }
 
 @Ask("开始测试")
