@@ -1,4 +1,4 @@
-package com.sweven.annotaion_test
+package com.sweven.annotation_test
 
 import android.os.Build
 
