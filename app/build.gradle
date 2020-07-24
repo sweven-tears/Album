@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'org.greenrobot.greendao'
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 29
@@ -59,6 +60,4 @@ dependencies {
     implementation 'com.yanzhenjie:permission:2.0.0-rc12'
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'org.greenrobot:greendao:3.2.2'
-    implementation 'org.projectlombok:lombok:1.16.10'
-    annotationProcessor 'org.projectlombok:lombok:1.16.10'
 }
