@@ -11,12 +11,16 @@ import luoluna.sweven.album.entity.local.Image;
  * <p>Create by Sweven on 2020/7/16 -- 14:55</p>
  * Email: sweventears@163.com
  */
-public class PictureMenu {
+public class PictureMenu extends AbsMenu {
 
     private Image image;
     private String path;
     private String fileName;
     private long size;
+
+    public PictureMenu(String menu, String method) {
+        super(menu, method);
+    }
 
     public void setImage(Image image) {
         this.image = image;

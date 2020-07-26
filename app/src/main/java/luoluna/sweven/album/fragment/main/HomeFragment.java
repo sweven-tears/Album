@@ -8,6 +8,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.sweven.base.BaseFragment;
 import com.sweven.dialog.InputDialog;
 import com.sweven.dialog.WaitDialog;
@@ -16,11 +22,6 @@ import com.sweven.interf.CallBack;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import luoluna.sweven.album.R;
 import luoluna.sweven.album.adapter.AlbumAtlasAdapter;
 import luoluna.sweven.album.app.App;
@@ -348,5 +349,11 @@ public class HomeFragment extends BaseFragment implements AtlasOperate {
             selectedChange(i, i1);
             onSelectedChangeListener.onChange(i, i1);
         });
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        setAdapter(null);
     }
 }

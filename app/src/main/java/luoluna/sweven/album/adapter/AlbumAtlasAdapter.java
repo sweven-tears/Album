@@ -11,6 +11,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+
 import com.bumptech.glide.Glide;
 import com.sweven.base.BaseRecyclerAdapter;
 import com.sweven.dialog.FolderChooser;
@@ -21,7 +23,6 @@ import com.sweven.util.ViewUtil;
 
 import java.util.List;
 
-import androidx.annotation.NonNull;
 import luoluna.sweven.album.R;
 import luoluna.sweven.album.app.App;
 import luoluna.sweven.album.app.Helper;
@@ -79,8 +80,7 @@ public class AlbumAtlasAdapter extends BaseRecyclerAdapter<Album> {
         }
     }
 
-    @Override
-    public void insert(Album album) {
+    public boolean insertAlbum(Album album) {
         long result = Helper.addAlbum(album);
         if (result > 0) {
             HomeFragment.albums.add(0, album);
@@ -88,6 +88,7 @@ public class AlbumAtlasAdapter extends BaseRecyclerAdapter<Album> {
         } else {
             toast.showShort("创建失败");
         }
+        return result > 0;
     }
 
     /**
@@ -130,9 +131,10 @@ public class AlbumAtlasAdapter extends BaseRecyclerAdapter<Album> {
     private void nextStep(Album album, CallBack callBack) {
         FolderChooser chooser = new FolderChooser(activity);
         chooser.setOnConfirm(path -> {
-            insert(Album.create(album, path));
-            if (callBack != null) {
-                callBack.call();
+            if (insertAlbum(Album.create(album, path))) {
+                if (callBack != null) {
+                    callBack.call();
+                }
             }
         });
         chooser.show();

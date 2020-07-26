@@ -40,7 +40,7 @@ public class Helper {
     }
 
     public static long addAlbum(Album album) {
-        return DaoManager.getSession().getAlbumDao().insertWithoutSettingPk(album);
+        return DaoManager.getSession().getAlbumDao().insertWithoutSettingPk(album) + 1;
     }
 
     public static boolean hasAlbum(Album album) {

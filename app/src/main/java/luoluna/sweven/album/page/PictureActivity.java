@@ -7,11 +7,12 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
+
 import com.sweven.base.BaseActivity;
 import com.sweven.dialog.NoticeDialog;
 
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import luoluna.sweven.album.R;
 import luoluna.sweven.album.adapter.PictureAdapter;
 import luoluna.sweven.album.entity.local.Album;
@@ -39,7 +40,6 @@ public class PictureActivity extends BaseActivity implements View.OnClickListene
 
     /**
      * 获取intent传递的参数
-     *
      */
     private void getBundle() {
         Intent intent = getIntent();
@@ -50,9 +50,7 @@ public class PictureActivity extends BaseActivity implements View.OnClickListene
                 break;
             }
         }
-        if (album == null) {
-            error();
-        }
+        if (album == null) throw new NullPointerException(getClass().getName() + ".album");
     }
 
     @Override

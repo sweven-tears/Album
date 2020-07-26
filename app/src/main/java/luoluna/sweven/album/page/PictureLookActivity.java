@@ -5,6 +5,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.PagerSnapHelper;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.sweven.base.BaseActivity;
 import com.sweven.console.LogUtil;
 import com.sweven.dialog.NoticeDialog;
@@ -14,16 +19,9 @@ import com.sweven.util.WindowUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.PagerSnapHelper;
-import androidx.recyclerview.widget.RecyclerView;
 import luoluna.sweven.album.R;
-import luoluna.sweven.album.adapter.MenuAdapter;
 import luoluna.sweven.album.adapter.PictureLookAdapter;
 import luoluna.sweven.album.dialog.MenuDialog;
-import luoluna.sweven.album.entity.Menu;
-import luoluna.sweven.album.entity.PictureMenu;
 import luoluna.sweven.album.entity.local.Album;
 import luoluna.sweven.album.entity.local.Image;
 import luoluna.sweven.album.fragment.main.HomeFragment;
@@ -124,6 +122,9 @@ public class PictureLookActivity extends BaseActivity implements PictureLookAdap
 
     @Override
     public void onClick(Image image) {
-
+        Intent intent = new Intent();
+        intent.putExtra("image_id", image.getId());
+        setResult(RESULT_OK, intent);
+        finish();
     }
 }
