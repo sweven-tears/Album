@@ -76,10 +76,10 @@ public class Album {
      */
     public static Album create(Album album, String path) {
         album.setPath(path);
-        List<Image> desktops = FileManager.sort(new File(path));
+        List<Image> desktops = FileManager.sortImg(new File(path));
         if (desktops.size() > 0) {
             album.setCover(desktops.get(0).getUri());
-            if (album.getDesktops() == null) {
+            if (album.desktops == null) {
                 album.setDesktops(new ArrayList<>());
             }
             album.desktops.addAll(desktops);

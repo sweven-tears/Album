@@ -65,7 +65,7 @@ public class FileManager {
         String[] arrays = set.toArray(new String[0]);
         for (int i = 0; i < arrays.length; i++) {
             File file = new File(arrays[i]);
-            List<Image> desktops = sort(file);
+            List<Image> desktops = sortImg(file);
             if (desktops.size() == 0) continue;
             Album album = new Album(i + 1, file.getName());
             album.setDesktops(desktops);
@@ -80,16 +80,17 @@ public class FileManager {
     /**
      * 通过dir获取目录下的图片并按时间排序
      */
-    public static List<Image> sort(File file) {
+    public static List<Image> sortImg(File file) {
         List<String> array = FileUtil.getFilesByEndName(file.getPath(), App.supportFormat);
         String[] temps = array.toArray(new String[0]);
         Arrays.sort(temps, new FileASCComparator());
         array = Arrays.asList(temps);
         List<Image> images = new ArrayList<>();
-        for (String s : array) {
+        for (int i = 0; i < array.size(); i++) {
             Image image = new Image();
             image.setAid(0);
-            image.setUri(s);
+            image.setId(i);
+            image.setUri(array.get(i));
             images.add(image);
         }
         return images;
@@ -104,7 +105,7 @@ public class FileManager {
      */
     public Album getAlbumByFolder(Context context, String folder) {
         Album album = new Album(0, null);
-        List<Image> desktops = sort(new File(folder));
+        List<Image> desktops = sortImg(new File(folder));
         album.setDesktops(desktops);
         album.setCount(desktops.size());
         album.setPath(folder);

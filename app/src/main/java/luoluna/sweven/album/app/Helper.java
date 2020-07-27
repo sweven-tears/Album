@@ -7,10 +7,13 @@ import com.sweven.util.PreferenceUtil;
 
 import org.greenrobot.greendao.query.WhereCondition;
 
+import java.io.File;
 import java.util.List;
 
 import luoluna.sweven.album.entity.local.Album;
 import luoluna.sweven.album.entity.local.AlbumDao;
+import luoluna.sweven.album.entity.local.Image;
+import luoluna.sweven.album.manager.FileManager;
 import luoluna.sweven.album.repository.local.DaoManager;
 
 /**
@@ -64,6 +67,14 @@ public class Helper {
     }
 
     public static List<Album> queryAlbums() {
-        return DaoManager.getSession().getAlbumDao().queryBuilder().list();
+        List<Album> list = DaoManager.getSession().getAlbumDao().queryBuilder().list();
+        for (Album album : list) {
+            album.__setDaoSession(DaoManager.getSession());
+            List<Image> desktops = album.getDesktops();
+            List<Image> images = FileManager.sortImg(new File(album.getPath()));
+            desktops.addAll(images);
+            album.setDesktops(desktops);
+        }
+        return list;
     }
 }
