@@ -15,6 +15,7 @@ import java.util.List;
 import luoluna.sweven.album.R;
 import luoluna.sweven.album.adapter.MenuAdapter;
 import luoluna.sweven.album.entity.AbsMenu;
+import luoluna.sweven.album.entity.IMenu;
 import luoluna.sweven.album.entity.PictureMenu;
 
 public class MenuDialog extends Dialog {
@@ -50,7 +51,15 @@ public class MenuDialog extends Dialog {
         layoutManager.setOrientation(RecyclerView.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
+        clear.execute();
     }
+
+    private IMenu<Void, Void> clear = new IMenu<>(
+            "menu",
+            params -> {
+                System.out.println("param");
+                return params;
+            });
 
     private AbsMenu details = new AbsMenu("详情", "details") {
         public void details() {
