@@ -5,17 +5,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-
 import com.sweven.base.BaseRecyclerAdapter;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import luoluna.sweven.album.R;
-import luoluna.sweven.album.entity.AbsMenu;
+import luoluna.sweven.album.entity.IMenu;
 
-public class MenuAdapter extends BaseRecyclerAdapter<AbsMenu> {
-    public MenuAdapter(Activity activity, List<AbsMenu> list) {
+public class MenuAdapter extends BaseRecyclerAdapter<IMenu<?>> {
+    public MenuAdapter(Activity activity, List<IMenu<?>> list) {
         super(activity, list);
     }
 
@@ -29,7 +28,7 @@ public class MenuAdapter extends BaseRecyclerAdapter<AbsMenu> {
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position) {
         MenuHolder holder = (MenuHolder) viewHolder;
-        AbsMenu menu = list.get(position);
+        IMenu<?> menu = list.get(position);
         holder.name.setText(menu.getMenu());
     }
 

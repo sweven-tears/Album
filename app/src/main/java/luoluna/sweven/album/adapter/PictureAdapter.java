@@ -1,7 +1,6 @@
 package luoluna.sweven.album.adapter;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -9,8 +8,6 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.sweven.base.BaseRecyclerAdapter;
 import com.sweven.util.ViewUtil;
-
-import java.io.Serializable;
 
 import androidx.annotation.NonNull;
 import luoluna.sweven.album.R;
