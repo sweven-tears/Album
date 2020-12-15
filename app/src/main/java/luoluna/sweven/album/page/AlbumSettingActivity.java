@@ -1,6 +1,5 @@
 package luoluna.sweven.album.page;
 
-import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -17,11 +16,8 @@ public class AlbumSettingActivity extends BaseActivity implements View.OnClickLi
     private ImageView backIv;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_album_setting);
-        bindView();
-        initData();
+    protected int layout() {
+        return R.layout.activity_album_setting;
     }
 
     @Override

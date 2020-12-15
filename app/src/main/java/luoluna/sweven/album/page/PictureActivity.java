@@ -1,22 +1,19 @@
 package luoluna.sweven.album.page;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.StaggeredGridLayoutManager;
-
 import com.sweven.base.BaseActivity;
 import com.sweven.dialog.NoticeDialog;
-import com.sweven.interf.CallBack;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import luoluna.sweven.album.R;
 import luoluna.sweven.album.adapter.PictureAdapter;
 import luoluna.sweven.album.bean.Album;
@@ -38,19 +35,14 @@ public class PictureActivity extends BaseActivity implements View.OnClickListene
     private List<Picture> list = new ArrayList<>();
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_picture);
-        bindView();
-        getBundle(this::initData);
+    protected int layout() {
+        return R.layout.activity_picture;
     }
 
     /**
      * 获取intent传递的参数
-     *
-     * @param callBack 完成bundle读取后的回调
      */
-    private void getBundle(CallBack callBack) {
+    protected void getBundle() {
         Intent intent = getIntent();
         int type = intent.getIntExtra("type", -1);
         String name = intent.getStringExtra("name");
@@ -76,10 +68,6 @@ public class PictureActivity extends BaseActivity implements View.OnClickListene
                 for (String image : desktops) {
                     list.add(new Picture(image));
                 }
-            }
-            // getBundle后的操作
-            if (callBack != null) {
-                callBack.call();
             }
         }
 

@@ -1,6 +1,6 @@
 package luoluna.sweven.album.page;
 
-import android.os.Bundle;
+import android.content.Intent;
 import android.widget.ImageView;
 
 import com.sweven.base.BaseActivity;
@@ -21,8 +21,17 @@ public class LaunchActivity extends BaseActivity {
     private ImageView imageView;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected int layout() {
+        return 0;
+    }
+
+    @Override
+    protected void bindView() {
+
+    }
+
+    @Override
+    protected void initData() {
         Inject.init(this);
         if (AndPermission.hasPermissions(this,
                 Permission.READ_EXTERNAL_STORAGE, Permission.WRITE_EXTERNAL_STORAGE)) {
@@ -48,7 +57,7 @@ public class LaunchActivity extends BaseActivity {
     }
 
     private void init() {
-        startActivity(MainActivity.class);
+        startActivity(new Intent(this, MainActivity.class));
         finish();
     }
 }

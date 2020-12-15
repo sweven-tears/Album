@@ -12,10 +12,7 @@ import java.util.ArrayList;
 public class Svg2Xml {
 
     public static void main(String[] arg) {
-        File file = new File("C:\\Users\\Administrator\\Desktop\\1.svg");
-        svg2xml(file);
-
-        file = new File("C:\\Users\\Administrator\\Desktop\\2.svg");
+        File file = new File("C:\\Users\\Administrator\\Downloads\\icon-test.svg");
         svg2xml(file);
 
     }
@@ -104,12 +101,13 @@ public class Svg2Xml {
      * @param paths
      */
     private static void collectPaths(String result, ArrayList<String> paths) {
-        String[] split = result.split("<path");
+        String[] split = result.split("<");
         for (String s : split) {
             if (s.contains("path")) {
                 int endIndex;
-                if (!s.contains("fill")) {
+                if (s.contains("d")) {
                     endIndex = s.indexOf("p");
+
                 } else {
                     endIndex = Math.min(s.indexOf("f"), s.indexOf("p"));
                 }

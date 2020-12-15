@@ -1,14 +1,8 @@
 package luoluna.sweven.album;
 
-import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import androidx.appcompat.widget.PopupMenu;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.sweven.base.BaseActivity;
 import com.sweven.util.AnimationUtil;
@@ -16,6 +10,10 @@ import com.sweven.util.AnimationUtil;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.appcompat.widget.PopupMenu;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import luoluna.sweven.album.adapter.MainDrawerAdapter;
 import luoluna.sweven.album.adapter.MainNavAdapter;
 import luoluna.sweven.album.fragment.main.HomeFragment;
@@ -29,14 +27,20 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private TextView doneTv;
     private ImageView addIv;
     private ImageView arrow;
-    private ImageView MineIv;
+    private ImageView ivMain;
 
     private FragmentManager fragmentManager = getSupportFragmentManager();
     private List<HomeFragment> fragments = new ArrayList<>();
     private HomeFragment albumFragment = HomeFragment.newInstance(SYSTEM_ALBUM);
     private HomeFragment atlasFragment = HomeFragment.newInstance(CUSTOMER_ATLAS);
-    private Fragment currentFragment = new Fragment();// 当前显示fragment
-    private int currentIndex = SYSTEM_ALBUM;// 当前显示位置
+    /**
+     * 当前显示fragment
+     */
+    private Fragment currentFragment = new Fragment();
+    /**
+     * 当前显示位置
+     */
+    private int currentIndex = SYSTEM_ALBUM;
 
     private MainNavAdapter navAdapter;
     private MainDrawerAdapter drawerAdapter;
@@ -45,11 +49,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private boolean edit = false;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        bindView();
-        initData();
+    protected int layout() {
+        return R.layout.activity_main;
     }
 
     @Override
@@ -57,7 +58,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         title = bindId(R.id.title);
         selectTv = bindId(R.id.select_text);
         doneTv = bindId(R.id.done_text);
-        MineIv = bindId(R.id.mine_image);
+        ivMain = bindId(R.id.mine_image);
         addIv = bindId(R.id.add_image);
         arrow = bindId(R.id.pucker_arrow);
     }
@@ -139,6 +140,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     toast.showShort("发生异常，请重试");
                 }
                 break;
+            default:
+                break;
         }
     }
 
@@ -160,8 +163,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
      * 完成刷新后的操作
      */
     private void finishRefresh() {
-        AnimationUtil.with().stopRotateConstantSpeed(MineIv);
-        refreshing = false;// 刷新状态
+        AnimationUtil.with().stopRotateConstantSpeed(ivMain);
+        // 刷新状态
+        refreshing = false;
     }
 
     /**
@@ -185,17 +189,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         popupMenu.setOnMenuItemClickListener(item -> {
             title.setText(item.getTitle());
-            switch (item.getItemId()) {
-                case R.id.system_album:
-                    addIv.setVisibility(View.GONE);
-                    doneTv.setVisibility(View.GONE);
-                    showFragment(SYSTEM_ALBUM);
-                    break;
-                case R.id.customer_atlas:
-                    addIv.setVisibility(View.VISIBLE);
-                    doneTv.setVisibility(View.VISIBLE);
-                    showFragment(CUSTOMER_ATLAS);
-                    break;
+            int itemId = item.getItemId();
+            if (itemId == R.id.system_album) {
+                addIv.setVisibility(View.GONE);
+                doneTv.setVisibility(View.GONE);
+                showFragment(SYSTEM_ALBUM);
+            } else if (itemId == R.id.customer_atlas) {
+                addIv.setVisibility(View.VISIBLE);
+                doneTv.setVisibility(View.VISIBLE);
+                showFragment(CUSTOMER_ATLAS);
             }
             return false;
         });
@@ -218,7 +220,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
      * @param state 编辑状态 true为编辑状态 false为非编辑状态
      */
     private void editState(boolean state) {
-        MineIv.setVisibility(state ? View.GONE : View.VISIBLE);
+        ivMain.setVisibility(state ? View.GONE : View.VISIBLE);
         addIv.setVisibility(currentIndex == SYSTEM_ALBUM || state ? View.GONE : View.VISIBLE);
 
         selectTv.setVisibility(state ? View.VISIBLE : View.GONE);

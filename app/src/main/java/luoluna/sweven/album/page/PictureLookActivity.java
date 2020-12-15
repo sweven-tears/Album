@@ -2,14 +2,9 @@ package luoluna.sweven.album.page;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.PagerSnapHelper;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.sweven.base.BaseActivity;
+import com.sweven.console.Console;
 import com.sweven.console.LogUtil;
 import com.sweven.dialog.NoticeDialog;
 import com.sweven.util.WindowUtil;
@@ -17,6 +12,10 @@ import com.sweven.util.WindowUtil;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.PagerSnapHelper;
+import androidx.recyclerview.widget.RecyclerView;
 import luoluna.sweven.album.R;
 import luoluna.sweven.album.adapter.PictureLookAdapter;
 import luoluna.sweven.album.bean.Picture;
@@ -29,17 +28,11 @@ public class PictureLookActivity extends BaseActivity {
     private List<Picture> list = new ArrayList<>();
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_picture_look);
-
-        WindowUtil.fullScreen(this);
-        getBundle();
-        bindView();
-        initData();
+    protected int layout() {
+        return R.layout.activity_picture_look;
     }
 
-    private void getBundle() {
+    protected void getBundle() {
         Intent intent = getIntent();
         index = intent.getIntExtra("present", 0);
         String[] images = intent.getStringArrayExtra("images");
@@ -63,6 +56,8 @@ public class PictureLookActivity extends BaseActivity {
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void initData() {
+        WindowUtil.fullScreen(this);
+
         PictureLookAdapter adapter = new PictureLookAdapter(this, list);
         // 让 RecyclerView 像 PagerView 的翻页效果
         new PagerSnapHelper().attachToRecyclerView(recyclerView);
@@ -85,7 +80,7 @@ public class PictureLookActivity extends BaseActivity {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-//                Console.log(dx,dy);
+                Console.log(dx,dy);
             }
         });
     }

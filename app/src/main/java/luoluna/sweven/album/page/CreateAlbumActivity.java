@@ -1,7 +1,5 @@
 package luoluna.sweven.album.page;
 
-import android.os.Bundle;
-
 import com.sweven.base.BaseActivity;
 
 import luoluna.sweven.album.R;
@@ -9,8 +7,17 @@ import luoluna.sweven.album.R;
 public class CreateAlbumActivity extends BaseActivity {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_create_album);
+    protected int layout() {
+        return R.layout.activity_create_album;
+    }
+
+    @Override
+    protected void bindView() {
+
+    }
+
+    @Override
+    protected void initData() {
+
     }
 }

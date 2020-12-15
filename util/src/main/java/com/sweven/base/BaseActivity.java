@@ -5,20 +5,20 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 
+import com.sweven.console.LogUtil;
+import com.sweven.console.ToastUtil;
+
 import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.sweven.console.LogUtil;
-import com.sweven.console.ToastUtil;
 
 /**
  * Created by Sweven on 2019/9/10--15:54.
  * Email: sweventears@foxmail.com
  */
-public class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity {
 
-    public String TAG = getClass().getSimpleName();
+    public final String TAG = getClass().getSimpleName();
 
     public ToastUtil toast;
     public LogUtil log;
@@ -27,7 +27,18 @@ public class BaseActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         init();
+        if (layout() > 0) {
+            setContentView(layout());
+        }
+        bindView();
+        getBundle();
+        initData();
     }
+
+    protected void getBundle() {
+    }
+
+    protected abstract int layout();
 
     private void init() {
         toast = new ToastUtil(this);
@@ -46,14 +57,12 @@ public class BaseActivity extends AppCompatActivity {
     /**
      * 绑定组件id
      */
-    protected void bindView() {
-    }
+    protected abstract void bindView();
 
     /**
      * 初始化数据
      */
-    protected void initData() {
-    }
+    protected abstract void initData();
 
     /**
      * @param cls 目标activity class
